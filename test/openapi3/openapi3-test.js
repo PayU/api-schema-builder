@@ -7,13 +7,12 @@ let chai = require('chai'),
     path = require('path'),
     InputValidationError = require('../inputValidationError');
 
-console.log("dsa");
 chai.use(chaiSinon);
 describe('oas3 check', function () {
     let schema;
     before(function () {
         const swaggerPath = path.join(__dirname, 'pets.yaml');
-        return schemaValidatorGenerator.getSchema(swaggerPath, {}).then(receivedSchema => {
+        return schemaValidatorGenerator.buildSchema(swaggerPath, {}).then(receivedSchema => {
             schema = receivedSchema;
         });
     });

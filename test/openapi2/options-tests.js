@@ -12,7 +12,7 @@ describe('options check', function () {
         let schema, schemaEndpoint;
         before(function () {
             const swaggerPath = path.join(__dirname, 'pets.yaml');
-            return schemaValidatorGenerator.getSchema(swaggerPath, {
+            return schemaValidatorGenerator.buildSchema(swaggerPath, {
                 ajvConfigBody: {
                     coerceTypes: true
                 }

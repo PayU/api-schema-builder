@@ -14,7 +14,7 @@ var SwaggerParser = require('swagger-parser'),
  * @param {string} swaggerPath - the path for the swagger file
  * @param {Object} options - options.formats to add formats to ajv, options.beautifyErrors, options.firstError, options.expectFormFieldsInBody, options.fileNameField (default is 'fieldname' - multer package), options.ajvConfigBody and options.ajvConfigParams for config object that will be passed for creation of Ajv instance used for validation of body and parameters appropriately
  */
-function getSchema(swaggerPath, options) {
+function buildSchema(swaggerPath, options) {
     let schemas = {};
     let middlewareOptions = options || {};
     const makeOptionalAttributesNullable = middlewareOptions.makeOptionalAttributesNullable || false;
@@ -152,5 +152,5 @@ function buildParametersValidation(parameters, contentTypes, middlewareOptions) 
 }
 
 module.exports = {
-    getSchema: getSchema
+    buildSchema: buildSchema
 };
