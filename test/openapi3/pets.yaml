@@ -7,7 +7,6 @@ info:
     backgroundColor: white
   description: >
     # Overview
-
   version: 1.2.0
   title: PaymentsOS API
 tags:
