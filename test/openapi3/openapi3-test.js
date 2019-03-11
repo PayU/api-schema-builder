@@ -7,6 +7,7 @@ let chai = require('chai'),
     path = require('path'),
     InputValidationError = require('../inputValidationError');
 
+console.log("dsa");
 chai.use(chaiSinon);
 describe('oas3 check', function () {
     let schema;
