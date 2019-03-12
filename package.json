@@ -1,6 +1,6 @@
 {
   "name": "api-schema-builder",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "build schema with validators for each endpoint",
   "main": "src/index.js",
   "nyc": {
