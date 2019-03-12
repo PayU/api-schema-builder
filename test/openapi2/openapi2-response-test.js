@@ -22,7 +22,7 @@ describe('oas2 check - response', function () {
             //todo - change all request and response endpoint to be (request/response)-only-(header/path/queries/description)
             schemaEndpoint = schema['/dog']['post'].responses;
         });
-        it('valid body', function () {
+        it('valid response', function () {
             let isResponseBodyMatch = schemaEndpoint['201'].validate({   body: {
                     petType: 'Dog',
                     name: 'name',
@@ -42,7 +42,7 @@ describe('oas2 check - response', function () {
             expect(isResponseBodyMatch).to.be.true;
         });
 
-        it('invalid body', function () {
+        it('invalid response', function () {
 
             let isResponseBodyMatch = schemaEndpoint['201'].validate({   body: {
                     petType: 'Dog',
@@ -52,15 +52,25 @@ describe('oas2 check - response', function () {
                     'x-neaxt': 123
                 }});
 
-            expect(schemaEndpoint['201'].errors).to.be.eql( [{
-                "dataPath": "",
-                "keyword": "required",
-                "message": "should have required property 'packSize'",
-                "params": {
-                    "missingProperty": "packSize"
+            expect(schemaEndpoint['201'].errors).to.be.eql( [
+                {
+                    "dataPath": ".body",
+                    "keyword": "required",
+                    "message": "should have required property 'name'",
+                    "params": {
+                        "missingProperty": "name"
+                    },
+                    "schemaPath": "#/body/allOf/0/required"
                 },
-                "schemaPath": "#/allOf/1/required"
-            }
+                {
+                    "dataPath": ".headers",
+                    "keyword": "required",
+                    "message": "should have required property 'x-next'",
+                    "params": {
+                        "missingProperty": "x-next"
+                    },
+                    "schemaPath": "#/headers/required"
+                }
             ]);
             expect(isResponseBodyMatch).to.be.false
 
@@ -86,13 +96,13 @@ describe('oas2 check - response', function () {
             // expect(isResponseBodyMatch).to.be.false;
         });
 
-        it('valid headers', function () {
-
-            // parameters.validate match
-            let isResponseBodyMatch = schemaEndpoint['201'].headers.validate({   'x-next': "432"});
-            expect(schemaEndpoint['201'].headers.errors).to.be.equal(null);
-            expect(isResponseBodyMatch).to.be.true;
-        });
+        // it('valid headers', function () {
+        //
+        //     // parameters.validate match
+        //     let isResponseBodyMatch = schemaEndpoint['201'].headers.validate({   'x-next': "432"});
+        //     expect(schemaEndpoint['201'].headers.errors).to.be.equal(null);
+        //     expect(isResponseBodyMatch).to.be.true;
+        // });
 
         // it('invalid body', function () {
         //

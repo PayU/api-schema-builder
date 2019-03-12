@@ -33,25 +33,17 @@ function getValidatedBodySchema(bodySchema) {
     return validatedBodySchema;
 }
 
-function buildBodyValidation(schema, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath, middlewareOptions = {}) {
-    const defaultAjvOptions = {
-        allErrors: true
-        // unknownFormats: 'ignore'
-    };
-    const options = Object.assign({}, defaultAjvOptions, middlewareOptions.ajvConfigBody);
-    let ajv = new Ajv(options);
-
+function buildBodyValidation(schema, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath, middlewareOptions = {}, schemaReference) {
+    let ajv = new Ajv({allErrors: true, ...middlewareOptions.ajvConfigBody});
     ajvUtils.addCustomKeyword(ajv, middlewareOptions.formats, middlewareOptions.keywords);
 
     if (schema.discriminator) {
-        return buildInheritance(schema.discriminator, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath, ajv);
+        return buildInheritance(schema.discriminator, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath, ajv, schemaReference);
     } else {
         return new Validators.SimpleValidator(ajv.compile(schema));
     }
 }
-
-function buildInheritance(discriminator, dereferencedDefinitions, swagger, currentPath, currentMethod, parsedPath, ajv) {
-    let bodySchema = swagger.paths[currentPath][currentMethod].parameters.filter(function (parameter) { return parameter.in === 'body' })[0];
+function buildInheritance(discriminator, dereferencedDefinitions, swagger, currentPath, currentMethod, parsedPath, ajv, schemaReference) {
     var inheritsObject = {
         inheritance: []
     };
@@ -60,7 +52,7 @@ function buildInheritance(discriminator, dereferencedDefinitions, swagger, curre
     Object.keys(swagger.definitions).forEach(key => {
         if (swagger.definitions[key].allOf) {
             swagger.definitions[key].allOf.forEach(element => {
-                if (element['$ref'] && element['$ref'] === bodySchema.schema['$ref']) {
+                if (element['$ref'] && element['$ref'] === schemaReference) {
                     inheritsObject[key] = ajv.compile(dereferencedDefinitions[key]);
                     inheritsObject.inheritance.push(key);
                 }

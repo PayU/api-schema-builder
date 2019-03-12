@@ -24,6 +24,8 @@ function buildSchema(swaggerPath, options) {
         SwaggerParser.parse(swaggerPath)
     ]).then(function (swaggers) {
         const dereferenced = swaggers[0];
+        const referenced = swaggers[1];
+
         Object.keys(dereferenced.paths).forEach(function (currentPath) {
             let pathParameters = dereferenced.paths[currentPath].parameters || [];
             let parsedPath = dereferenced.basePath && dereferenced.basePath !== '/' ? dereferenced.basePath.concat(currentPath.replace(/{/g, ':').replace(/}/g, '')) : currentPath.replace(/{/g, ':').replace(/}/g, '');
@@ -34,7 +36,7 @@ function buildSchema(swaggerPath, options) {
                     const isOpenApi3 = dereferenced.openapi === '3.0.0';
                     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
                     if (isOpenApi3){
-                        schemas[parsedPath][currentMethod].body = oas3.buildBodyValidation(dereferenced, swaggers[1], currentPath, currentMethod, middlewareOptions);
+                        schemas[parsedPath][currentMethod].body = oas3.buildBodyValidation(dereferenced, referenced, currentPath, currentMethod, middlewareOptions);
                     } else {
                         let bodySchema = middlewareOptions.expectFormFieldsInBody
                             ? parameters.filter(function (parameter) { return (parameter.in === 'body' || (parameter.in === 'formData' && parameter.type !== 'file')) })
@@ -44,9 +46,30 @@ function buildSchema(swaggerPath, options) {
                         }
                         if (bodySchema.length > 0) {
                             const validatedBodySchema = oas2.getValidatedBodySchema(bodySchema);
-                            schemas[parsedPath][currentMethod].body = oas2.buildBodyValidation(validatedBodySchema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath, middlewareOptions);
+                            let bodySchemaReference = referenced.paths[currentPath][currentMethod].parameters.filter(function (parameter) { return parameter.in === 'body' })[0];
+                            let schemaReference = bodySchemaReference.schema['$ref'];
+                            schemas[parsedPath][currentMethod].body = oas2.buildBodyValidation(validatedBodySchema, dereferenced.definitions, referenced, currentPath, currentMethod, parsedPath, middlewareOptions, schemaReference);
                         }
                     }
+
+                    //response validation
+                    schemas[parsedPath][currentMethod].responses = {};
+                    let responses = dereferenced.paths[currentPath][currentMethod].responses;
+                    Object.keys(responses).forEach(statusCode => {
+                        if(statusCode !== 'default'){
+                            let responseDereferenceSchema = responses[statusCode].schema;
+                            let responseDereferenceHeaders = responses[statusCode].headers;
+                            let headersValidator = responseDereferenceHeaders ? buildHeadersValidation(responseDereferenceHeaders, middlewareOptions) : undefined;
+
+                            let responseSchema = referenced.paths[currentPath][currentMethod].responses[statusCode].schema;
+                            let bodyValidator = responseSchema ? oas2.buildBodyValidation(responseDereferenceSchema, dereferenced.definitions, referenced, currentPath, currentMethod, parsedPath, middlewareOptions, responseSchema['$ref']) : undefined;
+
+                            if(headersValidator || bodyValidator){
+                                schemas[parsedPath][currentMethod].responses[statusCode] =  new Validators.ResponseValidator({body:bodyValidator,headers:headersValidator});
+                            }
+
+                        }
+                    });
 
                     let localParameters = parameters.filter(function (parameter) {
                         return parameter.in !== 'body';
@@ -150,6 +173,33 @@ function buildParametersValidation(parameters, contentTypes, middlewareOptions) 
 
     return new Validators.SimpleValidator(ajv.compile(ajvParametersSchema));
 }
+
+//split to diff parsers if needed
+function buildHeadersValidation(headers, middlewareOptions) {
+    let ajv = new Ajv( {allErrors: true, coerceTypes: 'array', ...middlewareOptions.ajvConfigParams});
+    ajvUtils.addCustomKeyword(ajv, middlewareOptions.formats);
+
+    var ajvHeadersSchema = {
+                title: 'HTTP headers',
+                type: 'object',
+                properties: {},
+                required: [],
+                additionalProperties: true
+            };
+
+    Object.keys(headers).forEach(key => {
+        let headerObj = headers[key];
+        const headerName = key.toLowerCase();
+        ajvHeadersSchema.properties[headerName] = {description:headerObj.description, type: headerObj.type};
+        headerObj.required && ajvHeadersSchema.required.push(key);
+    }, this);
+
+    //todo - should i need it?
+   // ajvHeadersSchema.content = createContentTypeHeaders(middlewareOptions.contentTypeValidation, contentTypes);
+
+    return new Validators.SimpleValidator(ajv.compile(ajvHeadersSchema));
+}
+
 
 module.exports = {
     buildSchema: buildSchema
