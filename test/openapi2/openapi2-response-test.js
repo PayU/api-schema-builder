@@ -8,68 +8,148 @@ let chai = require('chai'),
     InputValidationError = require('../inputValidationError');
 
 chai.use(chaiSinon);
-describe('oas2 check', function () {
+describe('oas2 check - response', function () {
     let schema;
     before(function () {
-        const swaggerPath = path.join(__dirname, 'pets.yaml');
+        const swaggerPath = path.join(__dirname, 'pets-response.yaml');
         return schemaValidatorGenerator.buildSchema(swaggerPath, {}).then((receivedSchema) => {
             schema = receivedSchema;
         });
     });
-    describe('check headers', function () {
+    describe('check body', function () {
         let schemaEndpoint;
         before(function() {
-            schemaEndpoint = schema['/pet-header']['get'];
+            //todo - change all request and response endpoint to be (request/response)-only-(header/path/queries/description)
+            schemaEndpoint = schema['/dog']['post'].responses;
         });
-        it('valid headers', function () {
-            // parameters.validate match
-            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
-                headers: { 'api-version': '1.0'
+        it('valid body', function () {
+            let isResponseBodyMatch = schemaEndpoint['201'].validate({   body: {
+                    petType: 'Dog',
+                    name: 'name',
+                    packSize: 3
                 },
-                path: {},
-                files: undefined });
-            expect(schemaEndpoint.parameters.errors).to.be.equal(null);
-            expect(isParametersMatch).to.be.true;
+                headers:{
+                        'x-next': 123
+                    }});
+
+            // let isResponseBodyMatch = schemaEndpoint['201'].validate({   body: {
+            //         name: 'name',
+            //     },
+            // headers:{
+            //     'x-next': 123
+            // }});
+            expect(schemaEndpoint['201'].errors).to.be.equal(null);
+            expect(isResponseBodyMatch).to.be.true;
         });
-        it('missing required header', function () {
-            // parameters match
-            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
-                headers: { 'host': 'test' },
-                path: {},
-                files: undefined });
-            expect(schemaEndpoint.parameters.errors).to.be.eql([
-                {
-                    'dataPath': '.headers',
-                    'keyword': 'required',
-                    'message': "should have required property 'api-version'",
-                    'params': {
-                        'missingProperty': 'api-version'
-                    },
-                    'schemaPath': '#/properties/headers/required'
-                }
+
+        it('invalid body', function () {
+
+            let isResponseBodyMatch = schemaEndpoint['201'].validate({   body: {
+                    petType: 'Dog',
+                    packSize: 3
+                },
+                headers:{
+                    'x-neaxt': 123
+                }});
+
+            expect(schemaEndpoint['201'].errors).to.be.eql( [{
+                "dataPath": "",
+                "keyword": "required",
+                "message": "should have required property 'packSize'",
+                "params": {
+                    "missingProperty": "packSize"
+                },
+                "schemaPath": "#/allOf/1/required"
+            }
             ]);
-            expect(isParametersMatch).to.be.false;
+            expect(isResponseBodyMatch).to.be.false
+
+            // // parameters.validate match
+            // let isResponseBodyMatch = schemaEndpoint['201'].validate({  body:{ petType: 'Dog',
+            //     name: 'name'}});
+            // expect(schemaEndpoint['201'].errors).to.be.eql( [{
+            //     "dataPath": "",
+            //     "keyword": "required",
+            //     "message": "should have required property 'packSize'",
+            //     "params": {
+            //         "missingProperty": "packSize"
+            //     },
+            //     "schemaPath": "#/allOf/1/required"
+            // }
+        // ]);
+
+            // const error = new InputValidationError(schemaEndpoint.body.errors, '/pet-discriminator', 'post',
+            //     { beautifyErrors: true,
+            //         firstError: true });
+            // expect(error.errors).to.be.equal('body/type should be equal to one of the allowed values [dog_object,cat_object]');
+
+            // expect(isResponseBodyMatch).to.be.false;
         });
-        it('invalid type for headers', function () {
-            // parameters match
-            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
-                headers: 3,
-                path: {},
-                files: undefined });
-            expect(schemaEndpoint.parameters.errors).to.be.eql([{
-                'dataPath': '.headers',
-                'keyword': 'type',
-                'message': 'should be object',
-                'params': {
-                    'type': 'object'
-                },
-                'schemaPath': '#/properties/headers/type'
-            }]);
-            expect(isParametersMatch).to.be.false;
+
+        it('valid headers', function () {
+
+            // parameters.validate match
+            let isResponseBodyMatch = schemaEndpoint['201'].headers.validate({   'x-next': "432"});
+            expect(schemaEndpoint['201'].headers.errors).to.be.equal(null);
+            expect(isResponseBodyMatch).to.be.true;
         });
+
+        // it('invalid body', function () {
+        //
+        //     // parameters.validate match
+        //     let isResponseBodyMatch = schemaEndpoint['201'].body.validate({   petType: 'Dog',
+        //         name: 'name'});
+        //     expect(schemaEndpoint['201'].body.errors).to.be.eql(  [{
+        //         "dataPath": "",
+        //         "keyword": "required",
+        //         "message": "should have required property 'packSize'",
+        //         "params": {
+        //             "missingProperty": "packSize"
+        //         },
+        //         "schemaPath": "#/allOf/1/required"
+        //     }
+        //     ]);
+        //     expect(isResponseBodyMatch).to.be.false;
+        // });
+        // it('missing required header', function () {
+        //     // parameters match
+        //     let isParametersMatch = schemaEndpoint.response['201'].validate({ query: {},
+        //         headers: { 'host': 'test' },
+        //         path: {},
+        //         files: undefined });
+        //     expect(schemaEndpoint.parameters.errors).to.be.eql([
+        //         {
+        //             'dataPath': '.headers',
+        //             'keyword': 'required',
+        //             'message': "should have required property 'api-version'",
+        //             'params': {
+        //                 'missingProperty': 'api-version'
+        //             },
+        //             'schemaPath': '#/properties/headers/required'
+        //         }
+        //     ]);
+        //     expect(isParametersMatch).to.be.false;
+        // });
+        // it('invalid type for headers', function () {
+        //     // parameters match
+        //     let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
+        //         headers: 3,
+        //         path: {},
+        //         files: undefined });
+        //     expect(schemaEndpoint.parameters.errors).to.be.eql([{
+        //         'dataPath': '.headers',
+        //         'keyword': 'type',
+        //         'message': 'should be object',
+        //         'params': {
+        //             'type': 'object'
+        //         },
+        //         'schemaPath': '#/properties/headers/type'
+        //     }]);
+        //     expect(isParametersMatch).to.be.false;
+        // });
     });
 
-    describe('check queries', function () {
+    describe.skip('check queries', function () {
         let schemaEndpoint;
         before(function () {
             schemaEndpoint = schema['/pet-query']['get'];
@@ -113,7 +193,7 @@ describe('oas2 check', function () {
         });
     });
 
-    describe('check path', function () {
+    describe.skip('check path', function () {
         let schemaEndpoint;
         before(function () {
             schemaEndpoint = schema['/pet-path/:name']['get'];
@@ -161,7 +241,7 @@ describe('oas2 check', function () {
     // no tests were written
     describe.skip('check file', function () {});
 
-    describe('check body', function () {
+    describe.skip('check body', function () {
         let schemaEndpoint;
         before(function () {
             schemaEndpoint = schema['/tree']['post'];

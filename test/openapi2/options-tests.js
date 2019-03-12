@@ -11,7 +11,7 @@ describe('options check', function () {
     describe('Type coercion (check ajvConfigBody is pass)', function () {
         let schema, schemaEndpoint;
         before(function () {
-            const swaggerPath = path.join(__dirname, 'pets.yaml');
+            const swaggerPath = path.join(__dirname, 'pets-request.yaml');
             return schemaValidatorGenerator.buildSchema(swaggerPath, {
                 ajvConfigBody: {
                     coerceTypes: true

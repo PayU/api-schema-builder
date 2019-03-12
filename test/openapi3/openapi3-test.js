@@ -11,7 +11,7 @@ chai.use(chaiSinon);
 describe('oas3 check', function () {
     let schema;
     before(function () {
-        const swaggerPath = path.join(__dirname, 'pets.yaml');
+        const swaggerPath = path.join(__dirname, 'pets-request.yaml');
         return schemaValidatorGenerator.buildSchema(swaggerPath, {}).then(receivedSchema => {
             schema = receivedSchema;
         });
