@@ -60,9 +60,6 @@ function buildSchema(swaggerPath, options) {
         });
         return schemas;
     })
-        .catch(function (error) {
-            return Promise.reject(error);
-        });
 }
 
 function createContentTypeHeaders(validate, contentTypes) {
