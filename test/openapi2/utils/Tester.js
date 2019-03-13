@@ -164,8 +164,9 @@ function pathMatcher(schema, path) {
         return Object.keys(schema).reduce((prev, schemaPath) => {
             let pattern = schemaPath.replace(/:(\w+)/g, '(?<$1>[^/]+)')
 
-            if(pattern[pattern.length-1] == ":"){
-                pattern =  pattern.substring[0, pattern.length-1];
+            // fix for node 8 + 10
+            if(pattern[pattern.length-1] == "$"){
+                pattern =  pattern.substring[0, pattern.length-2];
             }
             const re = new RegExp(pattern)
             const res = re.exec(path)
