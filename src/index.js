@@ -59,7 +59,7 @@ function buildSchema(swaggerPath, options) {
                 });
         });
         return schemas;
-    })
+    });
 }
 
 function createContentTypeHeaders(validate, contentTypes) {
