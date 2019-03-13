@@ -29,8 +29,12 @@ describe('oas2 check - response', function () {
                     packSize: 3
                 },
                 headers:{
-                        'x-next': 123
+                        'x-next':3
                     }});
+
+            // let isResponseBodyMatch = schema['/dog']['post'].parameters.validate({   headers:{
+            //         'x-next': 1
+            //     }});
 
             // let isResponseBodyMatch = schemaEndpoint['201'].validate({   body: {
             //         name: 'name',
@@ -38,21 +42,20 @@ describe('oas2 check - response', function () {
             // headers:{
             //     'x-next': 123
             // }});
-            expect(schemaEndpoint['201'].errors).to.be.equal(null);
+            expect(schemaEndpoint['201'].errors).to.be.eql(null);
             expect(isResponseBodyMatch).to.be.true;
         });
 
         it('invalid response', function () {
-
             let isResponseBodyMatch = schemaEndpoint['201'].validate({   body: {
                     petType: 'Dog',
                     packSize: 3
                 },
                 headers:{
-                    'x-neaxt': 123
+                    'x-next': 1
                 }});
 
-            expect(schemaEndpoint['201'].errors).to.be.eql( [
+            expect(schemaEndpoint['201'].errors).to.be.eql([
                 {
                     "dataPath": ".body",
                     "keyword": "required",
@@ -63,13 +66,15 @@ describe('oas2 check - response', function () {
                     "schemaPath": "#/body/allOf/0/required"
                 },
                 {
-                    "dataPath": ".headers",
-                    "keyword": "required",
-                    "message": "should have required property 'x-next'",
+                    "dataPath": ".headers['x-next']",
+                    "keyword": "minimum",
+                    "message": "should be >= 3",
                     "params": {
-                        "missingProperty": "x-next"
+                        "comparison": ">=",
+                        "exclusive": false,
+                        "limit": 3
                     },
-                    "schemaPath": "#/headers/required"
+                    "schemaPath": "#/headers/properties/x-next/minimum"
                 }
             ]);
             expect(isResponseBodyMatch).to.be.false

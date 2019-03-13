@@ -67,7 +67,6 @@ function buildSchema(swaggerPath, options) {
                             if(headersValidator || bodyValidator){
                                 schemas[parsedPath][currentMethod].responses[statusCode] =  new Validators.ResponseValidator({body:bodyValidator,headers:headersValidator});
                             }
-
                         }
                     });
 
@@ -188,10 +187,13 @@ function buildHeadersValidation(headers, middlewareOptions) {
             };
 
     Object.keys(headers).forEach(key => {
-        let headerObj = headers[key];
+        let headerObj = Object.assign({}, headers[key]);
         const headerName = key.toLowerCase();
-        ajvHeadersSchema.properties[headerName] = {description:headerObj.description, type: headerObj.type};
+        const headerRequired = headerObj.required;
         headerObj.required && ajvHeadersSchema.required.push(key);
+        delete headerObj.name;
+        delete headerObj.required;
+        ajvHeadersSchema.properties[headerName] = headerObj;
     }, this);
 
     //todo - should i need it?

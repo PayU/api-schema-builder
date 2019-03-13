@@ -97,7 +97,12 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/Dog'
-
+      - name: x-next
+        in: header
+        type: string
+        minLength: 3
+        description: A link to the next page of responses
+        required: true
       responses:
         "201":
           description: Null response
@@ -106,8 +111,10 @@ paths:
           headers:
             x-next:
               type: integer
+              minimum: 3
               description: A link to the next page of responses
               required: true
+
         default:
           description: unexpected error
           schema:
