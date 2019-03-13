@@ -162,14 +162,11 @@ function _validateParams(schemas, headers, pathParams, query, files, path, metho
 function pathMatcher(schema, path) {
     if (schema) {
         return Object.keys(schema).reduce((prev, schemaPath) => {
-            //const path = '/v2/pets/123/names/333'
-
             const pattern = schemaPath.replace(/:(\w+)/g, '(?<$1>[^/]+)')
-            //for many replaces
-           // const matcher = schemaPath.split(/\:[^/]+/).join('[^/]+');
-            if (path.match(`^${pattern}/?$`)) {
-                const re = new RegExp(pattern)
-                const res = re.exec(path)
+            const re = new RegExp(pattern)
+            const res = re.exec(path)
+
+            if (res) {
                 return {
                     path: schemaPath,
                     pathParams: res.groups
