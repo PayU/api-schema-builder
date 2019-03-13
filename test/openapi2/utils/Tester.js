@@ -96,18 +96,14 @@ let handleCallback = function(tester, callback){
         },
         tester.schemas)
         .then(() => {
-            response = {body:{ result: 'OK', receivedParams: tester.body }};
+            callback(undefined, {body:{ result: 'OK', receivedParams: tester.body }})
         })
         .catch(errors => {
             const error = new InputValidationError(errors,
                 { beautifyErrors: tester.options.beautifyErrors,
                     firstError: tester.options.firstError });
             //response = {body:{ more_info: JSON.stringify(error.errors) }};
-            response = {body:{ more_info: JSON.stringify(error.errors) }};
-
-        })
-        .finally(() => {
-            callback(undefined, response)
+            callback(undefined, {body:{ more_info: JSON.stringify(error.errors) }})
         })
 }
 let extractFromPath = function(pathName, tester){
@@ -162,19 +158,14 @@ function _validateParams(schemas, headers, pathParams, query, files, path, metho
 function pathMatcher(schema, path) {
     if (schema) {
         return Object.keys(schema).reduce((prev, schemaPath) => {
-            let pattern = schemaPath.replace(/:(\w+)/g, '(?<$1>[^/]+)')
+            //const path = '/v2/pets/123/names/333'
 
-            // fix for node 8 + 10
-            if(pattern[pattern.length-1] == "$"){
-                pattern =  pattern.substring[0, pattern.length-2];
-            }
-            const re = new RegExp(pattern)
-            const res = re.exec(path)
-
-            if (res) {
+            const pattern = schemaPath.replace(/:(\w+)/g, '[^/]+')
+            if (path.match(`^${pattern}/?$`)) {
+                let pathParams = getPathParam(schemaPath, path)
                 return {
                     path: schemaPath,
-                    pathParams: res.groups
+                    pathParams: pathParams === "" ? {}:pathParams
                 };
             }
             return prev;
@@ -182,4 +173,20 @@ function pathMatcher(schema, path) {
     }
 
     return undefined;
+}
+
+
+function getPathParam(schemaPath, path){
+    const sp = schemaPath.split('/');
+    const p = path.split('/');
+
+   return sp.reduce((prev, key, idx) => {
+        console.info(key);
+        if (key.startsWith(':')) {
+            return Object.assign(prev, {
+                [key.replace(':', '')]: p[idx],
+            });
+        }
+        return prev;
+    });
 }
