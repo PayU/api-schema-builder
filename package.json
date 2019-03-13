@@ -10,7 +10,8 @@
     "functions": 100,
     "branches": 90,
     "include": [
-      "src/*.js"
+      "src/*.js",
+      "src/*/*.js"
     ],
     "reporter": [
       "lcov",
@@ -21,8 +22,8 @@
   },
   "license": "MIT",
   "scripts": {
-    "test": "node_modules/mocha/bin/_mocha ./test/*/*/*-test.js ./test/*/*-test.js ./test/*-test.js --recursive",
-    "test:coverage": "nyc node_modules/mocha/bin/_mocha --recursive ./test/*/*/*-test.js ./test/*/*-test.js ./test/*-test.js",
+    "test": "node_modules/mocha/bin/_mocha ./test/*/*-test.js --recursive",
+    "test:coverage": "nyc node_modules/mocha/bin/_mocha --recursive ./test/*/*-test.js ",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
     "lint": "./node_modules/.bin/eslint src"
   },
@@ -49,6 +50,7 @@
     "swagger-parser": "^6.0.2"
   },
   "devDependencies": {
+    "ajv-keywords": "^3.4.0",
     "body-parser": "^1.18.3",
     "chai": "^4.2.0",
     "chai-sinon": "^2.8.1",

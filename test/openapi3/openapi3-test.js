@@ -226,7 +226,7 @@ describe('oas3 check', function () {
                         'bark': 'hav hav'
                     });
 
-                    const error = new InputValidationError(schemaEndpoint.body.errors, '/pet-discriminator', 'post',
+                    const error = new InputValidationError(schemaEndpoint.body.errors,
                         { beautifyErrors: true,
                             firstError: true });
                     expect(error.errors).to.be.equal('body/type should be equal to one of the allowed values [dog_object,cat_object]');
@@ -272,7 +272,7 @@ describe('oas3 check', function () {
                         'fur': 'hav hav'
                     });
 
-                    const error = new InputValidationError(schemaEndpoint.body.errors, '/pet-discriminator', 'post',
+                    const error = new InputValidationError(schemaEndpoint.body.errors,
                         { beautifyErrors: true,
                             firstError: true });
                     expect(error.errors).to.be.equal('body/type should be equal to one of the allowed values [dog_multiple,cat_object]');
@@ -286,7 +286,7 @@ describe('oas3 check', function () {
                         bark: 'hav hav',
                         type: 'dog_multiple'
                     });
-                    const error = new InputValidationError(schemaEndpoint.body.errors, '/pet-discriminator', 'post',
+                    const error = new InputValidationError(schemaEndpoint.body.errors,
                         { beautifyErrors: true,
                             firstError: true });
                     expect(error.errors).to.be.equal('body/model should be equal to one of the allowed values [small_dog,big_dog]');
@@ -298,7 +298,7 @@ describe('oas3 check', function () {
                         type: 'dog_multiple',
                         model: 'small_dog'
                     });
-                    const error = new InputValidationError(schemaEndpoint.body.errors, '/pet-discriminator', 'post',
+                    const error = new InputValidationError(schemaEndpoint.body.errors,
                         { beautifyErrors: true,
                             firstError: false });
                     expect(error.errors).to.be.eql([
@@ -330,7 +330,7 @@ describe('oas3 check', function () {
                     let isBodysMatch = schemaEndpoint.body.validate({
                         fur: '6'
                     });
-                    const error = new InputValidationError(schemaEndpoint.body.errors, '/pet-discriminator', 'post',
+                    const error = new InputValidationError(schemaEndpoint.body.errors,
                         { beautifyErrors: true,
                             firstError: true });
                     expect(error.errors).to.be.equal('body/type should be equal to one of the allowed values [mapped_dog,mapped_cat]');
@@ -342,7 +342,7 @@ describe('oas3 check', function () {
                         type: 'mapped_dog',
                         model: 'small_dog'
                     });
-                    const error = new InputValidationError(schemaEndpoint.body.errors, '/pet-discriminator', 'post',
+                    const error = new InputValidationError(schemaEndpoint.body.errors,
                         { beautifyErrors: true,
                             firstError: true });
                     expect(error.errors).to.be.equal('body should have required property \'max_length\'');
