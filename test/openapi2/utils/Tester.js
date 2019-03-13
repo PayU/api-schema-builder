@@ -181,7 +181,6 @@ function getPathParam(schemaPath, path){
     const p = path.split('/');
 
    return sp.reduce((prev, key, idx) => {
-        console.info(key);
         if (key.startsWith(':')) {
             return Object.assign(prev, {
                 [key.replace(':', '')]: p[idx],
