@@ -6,11 +6,10 @@ const Validator = require('./Validator'),
     DiscriminatorValidator = require('./DiscriminatorValidator'),
     ResponseValidator = require('./ResponseValidator');
 
-
 module.exports = {
     Validator: Validator,
     OneOfValidator: OneOfValidator,
-    ResponseValidator:ResponseValidator,
+    ResponseValidator: ResponseValidator,
     SimpleValidator: SimpleValidator,
     DiscriminatorValidator
 };

@@ -52,11 +52,11 @@ function buildSchema(swaggerPath, options) {
                         }
                     }
 
-                    //response validation
+                    // response validation
                     schemas[parsedPath][currentMethod].responses = {};
                     let responses = dereferenced.paths[currentPath][currentMethod].responses || [];
                     Object.keys(responses).forEach(statusCode => {
-                        if(statusCode !== 'default'){
+                        if (statusCode !== 'default'){
                             let responseDereferenceSchema = responses[statusCode].schema;
                             let responseDereferenceHeaders = responses[statusCode].headers;
                             let headersValidator = responseDereferenceHeaders ? buildHeadersValidation(responseDereferenceHeaders, middlewareOptions) : undefined;
@@ -64,8 +64,8 @@ function buildSchema(swaggerPath, options) {
                             let responseSchema = referenced.paths[currentPath][currentMethod].responses[statusCode].schema;
                             let bodyValidator = responseSchema ? oas2.buildBodyValidation(responseDereferenceSchema, dereferenced.definitions, referenced, currentPath, currentMethod, parsedPath, middlewareOptions, responseSchema) : undefined;
 
-                            if(headersValidator || bodyValidator){
-                                schemas[parsedPath][currentMethod].responses[statusCode] =  new Validators.ResponseValidator({body:bodyValidator,headers:headersValidator});
+                            if (headersValidator || bodyValidator){
+                                schemas[parsedPath][currentMethod].responses[statusCode] = new Validators.ResponseValidator({ body: bodyValidator, headers: headersValidator });
                             }
                         }
                     });
@@ -170,7 +170,7 @@ function buildParametersValidation(parameters, contentTypes, middlewareOptions) 
     return new Validators.SimpleValidator(ajv.compile(ajvParametersSchema));
 }
 
-//split to diff parsers if needed
+// split to diff parsers if needed
 function buildHeadersValidation(headers, middlewareOptions) {
     const defaultAjvOptions = {
         allErrors: true,
@@ -182,29 +182,28 @@ function buildHeadersValidation(headers, middlewareOptions) {
     ajvUtils.addCustomKeyword(ajv, middlewareOptions.formats);
 
     var ajvHeadersSchema = {
-                title: 'HTTP headers',
-                type: 'object',
-                properties: {},
-                required: [],
-                additionalProperties: true
-            };
+        title: 'HTTP headers',
+        type: 'object',
+        properties: {},
+        required: [],
+        additionalProperties: true
+    };
 
     Object.keys(headers).forEach(key => {
         let headerObj = Object.assign({}, headers[key]);
         const headerName = key.toLowerCase();
         const headerRequired = headerObj.required;
-        headerObj.required && ajvHeadersSchema.required.push(key);
+        if (headerRequired) ajvHeadersSchema.required.push(key);
         delete headerObj.name;
         delete headerObj.required;
         ajvHeadersSchema.properties[headerName] = headerObj;
     }, this);
 
-    //todo - should i need it?
-   // ajvHeadersSchema.content = createContentTypeHeaders(middlewareOptions.contentTypeValidation, contentTypes);
+    // todo - should i need it?
+    // ajvHeadersSchema.content = createContentTypeHeaders(middlewareOptions.contentTypeValidation, contentTypes);
 
     return new Validators.SimpleValidator(ajv.compile(ajvHeadersSchema));
 }
-
 
 module.exports = {
     buildSchema: buildSchema
