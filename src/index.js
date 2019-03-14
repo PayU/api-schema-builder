@@ -46,15 +46,15 @@ function buildSchema(swaggerPath, options) {
                         }
                         if (bodySchema.length > 0) {
                             const validatedBodySchema = oas2.getValidatedBodySchema(bodySchema);
-                            let bodySchemaReference = referenced.paths[currentPath][currentMethod].parameters.filter(function (parameter) { return parameter.in === 'body' })[0];
-                            let schemaReference = bodySchemaReference.schema['$ref'];
+                            let bodySchemaReference = referenced.paths[currentPath][currentMethod].parameters.filter(function (parameter) { return parameter.in === 'body' })[0] || {};
+                            let schemaReference = bodySchemaReference.schema;
                             schemas[parsedPath][currentMethod].body = oas2.buildBodyValidation(validatedBodySchema, dereferenced.definitions, referenced, currentPath, currentMethod, parsedPath, middlewareOptions, schemaReference);
                         }
                     }
 
                     //response validation
                     schemas[parsedPath][currentMethod].responses = {};
-                    let responses = dereferenced.paths[currentPath][currentMethod].responses;
+                    let responses = dereferenced.paths[currentPath][currentMethod].responses || [];
                     Object.keys(responses).forEach(statusCode => {
                         if(statusCode !== 'default'){
                             let responseDereferenceSchema = responses[statusCode].schema;
@@ -62,7 +62,7 @@ function buildSchema(swaggerPath, options) {
                             let headersValidator = responseDereferenceHeaders ? buildHeadersValidation(responseDereferenceHeaders, middlewareOptions) : undefined;
 
                             let responseSchema = referenced.paths[currentPath][currentMethod].responses[statusCode].schema;
-                            let bodyValidator = responseSchema ? oas2.buildBodyValidation(responseDereferenceSchema, dereferenced.definitions, referenced, currentPath, currentMethod, parsedPath, middlewareOptions, responseSchema['$ref']) : undefined;
+                            let bodyValidator = responseSchema ? oas2.buildBodyValidation(responseDereferenceSchema, dereferenced.definitions, referenced, currentPath, currentMethod, parsedPath, middlewareOptions, responseSchema) : undefined;
 
                             if(headersValidator || bodyValidator){
                                 schemas[parsedPath][currentMethod].responses[statusCode] =  new Validators.ResponseValidator({body:bodyValidator,headers:headersValidator});
@@ -172,7 +172,13 @@ function buildParametersValidation(parameters, contentTypes, middlewareOptions) 
 
 //split to diff parsers if needed
 function buildHeadersValidation(headers, middlewareOptions) {
-    let ajv = new Ajv( {allErrors: true, coerceTypes: 'array', ...middlewareOptions.ajvConfigParams});
+    const defaultAjvOptions = {
+        allErrors: true,
+        coerceTypes: 'array'
+    };
+    const options = Object.assign({}, defaultAjvOptions, middlewareOptions.ajvConfigParams);
+    let ajv = new Ajv(options);
+
     ajvUtils.addCustomKeyword(ajv, middlewareOptions.formats);
 
     var ajvHeadersSchema = {

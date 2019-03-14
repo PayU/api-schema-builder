@@ -34,7 +34,12 @@ function getValidatedBodySchema(bodySchema) {
 }
 
 function buildBodyValidation(schema, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath, middlewareOptions = {}, schemaReference) {
-    let ajv = new Ajv({allErrors: true, ...middlewareOptions.ajvConfigBody});
+    const defaultAjvOptions = {
+        allErrors: true
+    };
+    const options = Object.assign({}, defaultAjvOptions, middlewareOptions.ajvConfigBody);
+    let ajv = new Ajv(options);
+
     ajvUtils.addCustomKeyword(ajv, middlewareOptions.formats, middlewareOptions.keywords);
 
     if (schema.discriminator) {
@@ -43,7 +48,7 @@ function buildBodyValidation(schema, swaggerDefinitions, originalSwagger, curren
         return new Validators.SimpleValidator(ajv.compile(schema));
     }
 }
-function buildInheritance(discriminator, dereferencedDefinitions, swagger, currentPath, currentMethod, parsedPath, ajv, schemaReference) {
+function buildInheritance(discriminator, dereferencedDefinitions, swagger, currentPath, currentMethod, parsedPath, ajv, schemaReference = {}) {
     var inheritsObject = {
         inheritance: []
     };
@@ -52,7 +57,7 @@ function buildInheritance(discriminator, dereferencedDefinitions, swagger, curre
     Object.keys(swagger.definitions).forEach(key => {
         if (swagger.definitions[key].allOf) {
             swagger.definitions[key].allOf.forEach(element => {
-                if (element['$ref'] && element['$ref'] === schemaReference) {
+                if (element['$ref'] && element['$ref'] === schemaReference['$ref']) {
                     inheritsObject[key] = ajv.compile(dereferencedDefinitions[key]);
                     inheritsObject.inheritance.push(key);
                 }

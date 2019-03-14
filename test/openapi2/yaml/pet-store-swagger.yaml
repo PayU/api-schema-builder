@@ -265,7 +265,8 @@ definitions:
     properties:
       id:
         type: integer
-        format: int64
+#        format: int64
+#        minLength: 3
       name:
         type: string
       tag:
