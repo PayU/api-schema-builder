@@ -53,8 +53,12 @@ The function return Promise.
 Array that contains:
 * `path_name`: the paths it written in the doc, for example `/pet`.
     * `method`: the relevant method it written in the doc, for example `get`.
-        * `parameters.validate`: ajv validator that check: paths, files, queries, headers.
-        * `body.validate`: ajv validator that check: body only.
+        * `parameters`:
+            * `validate`:  ajv validator that check: paths, files, queries and headers.
+            * `errors`: in case of fail validation it return array of errors, otherwise return null
+        * `body`:
+            * `validate`: ajv validator that check: body only.
+            * `errors`: in case of fail validation it return array of errors, otherwise return null
 
 
 ##### Options
