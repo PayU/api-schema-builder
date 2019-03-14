@@ -3,12 +3,13 @@
 var chai = require('chai'),
     expect = chai.expect,
     chaiSinon = require('chai-sinon'),
-    request = require('supertest'),
     path = require('path'),
     schemaValidatorGenerator = require('../../src/index');
 
 chai.use(chaiSinon);
-let Tester = require('./utils/Tester');
+const Tester = require('./utils/Tester');
+const TesterFactory = require('./utils/TesterFactory');
+
 describe('input-validation middleware tests - Express', function () {
     describe('init function tests', function () {
         it('should reject the promise in case the file doesn\'t exists', function () {
@@ -25,16 +26,16 @@ describe('input-validation middleware tests - Express', function () {
         });
     });
     describe('Simple server - no options', function () {
-        let schemas, options = {};
+        let options = {}, testerFactory;
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger.yaml');
             return schemaValidatorGenerator.buildSchema(swaggerPath,options).then(receivedSchema => {
-                schemas = receivedSchema;
+                testerFactory = new TesterFactory(receivedSchema, options)
             })
 
         });
         it('valid request - should pass validation', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('api-version', '1.0')
                 .set('request-id', '123456')
@@ -48,7 +49,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('missing header - should fail', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '123456')
                 .query({ page: 0 })
@@ -64,7 +65,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad header - invalid pattern', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '123456')
                 .set('api-version', '1')
@@ -81,7 +82,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad header - empty header', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '')
                 .set('api-version', '1.0')
@@ -98,7 +99,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong type', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '123234')
                 .set('api-version', '1.0')
@@ -120,7 +121,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - missing required params', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '123324')
                 .set('api-version', '1.0')
@@ -141,7 +142,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - missing required object attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '123434')
                 .set('api-version', '1.0')
@@ -160,7 +161,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong type object attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '12334')
                 .set('api-version', '1.0')
@@ -180,7 +181,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - missing required nested attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '12343')
                 .set('api-version', '1.0')
@@ -200,7 +201,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format nested attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '12343')
                 .set('api-version', '1.0')
@@ -222,7 +223,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong enum value', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -244,7 +245,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad query param - missing required params', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -260,7 +261,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad query param - over limit', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -276,7 +277,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad query param - under limit', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -292,7 +293,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad path param - wrong format', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets/12')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -308,7 +309,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format nested attribute (not parameters)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets')
                 .send([{
                     name: 'name',
@@ -329,7 +330,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format in array item body (second item)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets')
                 .send([
                     {
@@ -357,7 +358,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format body (should be an array)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets')
                 .send({
                     name: 'name',
@@ -378,7 +379,7 @@ describe('input-validation middleware tests - Express', function () {
         });
     });
     describe('Simple server - type coercion enabled', function () {
-        let schemas, options = {
+        let testerFactory, options = {
             ajvConfigBody: {
                 coerceTypes: true,
                 useDefaults: true
@@ -394,12 +395,12 @@ describe('input-validation middleware tests - Express', function () {
                 },
                 makeOptionalAttributesNullable: true
             }).then(receivedSchema => {
-                schemas = receivedSchema;
+                testerFactory = new TesterFactory(receivedSchema, options)
             })
 
         });
         it('request with wrong parameter type - should pass validation due to coercion', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets')
                 .send([{
                     name: 1,
@@ -411,7 +412,7 @@ describe('input-validation middleware tests - Express', function () {
                 .expect(200, done);
         });
         it('request with wrong parameter type - should keep null values as null when payload is array', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets')
                 .send([{
                     name: 1,
@@ -434,7 +435,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('handles request body objects without specified schema correctly', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets')
                 .send([{
                     name: 1,
@@ -460,7 +461,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('handles request body without specified schema correctly', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .patch('/pets')
                 .send({
                     name: 1,
@@ -487,7 +488,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('request with wrong parameter type - should keep null values as null when payload is object', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .send({
                     name: 1,
@@ -510,7 +511,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('request with wrong parameter type and no required fields defined - should keep null values as null when payload is object', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .send({
                     name: 1,
@@ -537,7 +538,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('request with wrong parameter type - should keep null values as null when (invalid) swagger with multiple types is provided', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets')
                 .send([{
                     name: 1,
@@ -559,16 +560,16 @@ describe('input-validation middleware tests - Express', function () {
         });
     });
     describe('Simple server - with base path', function () {
-        let schemas, options = { contentTypeValidation: true };
+        let testerFactory, options = { contentTypeValidation: true };
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger-with-base-path.yaml');
             return schemaValidatorGenerator.buildSchema(swaggerPath,{ contentTypeValidation: true }).then(receivedSchema => {
-                schemas = receivedSchema;
+                testerFactory = new TesterFactory(receivedSchema, options)
             })
 
         });
         it('valid request - should pass validation', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/v1/pets')
                 .set('api-version', '1.0')
                 .set('request-id', '123456')
@@ -582,7 +583,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad request - wrong content-type (should be application/json)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/v1/pets')
                 .set('content-type', 'application/x-www-form-urlencoded')
                 .send([{
@@ -602,7 +603,7 @@ describe('input-validation middleware tests - Express', function () {
         });
         //openapi2 lowercase the headers
         it.skip('headers are in capital letters - should pass validation', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/v1/capital')
                 .set('Capital-Letters', '1.0')
                 .expect(200, function (err, res) {
@@ -614,7 +615,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('headers are in lowercase letters - should pass validation', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/v1/capital')
                 .set('capital-letters', '1.0')
                 .expect(200, function (err, res) {
@@ -626,7 +627,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('missing header - should fail', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/v1/pets')
                 .set('request-id', '123456')
                 .query({ page: 0 })
@@ -642,7 +643,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad header - invalid pattern', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/v1/pets')
                 .set('request-id', '123456')
                 .set('api-version', '1')
@@ -659,7 +660,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad header - empty header', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/v1/pets')
                 .set('request-id', '')
                 .set('api-version', '1.0')
@@ -676,7 +677,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong type', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/v1/pets')
                 .set('request-id', '123234')
                 .set('api-version', '1.0')
@@ -698,7 +699,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - missing required params', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/v1/pets')
                 .set('request-id', '123324')
                 .set('api-version', '1.0')
@@ -719,7 +720,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - missing required object attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/v1/pets')
                 .set('request-id', '123434')
                 .set('api-version', '1.0')
@@ -738,7 +739,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong type object attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/v1/pets')
                 .set('request-id', '12334')
                 .set('api-version', '1.0')
@@ -758,7 +759,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - missing required nested attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/v1/pets')
                 .set('request-id', '12343')
                 .set('api-version', '1.0')
@@ -778,7 +779,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format nested attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/v1/pets')
                 .set('request-id', '12343')
                 .set('api-version', '1.0')
@@ -800,7 +801,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong enum value', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/v1/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -822,7 +823,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad query param - missing required params', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/v1/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -838,7 +839,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad query param - over limit', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/v1/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -854,7 +855,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad query param - under limit', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/v1/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -870,7 +871,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad path param - wrong format', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/v1/pets/12')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -886,7 +887,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format nested attribute (not parameters)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/v1/pets')
                 .send([{
                     name: 'name',
@@ -907,7 +908,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format in array item body (second item)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/v1/pets')
                 .send([
                     {
@@ -935,7 +936,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format body (should be an array)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/v1/pets')
                 .send({
                     name: 'name',
@@ -956,16 +957,16 @@ describe('input-validation middleware tests - Express', function () {
         });
     });
     describe('Simple server using routes', function () {
-        let schemas, options = {};
+        let testerFactory, options = {};
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger.yaml');
             return schemaValidatorGenerator.buildSchema(swaggerPath,options).then(receivedSchema => {
-                schemas = receivedSchema;
+                testerFactory = new TesterFactory(receivedSchema, options)
             })
 
         });
         it('valid request - should pass validation', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('api-version', '1.0')
                 .set('request-id', '123456')
@@ -979,7 +980,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('missing header - should fail', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '123456')
                 .query({ page: 0 })
@@ -995,7 +996,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad header - invalid pattern', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '123456')
                 .set('api-version', '1')
@@ -1012,7 +1013,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad header - empty header', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '')
                 .set('api-version', '1.0')
@@ -1029,7 +1030,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong type', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '123234')
                 .set('api-version', '1.0')
@@ -1051,7 +1052,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - missing required params', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '123324')
                 .set('api-version', '1.0')
@@ -1072,7 +1073,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - missing required object attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '123434')
                 .set('api-version', '1.0')
@@ -1091,7 +1092,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong type object attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '12334')
                 .set('api-version', '1.0')
@@ -1111,7 +1112,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - missing required nested attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '12343')
                 .set('api-version', '1.0')
@@ -1131,7 +1132,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format nested attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '12343')
                 .set('api-version', '1.0')
@@ -1153,7 +1154,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong enum value', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -1175,7 +1176,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad query param - missing required params', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -1191,7 +1192,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad query param - over limit', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -1207,7 +1208,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad query param - under limit', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -1223,7 +1224,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad path param - wrong format', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets/12')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -1239,7 +1240,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format nested attribute (not parameters)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets')
                 .send([{
                     name: 'name',
@@ -1260,7 +1261,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format in array item body (second item)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets')
                 .send([
                     {
@@ -1288,7 +1289,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format body (should be an array)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets')
                 .send({
                     name: 'name',
@@ -1309,7 +1310,7 @@ describe('input-validation middleware tests - Express', function () {
         });
     });
     describe('Server with options - beautify and one error', function () {
-        let schemas, options = {
+        let testerFactory, options = {
             formats: [
                 { name: 'double', pattern: /\d+(\.\d+)?/ },
                 { name: 'int64', pattern: /^\d{1,19}$/ },
@@ -1323,12 +1324,12 @@ describe('input-validation middleware tests - Express', function () {
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger.yaml');
             return schemaValidatorGenerator.buildSchema(swaggerPath, options).then(receivedSchema => {
-                schemas = receivedSchema;
+                testerFactory = new TesterFactory(receivedSchema, options)
             })
 
         });
         it('valid request - should pass validation', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('api-version', '1.0')
                 .set('request-id', '123456')
@@ -1342,7 +1343,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('missing header - should fail', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '123456')
                 .query({ page: 0 })
@@ -1356,7 +1357,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad header - invalid pattern', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '123456')
                 .set('api-version', '1')
@@ -1372,7 +1373,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad header - empty header', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '')
                 .set('api-version', '1.0')
@@ -1388,7 +1389,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong type', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -1410,7 +1411,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - missing required params', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -1431,7 +1432,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - missing required object attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '12345')
                 .set('api-version', '1.0')
@@ -1450,7 +1451,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong type object attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '12354')
                 .set('api-version', '1.0')
@@ -1470,7 +1471,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - missing required nested attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '123345')
                 .set('api-version', '1.0')
@@ -1490,7 +1491,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format nested attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '123435')
                 .set('api-version', '1.0')
@@ -1512,7 +1513,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong enum value', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '123345')
                 .set('api-version', '1.0')
@@ -1534,7 +1535,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad query param - missing required params', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -1550,7 +1551,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad query param - over limit', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -1566,7 +1567,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad query param - under limit', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -1582,7 +1583,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad path param - wrong format', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets/12')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -1598,7 +1599,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format nested attribute (not parameters)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets')
                 .send([{
                     name: 'name',
@@ -1618,7 +1619,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format in array item body (second item)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets')
                 .send([
                     {
@@ -1646,7 +1647,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format body (should be an array)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets')
                 .send({
                     name: 'name',
@@ -1666,7 +1667,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad request - wrong content-type (should be application/json)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets')
                 .set('content-type', 'application/x-www-form-urlencoded')
                 .send([{
@@ -1687,7 +1688,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('valid content-type when multiple content-types defined - should pass validation', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/text')
                 .set('content-type', 'text/plain')
                 .send('text')
@@ -1700,7 +1701,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('more detailed content-type - should pass validation', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets')
                 .set('content-type', 'application/json; charset=utf-8')
                 .send([{
@@ -1719,7 +1720,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('valid empty request - should pass validation', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets/1234')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -1733,7 +1734,7 @@ describe('input-validation middleware tests - Express', function () {
         });
     });
     describe('Server with options - Only beautify errors', function () {
-        let schemas, options = {
+        let testerFactory, options = {
             formats: [
                 { name: 'double', pattern: /\d+(\.\d+)?/ },
                 { name: 'int64', pattern: /^\d{1,18}$/ }
@@ -1743,12 +1744,12 @@ describe('input-validation middleware tests - Express', function () {
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger.yaml');
             return schemaValidatorGenerator.buildSchema(swaggerPath,options).then(receivedSchema => {
-                schemas = receivedSchema;
+                testerFactory = new TesterFactory(receivedSchema, options)
             })
 
         });
         it('valid request - should pass validation', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('api-version', '1.0')
                 .set('request-id', '123456')
@@ -1762,7 +1763,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('missing header - should fail', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '123456')
                 .query({ page: 0 })
@@ -1777,7 +1778,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad header - invalid pattern', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '123456')
                 .set('api-version', '1')
@@ -1793,7 +1794,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad header - empty header', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '')
                 .set('api-version', '1.0')
@@ -1809,7 +1810,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body & bad header', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '')
                 .set('api-version', '1.0')
@@ -1833,7 +1834,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong type', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -1855,7 +1856,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - missing required params', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -1876,7 +1877,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - missing required object attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '12345')
                 .set('api-version', '1.0')
@@ -1895,7 +1896,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong type object attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '12354')
                 .set('api-version', '1.0')
@@ -1915,7 +1916,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - missing required nested attribute', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '123345')
                 .set('api-version', '1.0')
@@ -1935,7 +1936,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format nested attribute (more than one error)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '123435')
                 .set('api-version', '1.0')
@@ -1958,7 +1959,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong enum value', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('request-id', '123345')
                 .set('api-version', '1.0')
@@ -1980,7 +1981,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad query param - missing required params', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -1996,7 +1997,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad query param - over limit', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -2012,7 +2013,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad query param - under limit', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -2028,7 +2029,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad path param - wrong format', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets/12')
                 .set('request-id', '1234')
                 .set('api-version', '1.0')
@@ -2044,7 +2045,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format nested attribute (not parameters)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets')
                 .send([{
                     name: 'name',
@@ -2064,7 +2065,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format in array item body (second item)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets')
                 .send([
                     {
@@ -2092,7 +2093,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('bad body - wrong format body (should be an array)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .put('/pets')
                 .send({
                     name: 'name',
@@ -2113,7 +2114,7 @@ describe('input-validation middleware tests - Express', function () {
         });
     });
     describe('Inheritance', function () {
-        let schemas, options = {
+        let testerFactory, options = {
             formats: [
                 { name: 'double', pattern: /\d+(\.\d+)?/ },
                 { name: 'int64', pattern: /^\d{1,19}$/ },
@@ -2125,12 +2126,12 @@ describe('input-validation middleware tests - Express', function () {
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger-inheritance.yaml');
             return schemaValidatorGenerator.buildSchema(swaggerPath,options).then(receivedSchema => {
-                schemas = receivedSchema;
+                testerFactory = new TesterFactory(receivedSchema, options)
             })
 
         });
         it('should pass', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('api-version', '1.0')
                 .send({
@@ -2147,7 +2148,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('wrong value for header with enum definition', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('api-version', '2.0')
                 .expect(400, function (err, res) {
@@ -2159,7 +2160,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('wrong value for query with enum definition', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .set('api-version', '1.0')
                 .query({ PetType: 'bird' })
@@ -2172,7 +2173,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('missing header with enum definition', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/pets')
                 .expect(400, function (err, res) {
                     if (err) {
@@ -2183,7 +2184,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('wrong value for path param with enum definition', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .get('/v2/pets/12345')
                 .expect(400, function (err, res) {
                     if (err) {
@@ -2194,7 +2195,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('should fail for wrong value in discriminator', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('api-version', '1.0')
                 .send({
@@ -2214,7 +2215,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('should fail for missing discriminator key', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('api-version', '1.0')
                 .send({
@@ -2233,7 +2234,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('should fail for missing attribute in inherited object (Dog)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('api-version', '1.0')
                 .send({
@@ -2253,7 +2254,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('should fail for missing attribute in inherited object (cat)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('api-version', '1.0')
                 .send({
@@ -2273,7 +2274,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('should fail for missing attribute in inherited object (parent)', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets')
                 .set('api-version', '1.0')
                 .send({
@@ -2291,7 +2292,7 @@ describe('input-validation middleware tests - Express', function () {
         });
     });
     describe('FormData', function () {
-        let schemas, options =  {
+        let testerFactory, options =  {
             formats: [
                 { name: 'double', pattern: /\d+(\.\d+)?/ },
                 { name: 'int64', pattern: /^\d{1,19}$/ },
@@ -2305,12 +2306,12 @@ describe('input-validation middleware tests - Express', function () {
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/form-data-swagger.yaml');
             return schemaValidatorGenerator.buildSchema(swaggerPath,options).then(receivedSchema => {
-                schemas = receivedSchema;
+                testerFactory = new TesterFactory(receivedSchema, options)
             })
 
         });
         it('only required files exists should pass', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets/import')
                 .set('api-version', '1.0')
                 .attach('sourceFile', 'LICENSE')
@@ -2323,7 +2324,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('required and optional files exists should pass', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets/import')
                 .set('api-version', '1.0')
                 .attach('sourceFile', 'LICENSE')
@@ -2337,7 +2338,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('missing required file should fail', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets/import')
                 .set('api-version', '1.0')
                 .attach('sourceFile1', 'LICENSE')
@@ -2350,7 +2351,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('extra files exists but not allowed should fail', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/pets/import')
                 .set('api-version', '1.0')
                 .attach('sourceFile1', 'LICENSE')
@@ -2364,7 +2365,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('supports string formData', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/login')
                 .set('api-version', '1.0')
                 .field('username', 'user')
@@ -2378,7 +2379,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('supports mix of files and fields', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/kennels/import')
                 .set('api-version', '1.0')
                 .field('name', 'kennel 1 ')
@@ -2392,7 +2393,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('validates string formData', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/login')
                 .set('api-version', '1.0')
                 .field('username', 'user')
@@ -2425,7 +2426,7 @@ describe('input-validation middleware tests - Express', function () {
         };
 
         var range = require('ajv-keywords/keywords/range');
-        let schemas, options = {
+        let testerFactory, options = {
             keywords: [range, { name: 'prohibited', definition }],
             beautifyErrors: true,
             firstError: true,
@@ -2434,12 +2435,12 @@ describe('input-validation middleware tests - Express', function () {
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/custom-keywords-swagger.yaml');
             return schemaValidatorGenerator.buildSchema(swaggerPath,options).then(receivedSchema => {
-                schemas = receivedSchema;
+                testerFactory = new TesterFactory(receivedSchema, options)
             })
 
         });
         it('should pass the validation by the range keyword', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/keywords')
                 .send({ age: 20 })
                 .expect(200, function (err, res) {
@@ -2451,7 +2452,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('should be failed by the range keyword', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/keywords')
                 .send({ age: 50 })
                 .expect(400, function (err, res) {
@@ -2463,7 +2464,7 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
         it('should be failed by the prohibited keyword', function (done) {
-            new Tester(schemas, options)
+            testerFactory.createTester()
                 .post('/keywords')
                 .send({ ages: 20, age: 20 })
                 .expect(400, function (err, res) {
