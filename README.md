@@ -1,10 +1,15 @@
 
 # api-schema-builder
+[![Build Status](https://travis-ci.org/Zooz/api-schema-builder.svg?branch=master)](https://travis-ci.org/Zooz/api-schema-builder)
+[![Coverage Status](https://coveralls.io/repos/github/Zooz/api-schema-builder/badge.svg?branch=master)](https://coveralls.io/github/Zooz/api-schema-builder?branch=master)
+
 This package is used to build schema for input validation base on openapi doc [Swagger (Open API)](https://swagger.io/specification/) definition and [ajv](https://www.npmjs.com/package/ajv)
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  <!-- *generated with [DocToc](https://github.com/thlorenz/doctoc)* -->
+
+
 
 - [Install](#install)
 - [API](#api)
@@ -48,8 +53,12 @@ The function return Promise.
 Array that contains:
 * `path_name`: the paths it written in the doc, for example `/pet`.
     * `method`: the relevant method it written in the doc, for example `get`.
-        * `parameters.validate`: ajv validator that check: paths, files, queries, headers.
-        * `body.validate`: ajv validator that check: body only.
+        * `parameters`:
+            * `validate`:  ajv validator that check: paths, files, queries and headers.
+            * `errors`: in case of fail validation it return array of errors, otherwise return null
+        * `body`:
+            * `validate`: ajv validator that check: body only.
+            * `errors`: in case of fail validation it return array of errors, otherwise return null
 
 
 ##### Options

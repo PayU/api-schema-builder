@@ -1,6 +1,6 @@
 {
   "name": "api-schema-builder",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "build schema with validators for each endpoint",
   "main": "src/index.js",
   "nyc": {
@@ -10,7 +10,8 @@
     "functions": 100,
     "branches": 90,
     "include": [
-      "src/*.js"
+      "src/*.js",
+      "src/*/*.js"
     ],
     "reporter": [
       "lcov",
@@ -21,8 +22,8 @@
   },
   "license": "MIT",
   "scripts": {
-    "test": "node_modules/mocha/bin/_mocha ./test/*/*/*-test.js ./test/*/*-test.js ./test/*-test.js --recursive",
-    "test:coverage": "nyc node_modules/mocha/bin/_mocha --recursive ./test/*/*/*-test.js ./test/*/*-test.js ./test/*-test.js",
+    "test": "node_modules/mocha/bin/_mocha ./test/*/*-test.js --recursive",
+    "test:coverage": "nyc node_modules/mocha/bin/_mocha --recursive ./test/*/*-test.js ",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
     "lint": "./node_modules/.bin/eslint src"
   },
@@ -49,10 +50,9 @@
     "swagger-parser": "^6.0.2"
   },
   "devDependencies": {
-    "body-parser": "^1.18.3",
+    "ajv-keywords": "^3.4.0",
     "chai": "^4.2.0",
     "chai-sinon": "^2.8.1",
-    "clear-require": "^2.0.0",
     "coveralls": "^3.0.2",
     "eslint": "^5.15.1",
     "eslint-config-standard": "^12.0.0",
@@ -61,9 +61,9 @@
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
-    "express": "^4.16.4",
+    "form-data": "^2.3.3",
+    "lodash": "^4.17.11",
     "mocha": "^6.0.2",
-    "multer": "^1.4.1",
     "nyc": "^13.3.0",
     "request": "^2.88.0",
     "sinon": "^4.5.0"
