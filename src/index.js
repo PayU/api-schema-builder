@@ -58,8 +58,9 @@ function buildSchema(swaggerPath, options) {
                     Object.keys(responses).forEach(statusCode => {
                         if (statusCode !== 'default'){
                             let responseDereferenceSchema = responses[statusCode].schema;
-                            let responseDereferenceHeaders = responses[statusCode].headers;
-                            let headersValidator = responseDereferenceHeaders ? buildHeadersValidation(responseDereferenceHeaders, middlewareOptions) : undefined;
+                            let responseDereferenceHeaders = responses[statusCode].headers || [];
+                            let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
+                            let headersValidator = (responseDereferenceHeaders || contentTypes) ? buildHeadersValidation(responseDereferenceHeaders, contentTypes, middlewareOptions) : undefined;
 
                             let responseSchema = referenced.paths[currentPath][currentMethod].responses[statusCode].schema;
                             let bodyValidator = responseSchema ? oas2.buildBodyValidation(responseDereferenceSchema, dereferenced.definitions, referenced, currentPath, currentMethod, parsedPath, middlewareOptions, responseSchema) : undefined;
@@ -171,7 +172,7 @@ function buildParametersValidation(parameters, contentTypes, middlewareOptions) 
 }
 
 // split to diff parsers if needed
-function buildHeadersValidation(headers, middlewareOptions) {
+function buildHeadersValidation(headers, contentTypes, middlewareOptions) {
     const defaultAjvOptions = {
         allErrors: true,
         coerceTypes: 'array'
@@ -179,7 +180,7 @@ function buildHeadersValidation(headers, middlewareOptions) {
     const options = Object.assign({}, defaultAjvOptions, middlewareOptions.ajvConfigParams);
     let ajv = new Ajv(options);
 
-    ajvUtils.addCustomKeyword(ajv, middlewareOptions.formats);
+    ajvUtils.addCustomKeyword(ajv, middlewareOptions.formats, middlewareOptions.keywords);
 
     var ajvHeadersSchema = {
         title: 'HTTP headers',
@@ -199,8 +200,7 @@ function buildHeadersValidation(headers, middlewareOptions) {
         ajvHeadersSchema.properties[headerName] = headerObj;
     }, this);
 
-    // todo - should i need it?
-    // ajvHeadersSchema.content = createContentTypeHeaders(middlewareOptions.contentTypeValidation, contentTypes);
+    ajvHeadersSchema.content = createContentTypeHeaders(middlewareOptions.contentTypeValidation, contentTypes);
 
     return new Validators.SimpleValidator(ajv.compile(ajvHeadersSchema));
 }

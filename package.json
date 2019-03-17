@@ -3,16 +3,15 @@
   "version": "1.0.2",
   "description": "build schema with validators for each endpoint",
   "main": "src/index.js",
+  "files" :[
+    "src"
+  ],
   "nyc": {
     "report-dir": "./coverage",
     "lines": 95,
     "statements": 95,
     "functions": 100,
     "branches": 90,
-    "include": [
-      "src/*.js",
-      "src/*/*.js"
-    ],
     "reporter": [
       "lcov",
       "text"

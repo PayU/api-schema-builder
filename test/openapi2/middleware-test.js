@@ -1733,7 +1733,9 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
     });
-    describe('Server with options - Only beautify errors', function () {
+
+    //don't check beautify and onError options
+    describe.skip('Server with options - Only beautify errors', function () {
         let testerFactory, options = {
             formats: [
                 { name: 'double', pattern: /\d+(\.\d+)?/ },

@@ -12,10 +12,11 @@ function responseValidator(response, data) {
     let bodyValidationResult = true, bodyValidationErrors = [],
         headersValidationResult = true, headersValidationErrors = [];
     if (bodySchema){
+       // let bodyToValidate = data.body || {}
         bodyValidationResult = bodySchema.validate(data.body);
         bodyValidationErrors = bodySchema.errors ? addErrorPrefix(bodySchema.errors, 'body') : [];
     }
-    if (headersSchema){
+    if (headersSchema && data.headers){
         headersValidationResult = headersSchema.validate(data.headers);
         headersValidationErrors = headersSchema.errors ? addErrorPrefix(headersSchema.errors, 'headers') : [];
     }
