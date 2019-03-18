@@ -11,12 +11,12 @@ function responseValidator(response, data) {
     let headersSchema = response.headers;
     let bodyValidationResult = true, bodyValidationErrors = [],
         headersValidationResult = true, headersValidationErrors = [];
-    if (bodySchema){
-       // let bodyToValidate = data.body || {}
+    if (bodySchema) {
+        // let bodyToValidate = data.body || {}
         bodyValidationResult = bodySchema.validate(data.body);
         bodyValidationErrors = bodySchema.errors ? addErrorPrefix(bodySchema.errors, 'body') : [];
     }
-    if (headersSchema && data.headers){
+    if (headersSchema && data.headers) {
         headersValidationResult = headersSchema.validate(data.headers);
         headersValidationErrors = headersSchema.errors ? addErrorPrefix(headersSchema.errors, 'headers') : [];
     }
@@ -28,7 +28,7 @@ function responseValidator(response, data) {
     return result;
 }
 
-function addErrorPrefix(errors, prefix){
+function addErrorPrefix(errors, prefix) {
     errors.forEach(error => {
         error.dataPath = '.' + prefix + error.dataPath;
         error.schemaPath = error.schemaPath.replace('#', '#/' + prefix);
