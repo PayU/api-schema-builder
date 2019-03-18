@@ -33,14 +33,14 @@ function getValidatedBodySchema(bodySchema) {
     return validatedBodySchema;
 }
 
-function buildBodyValidation(schema, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath, middlewareOptions = {}, schemaReference) {
+function buildBodyValidation(schema, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath, options = {}, schemaReference) {
     const defaultAjvOptions = {
         allErrors: true
     };
-    const options = Object.assign({}, defaultAjvOptions, middlewareOptions.ajvConfigBody);
-    let ajv = new Ajv(options);
+    const ajvOptions = Object.assign({}, defaultAjvOptions, options.ajvConfigBody);
+    let ajv = new Ajv(ajvOptions);
 
-    ajvUtils.addCustomKeyword(ajv, middlewareOptions.formats, middlewareOptions.keywords);
+    ajvUtils.addCustomKeyword(ajv, options.formats, options.keywords);
 
     if (schema.discriminator) {
         return buildInheritance(schema.discriminator, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath, ajv, schemaReference);
