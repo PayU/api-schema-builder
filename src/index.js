@@ -59,7 +59,7 @@ function buildValidations(referenced, dereferenced, options = {}) {
                 Object.keys(responses).forEach(statusCode => {
                     if (statusCode !== 'default') {
                         let responseDereferenceSchema = responses[statusCode].schema;
-                        let responseDereferenceHeaders = responses[statusCode].headers || [];
+                        let responseDereferenceHeaders = responses[statusCode].headers;
                         let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
                         let headersValidator = (responseDereferenceHeaders || contentTypes) ? buildHeadersValidation(responseDereferenceHeaders, contentTypes, options) : undefined;
 
@@ -172,7 +172,7 @@ function buildParametersValidation(parameters, contentTypes, options) {
 }
 
 // split to diff parsers if needed
-function buildHeadersValidation(headers, contentTypes, options) {
+function buildHeadersValidation(headers = [], contentTypes, options) {
     const defaultAjvOptions = {
         allErrors: true,
         coerceTypes: 'array'
