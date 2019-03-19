@@ -1398,9 +1398,29 @@ describe('oas2 - tests', () => {
             ])
         });
         it("valid content-type when multiple content-types defined - should pass validation", function () {
+            let paramsValidationErrors = validateParams({
+                schemas: schemas,
+                headers: {"content-type": "text/plain", "content-length": "1"},
+                pathParams: {},
+                queries: {},
+                files: [],
+                path: "/text",
+                method: "put"
+            });
+            expect(paramsValidationErrors).to.eql(undefined)
         });
         it("more detailed content-type - should pass validation", function () {
-        });
+            let paramsValidationErrors = validateParams({
+                schemas: schemas,
+                headers: {"content-type": "application/json; charset=utf-8", "content-length": "1"},
+                pathParams: {},
+                queries: {},
+                files: [],
+                path: "/pets",
+                method: "put"
+            });
+            expect(paramsValidationErrors).to.eql(undefined)
+        })
         it("valid empty request - should pass validation", function () {
             let paramsValidationErrors = validateParams({
                 schemas: schemas,
@@ -1414,6 +1434,7 @@ describe('oas2 - tests', () => {
             expect(paramsValidationErrors).to.eql(undefined)
         });
     });
+
     describe("Inheritance", function () {
         let schemas;
         let options = {
@@ -1433,6 +1454,17 @@ describe('oas2 - tests', () => {
 
         });
         it("should pass", function () {
+            let bodyValidationErrors = validateBody({
+                schemas: schemas,
+                body:{
+                    petType: 'Dog',
+                    name: 'name',
+                    packSize: 3
+                },
+                path: "/pets",
+                method: "post"
+            });
+            expect(bodyValidationErrors).to.eql(undefined)
         });
         it("wrong value for header with enum definition", function () {
             let paramsValidationErrors = validateParams({
@@ -1465,6 +1497,26 @@ describe('oas2 - tests', () => {
             expect(paramsValidationErrors).to.eql(undefined)
         });
         it("missing header with enum definition", function () {
+            let paramsValidationErrors = validateParams({
+                schemas: schemas,
+                headers: {},
+                pathParams: {},
+                queries: {},
+                files: [],
+                path: "/pets",
+                method: "get"
+            });
+            expect(paramsValidationErrors).to.eql([
+                {
+                    "keyword": "required",
+                    "dataPath": ".headers",
+                    "schemaPath": "#/properties/headers/required",
+                    "params": {
+                        "missingProperty": "api-version"
+                    },
+                    "message": "should have required property 'api-version'"
+                }
+            ])
         });
         it("wrong value for path param with enum definition", function () {
             let paramsValidationErrors = validateParams({
@@ -1644,8 +1696,13 @@ describe('oas2 - tests', () => {
             expect(paramsValidationErrors[0].dataPath).to.equal(".files");
         });
         it("supports string formData", function () {
-        });
-        it("supports mix of files and fields", function () {
+            let bodyValidationErrors = validateBody({
+                schemas: schemas,
+                body: {"username": 'user','password':'pass' },
+                path: "/login",
+                method: "post"
+            });
+            expect(bodyValidationErrors).to.eql(undefined)
         });
         it("validates string formData", function () {
             let bodyValidationErrors = validateBody({
