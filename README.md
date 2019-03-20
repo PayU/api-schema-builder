@@ -40,19 +40,19 @@ var apiSchemaBuilder = require('api-schema-builder');
 
 ### api-schema-builder.buildSchema(PathToSwaggerFile, options)
 
-buildSchema the middleware with the swagger definition.
+Build schema that contains ajv validators for each endpoint, it base on swagger definition.
 
 The function return Promise.
 
 #### Arguments
 
 * `PathToSwaggerFile` &ndash; Path to the swagger definition
-* `options` &ndash; Additional options for the middleware.
+* `options` &ndash; Additional options for build the schema.
 
 #### Response
 Array that contains:
-* `path_name`: the paths it written in the doc, for example `/pet`.
-    * `method`: the relevant method it written in the doc, for example `get`.
+* `path_name`: the paths it written in the api doc, for example `/pet`.
+    * `method`: the relevant method it written in the api doc, for example `get`.
         * `parameters`:
             * `validate`:  ajv validator that check: paths, files, queries and headers.
             * `errors`: in case of fail validation it return array of errors, otherwise return null

@@ -20,7 +20,10 @@
     "cache": true,
     "all": true
   },
-  "license": "MIT",
+  "files": [
+    "src"
+  ],
+  "license": "Apache-2.0",
   "scripts": {
     "test": "node_modules/mocha/bin/_mocha ./test/*/*-test.js --recursive",
     "test:coverage": "nyc node_modules/mocha/bin/_mocha --recursive ./test/*/*-test.js ",
@@ -43,7 +46,7 @@
     "url": "https://github.com/Zooz/api-schema-builder/issues"
   },
   "homepage": "https://github.com/Zooz/api-schema-builder.git",
-  "author": "Idan Tovi",
+  "author": "Gal Cohen",
   "dependencies": {
     "ajv": "^6.6.2",
     "clone-deep": "^4.0.1",
