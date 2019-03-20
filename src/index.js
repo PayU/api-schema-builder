@@ -54,23 +54,7 @@ function buildValidations(referenced, dereferenced, options = {}) {
                 }
 
                 // response validation
-                schemas[parsedPath][currentMethod].responses = {};
-                let responses = dereferenced.paths[currentPath][currentMethod].responses || [];
-                Object.keys(responses).forEach(statusCode => {
-                    if (statusCode !== 'default') {
-                        let responseDereferenceSchema = responses[statusCode].schema;
-                        let responseDereferenceHeaders = responses[statusCode].headers;
-                        let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
-                        let headersValidator = (responseDereferenceHeaders || contentTypes) ? buildHeadersValidation(responseDereferenceHeaders, contentTypes, options) : undefined;
-
-                        let responseSchema = referenced.paths[currentPath][currentMethod].responses[statusCode].schema;
-                        let bodyValidator = responseSchema ? oas2.buildBodyValidation(responseDereferenceSchema, dereferenced.definitions, referenced, currentPath, currentMethod, parsedPath, options, responseSchema) : undefined;
-
-                        if (headersValidator || bodyValidator) {
-                            schemas[parsedPath][currentMethod].responses[statusCode] = new Validators.ResponseValidator({ body: bodyValidator, headers: headersValidator });
-                        }
-                    }
-                });
+                schemas[parsedPath][currentMethod].responses = buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options);
 
                 let localParameters = parameters.filter(function (parameter) {
                     return parameter.in !== 'body';
@@ -85,6 +69,29 @@ function buildValidations(referenced, dereferenced, options = {}) {
     return schemas;
 }
 
+
+function buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options){
+    let responsesSchema = {};
+
+    let responses = dereferenced.paths[currentPath][currentMethod].responses;
+    responses && Object.keys(responses).forEach(statusCode => {
+        if (statusCode !== 'default') {
+            let responseDereferenceSchema = responses[statusCode].schema;
+            let responseDereferenceHeaders = responses[statusCode].headers;
+            let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
+            let headersValidator = (responseDereferenceHeaders || contentTypes) ? buildHeadersValidation(responseDereferenceHeaders, contentTypes, options) : undefined;
+
+            let responseSchema = referenced.paths[currentPath][currentMethod].responses[statusCode].schema;
+            let bodyValidator = responseSchema ? oas2.buildBodyValidation(responseDereferenceSchema, dereferenced.definitions, referenced, currentPath, currentMethod, parsedPath, options, responseSchema) : undefined;
+
+            if (headersValidator || bodyValidator) {
+                responsesSchema[statusCode] = new Validators.ResponseValidator({ body: bodyValidator, headers: headersValidator });
+            }
+        }
+    });
+
+    return responsesSchema;
+}
 function createContentTypeHeaders(validate, contentTypes) {
     if (!validate || !contentTypes) return;
 
@@ -172,7 +179,7 @@ function buildParametersValidation(parameters, contentTypes, options) {
 }
 
 // split to diff parsers if needed
-function buildHeadersValidation(headers = [], contentTypes, options) {
+function buildHeadersValidation(headers, contentTypes, options) {
     const defaultAjvOptions = {
         allErrors: true,
         coerceTypes: 'array'
@@ -190,7 +197,7 @@ function buildHeadersValidation(headers = [], contentTypes, options) {
         additionalProperties: true
     };
 
-    Object.keys(headers).forEach(key => {
+    headers && Object.keys(headers).forEach(key => {
         let headerObj = Object.assign({}, headers[key]);
         const headerName = key.toLowerCase();
         const headerRequired = headerObj.required;

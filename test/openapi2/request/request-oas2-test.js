@@ -2,7 +2,7 @@ var chai = require('chai'),
     expect = chai.expect,
     chaiSinon = require('chai-sinon'),
     path = require('path'),
-    schemaValidatorGenerator = require('../../src/index'),
+    schemaValidatorGenerator = require('../../../src/index'),
     {validateParams, validateBody} = require('./utils/schemaWrapper'),
     chaiLike = require('chai-like')
 
@@ -1434,7 +1434,49 @@ describe('oas2 - tests', () => {
             expect(paramsValidationErrors).to.eql(undefined)
         });
     });
+    describe("Formats", function(){
+        let schemas;
+        let options = {
+            formats: [
+                { name: 'abcName', pattern: /abc/ },
+            ],
+            contentTypeValidation: true
+        };
+        before(function () {
+            const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger-formats.yaml');
+            return schemaValidatorGenerator.buildSchema(swaggerPath,options).then(receivedSchema => {
+                schemas = receivedSchema;
+            })
 
+        });
+        it("bad body - wrong format body (should be an abcName format)", function () {
+            let paramsValidationErrors = validateBody({
+                schemas: schemas,
+                body: {id: "111"},
+                path: "/pets",
+                method: "get"
+            });
+            console.log(paramsValidationErrors);
+
+            expect(paramsValidationErrors).to.eql([ { keyword: 'format',
+                dataPath: '.id',
+                schemaPath: '#/properties/id/format',
+                params: { format: 'abcName' },
+                message: 'should match format "abcName"' } ])
+        });
+
+        it("valid body - good format", function () {
+            let paramsValidationErrors = validateBody({
+                schemas: schemas,
+                body: {id: "abc"},
+                path: "/pets",
+                method: "get"
+            });
+            console.log(paramsValidationErrors);
+
+            expect(paramsValidationErrors).to.eql(undefined)
+        });
+    });
     describe("Inheritance", function () {
         let schemas;
         let options = {
@@ -1740,7 +1782,7 @@ describe('oas2 - tests', () => {
         };
 
         var range = require('ajv-keywords/keywords/range');
-        let testerFactory, options = {
+        let schemas, options = {
             keywords: [range, { name: 'prohibited', definition }],
             beautifyErrors: true,
             firstError: true,

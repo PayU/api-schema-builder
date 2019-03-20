@@ -3,16 +3,16 @@
 let chai = require('chai'),
     expect = chai.expect,
     chaiSinon = require('chai-sinon'),
-    schemaValidatorGenerator = require('../../src/index'),
+    schemaValidatorGenerator = require('../../../src/index'),
     path = require('path'),
-    InputValidationError = require('../inputValidationError');
+    InputValidationError = require('../../inputValidationError');
 
 chai.use(chaiSinon);
 describe('oas2 check - response', function () {
     describe('check body and headers', () =>{
         let schema;
         before(function () {
-            const swaggerPath = path.join(__dirname, 'pets-response.yaml');
+            const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
             return schemaValidatorGenerator.buildSchema(swaggerPath, {}).then((receivedSchema) => {
                 schema = receivedSchema;
             });
@@ -27,9 +27,9 @@ describe('oas2 check - response', function () {
                     id: 321,
                     name: 'Roxy'
                 },
-            headers:{
-                'x-next':{}
-            }});
+                headers:{
+                    'x-next':{}
+                }});
             expect(schemaEndpoint.errors).to.be.eql([
                 {
                     "dataPath": ".headers['x-next']",
@@ -114,12 +114,13 @@ describe('oas2 check - response', function () {
         describe('simple', function () {
             let schema;
             before(() => {
-                const swaggerPath = path.join(__dirname, './pets-response.yaml');
+                const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
                 return schemaValidatorGenerator.buildSchema(swaggerPath)
                     .then((receivedSchema) => {
                         schema = receivedSchema;
                     })
             });
+
             it('valid response - should pass validation', function () {
                 let schemaEndpoint = schema['/pets/:petId']['get'].responses['200'];
                 let validatorMatch = schemaEndpoint.validate({   body: {
@@ -225,7 +226,7 @@ describe('oas2 check - response', function () {
                 ]);
                 expect(validatorMatch).to.be.false;
             });
-            it('bad body - wrong format in array item body (second item)', function () {
+            it('bad body - wrong type in array item body (second item)', function () {
                 let schemaEndpoint = schema['/pet-with-array']['get'].responses['200'];
                 let validatorMatch = schemaEndpoint.validate({   body: [{
                         field1: 'good_field'
@@ -247,7 +248,7 @@ describe('oas2 check - response', function () {
                 ]);
                 expect(validatorMatch).to.be.false;
             });
-            it('bad body - wrong format body (should be an array)', function () {
+            it('bad body - wrong type body (should be an array)', function () {
                 let schemaEndpoint = schema['/pet-with-array']['get'].responses['200'];
                 let validatorMatch = schemaEndpoint.validate({   body: {
                         field1: 'good_field'
@@ -317,33 +318,11 @@ describe('oas2 check - response', function () {
                 ]);
                 expect(validatorMatch).to.be.false;
             });
-            it('bad body - wrong format nested attribute', function () {
-                let schemaEndpoint = schema['/pet-with-object']['get'].responses['200'];
-                let validatorMatch = schemaEndpoint.validate({   body: {
-                        field2: {
-                            field3:''
-                        }
-                    }});
-
-                expect(schemaEndpoint.errors).to.be.eql([
-                    {
-                        "dataPath": ".body.field2.field3",
-                        "keyword": "type",
-                        "message": "should be integer",
-                        "params": {
-                            "type": "integer"
-                        },
-                        "schemaPath": "#/body/properties/field2/properties/field3/type"
-                    }
-                ]);
-                expect(validatorMatch).to.be.false;
-            });
         });
-
         describe('base path', function () {
             let schema;
             before(() => {
-                const swaggerPath = path.join(__dirname, './pets-response-with-base-path.yaml');
+                const swaggerPath = path.join(__dirname, './yaml/pets-response-with-base-path.yaml');
                 return schemaValidatorGenerator.buildSchema(swaggerPath)
                     .then((receivedSchema) => {
                         schema = receivedSchema;
@@ -351,18 +330,18 @@ describe('oas2 check - response', function () {
             });
             it('valid body with base path', function () {
                 let schemaEndpoint = schema['/v1/pets']['get'].responses['200'];
-                let validatorMatch = schemaEndpoint.validate({   body: [{
+                let validatorMatch = schemaEndpoint.validate({   headers:{},
+                    body: [{
                         id: 321, name: 'kitty'
                     }]});
 
                 expect(schemaEndpoint.errors).to.be.equal(null);
                 expect(validatorMatch).to.be.true;
             });
-
-
             it('invalid body with base path', function () {
                 let schemaEndpoint = schema['/v1/pets']['get'].responses['200'];
-                let validatorMatch = schemaEndpoint.validate({   body: [{
+                let validatorMatch = schemaEndpoint.validate({  headers:{},
+                    body: [{
                         id: 321, name: []
                     }]});
 
@@ -380,11 +359,10 @@ describe('oas2 check - response', function () {
                 expect(validatorMatch).to.be.false;
             });
         });
-
         describe('Inheritance', function () {
             let schema;
             before(() => {
-                const swaggerPath = path.join(__dirname, './pets-response-inheritance.yaml');
+                const swaggerPath = path.join(__dirname, './yaml/pets-response-inheritance.yaml');
                 return schemaValidatorGenerator.buildSchema(swaggerPath)
                     .then((receivedSchema) => {
                         schema = receivedSchema;
@@ -393,7 +371,9 @@ describe('oas2 check - response', function () {
 
             it('should pass', function () {
                 let schemaEndpoint = schema['/pets']['post'].responses['201'];
-                let validatorMatch = schemaEndpoint.validate({   body: {
+                let validatorMatch = schemaEndpoint.validate({
+                    headers:{},
+                    body: {
                         petType: 'Dog',
                         name: 'name',
                         packSize: 3
@@ -481,7 +461,6 @@ describe('oas2 check - response', function () {
 
             });
         });
-
         //todo not support yet in files
         //describe.skip('FormData', function () {});
     });
@@ -489,7 +468,7 @@ describe('oas2 check - response', function () {
         describe('without base path', function () {
             let schemaEndpoint, schema;
             before(() => {
-                const swaggerPath = path.join(__dirname, './pets-response.yaml');
+                const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
                 return schemaValidatorGenerator.buildSchema(swaggerPath, {
                     ajvConfigBody: true
                 })
@@ -498,8 +477,6 @@ describe('oas2 check - response', function () {
                     })
             });
 
-            //todo - doesnt support, update kobi
-            //it.skip('missing header - should fail', function () {
 
             it('bad header - wrong type', function () {
                 schemaEndpoint = schema['/pet-with-header']['get'].responses['200'];
@@ -580,7 +557,7 @@ describe('oas2 check - response', function () {
         describe('with base path', function () {
             let schema;
             before(() => {
-                const swaggerPath = path.join(__dirname, './pets-response-with-base-path.yaml');
+                const swaggerPath = path.join(__dirname, './yaml/pets-response-with-base-path.yaml');
                 return schemaValidatorGenerator.buildSchema(swaggerPath)
                     .then((receivedSchema) => {
                         schema = receivedSchema;
@@ -591,9 +568,9 @@ describe('oas2 check - response', function () {
                 let validatorMatch = schemaEndpoint.validate({   body: [{
                         id: 321, name: 'kitty'
                     }],
-                headers:{
-                    'x-next': 123
-                }});
+                    headers:{
+                        'x-next': 123
+                    }});
 
                 expect(schemaEndpoint.errors).to.be.equal(null);
                 expect(validatorMatch).to.be.true;
@@ -627,7 +604,7 @@ describe('oas2 check - response', function () {
             describe('contentTypeValidation = true', () => {
                 let schemaEndpoint, schema;
                 before(() => {
-                    const swaggerPath = path.join(__dirname, './pets-response.yaml');
+                    const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
                     return schemaValidatorGenerator.buildSchema(swaggerPath, {
                         contentTypeValidation: true
                     })
@@ -681,7 +658,7 @@ describe('oas2 check - response', function () {
             describe('contentTypeValidation = false', () => {
                 let schemaEndpoint, schema;
                 before(() => {
-                    const swaggerPath = path.join(__dirname, './pets-response.yaml');
+                    const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
                     return schemaValidatorGenerator.buildSchema(swaggerPath, {
                         contentTypeValidation: false
                     })
@@ -704,182 +681,80 @@ describe('oas2 check - response', function () {
                 });
             });
         })
-        describe.skip('type coercion option', function () {
-            let testerFactory, options = {
-                ajvConfigBody: {
-                    coerceTypes: true,
-                    // useDefaults: true
-                },
-                // makeOptionalAttributesNullable: true
-            };
-            before(function () {
-                const swaggerPath = path.join(__dirname, './yaml/pet-store.yaml');
-                return schemaValidatorGenerator.buildSchema(swaggerPath, options).then(receivedSchema => {
-                    receivedSchema
-                })
+        describe('ajvConfigBody - type coercion option ', function () {
+            describe('coerceTypes=true',function(){
+                let schema, options = {
+                    ajvConfigBody: {
+                        coerceTypes: true,
+                    }
+                };
+                before(function () {
+                    const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
+                    return schemaValidatorGenerator.buildSchema(swaggerPath, options).then(receivedSchema => {
+                        schema = receivedSchema
+                    })
+                });
+                it('request with wrong parameter type - should pass validation due to coercion', function () {
+                    let schemaEndpoint = schema['/pets']['put'].responses['200'];
 
-            });
-            it('request with wrong parameter type - should pass validation due to coercion', function (done) {
-                testerFactory.createTester()
-                    .put('/pets')
-                    .send([{
-                        name: 1,
-                        tag: 'tag',
-                        test: {
-                            field1: 'enum1'
-                        }
-                    }])
-                    .expect(200, done);
-            });
-            it('request with wrong parameter type - should keep null values as null when payload is array', function (done) {
-                testerFactory.createTester()
-                    .put('/pets')
-                    .send([{
-                        name: 1,
-                        tag: 'tag',
-                        age: null,
-                        test: {
-                            field1: 'enum1',
-                            field2: null
-                        }
-                    }])
-                    .expect(200)
-                    .end(function(err, res) {
-                        if (err) {
-                            return done(err);
-                        }
-                        const pet = res.body.receivedParams[0];
-                        expect(pet.test.field2).to.be.null;
-                        expect(pet.age).to.be.null;
-                        done();
+                    let isValid = schemaEndpoint.validate({
+                        body:[{
+                            id: 1,
+                            name: 1,
+                            tag: 'tag',
+                            test: {
+                                field1: 'enum1'
+                            }
+                        }]
                     });
-            });
-            it('handles request body objects without specified schema correctly', function (done) {
-                testerFactory.createTester()
-                    .put('/pets')
-                    .send([{
-                        name: 1,
-                        tag: 'tag',
-                        age: null,
-                        test: {
-                            field1: 'enum1'
-                        },
-                        test2: {
-                            arbitraryField: 'dummy',
-                            nullField: null
-                        }
-                    }])
-                    .expect(200)
-                    .end(function(err, res) {
-                        if (err) {
-                            return done(err);
-                        }
-                        const pet = res.body.receivedParams[0];
-                        expect(pet.test2.arbitraryField).to.equal('dummy');
-                        expect(pet.test2.nullField).to.be.null;
-                        done();
-                    });
-            });
-            it('handles request body without specified schema correctly', function (done) {
-                testerFactory.createTester()
-                    .patch('/pets')
-                    .send({
-                        name: 1,
-                        tag: 'tag',
-                        age: null,
-                        test: {
-                            field1: 'enum1'
-                        },
-                        test2: {
-                            arbitraryField: 'dummy',
-                            nullField: null
-                        }
+
+                    expect(schemaEndpoint.errors).to.be.equal(null);
+                    expect(isValid).to.be.true;
+                });
+            })
+            describe('coerceTypes=false', function() {
+                let schema, options = {
+                    ajvConfigBody: {
+                        coerceTypes: false,
+                    }
+                };
+
+                before(function () {
+                    const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
+                    return schemaValidatorGenerator.buildSchema(swaggerPath, options).then(receivedSchema => {
+                        schema = receivedSchema
                     })
-                    .expect(200)
-                    .end(function(err, res) {
-                        if (err) {
-                            return done(err);
-                        }
-                        const pet = res.body.receivedParams;
-                        expect(pet.test.field1).to.equal('enum1');
-                        expect(pet.test2.arbitraryField).to.equal('dummy');
-                        expect(pet.test2.nullField).to.be.null;
-                        done();
+                });
+                it('request with wrong parameter type - should pass validation due to coercion', function () {
+                    let schemaEndpoint = schema['/pets']['put'].responses['200'];
+
+                    let isValid = schemaEndpoint.validate({
+                        body:[{
+                            id: 1,
+                            name: 1,
+                            tag: 'tag',
+                            test: {
+                                field1: 'enum1'
+                            }
+                        }]
                     });
-            });
-            it('request with wrong parameter type - should keep null values as null when payload is object', function (done) {
-                testerFactory.createTester()
-                    .post('/pets')
-                    .send({
-                        name: 1,
-                        tag: 'tag',
-                        age: null,
-                        test: {
-                            field1: 'enum1',
-                            field2: null
+
+                    expect(schemaEndpoint.errors).to.be.eql([
+                        {
+                            "dataPath": ".body[0].name",
+                            "keyword": "type",
+                            "message": "should be string",
+                            "params": {
+                                "type": "string"
+                            },
+                            "schemaPath": "#/body/items/properties/name/type"
                         }
-                    })
-                    .expect(200)
-                    .end(function(err, res) {
-                        if (err) {
-                            return done(err);
-                        }
-                        const pet = res.body.receivedParams;
-                        expect(pet.test.field2).to.be.null;
-                        expect(pet.age).to.be.null;
-                        done();
-                    });
-            });
-            it('request with wrong parameter type and no required fields defined - should keep null values as null when payload is object', function (done) {
-                testerFactory.createTester()
-                    .post('/pets')
-                    .send({
-                        name: 1,
-                        tag: 'tag',
-                        age: null,
-                        test: {
-                            field1: 'enum1'
-                        },
-                        test3: {
-                            field1: 'enum1',
-                            field2: null
-                        }
-                    })
-                    .expect(200)
-                    .end(function(err, res) {
-                        if (err) {
-                            return done(err);
-                        }
-                        const pet = res.body.receivedParams;
-                        expect(pet.test3.field1).to.equal('enum1');
-                        expect(pet.test3.field2).to.be.null;
-                        expect(pet.age).to.be.null;
-                        done();
-                    });
-            });
-            it('request with wrong parameter type - should keep null values as null when (invalid) swagger with multiple types is provided', function (done) {
-                testerFactory.createTester()
-                    .put('/pets')
-                    .send([{
-                        name: 1,
-                        tag: 'tag',
-                        test: {
-                            field1: 'enum1',
-                            field3: null
-                        }
-                    }])
-                    .expect(200)
-                    .end(function(err, res) {
-                        if (err) {
-                            return done(err);
-                        }
-                        const pet = res.body.receivedParams[0];
-                        expect(pet.test.field3).to.be.null;
-                        done();
-                    });
-            });
+                    ]);
+                    expect(isValid).to.be.false;
+                });
+            })
         });
-        describe.skip('Keywords', function () {
+        describe('Keywords', function () {
             const definition = {
                 type: 'object',
                 macro: function (schema) {
@@ -899,56 +774,146 @@ describe('oas2 check - response', function () {
             };
 
             var range = require('ajv-keywords/keywords/range');
-            let testerFactory, options = {
+            let schema, options = {
                 keywords: [range, { name: 'prohibited', definition }],
                 expectFormFieldsInBody: true
             };
+
             before(function () {
-                const swaggerPath = path.join(__dirname, './yaml/custom-keywords-swagger.yaml');
+                const swaggerPath = path.join(__dirname, './yaml/custom-keywords-response.yaml');
+                return schemaValidatorGenerator.buildSchema(swaggerPath, options).then(receivedSchema => {
+                    schema = receivedSchema
+                })
+            });
+
+            it('should pass the validation by the range keyword', function () {
+                let schemaEndpoint = schema['/keywords']['post'].responses['200'];
+
+                let isValid = schemaEndpoint.validate({
+                    headers:{},
+                    body:{
+                        age: 25
+                    }
+                });
+
+
+                expect(schemaEndpoint.errors).to.be.eql(null);
+                expect(isValid).to.be.true;
+            });
+            it('should be failed by the range keyword', function () {
+                //todo - wired errors
+                let schemaEndpoint = schema['/keywords']['post'].responses['200'];
+
+                let isValid = schemaEndpoint.validate({
+                    headers:{},
+                    body:{
+                        age: 50
+                    }
+                });
+
+
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        "dataPath": ".body.age",
+                        "keyword": "maximum",
+                        "message": "should be <= 30",
+                        "params": {
+                            "comparison": "<=",
+                            "exclusive": false,
+                            "limit": 30
+                        },
+                        "schemaPath": "#/body/properties/age/maximum"
+                    },
+                    {
+                        "dataPath": ".body.age",
+                        "keyword": "range",
+                        "message": "should pass \"range\" keyword validation",
+                        "params": {
+                            "keyword": "range"
+                        },
+                        "schemaPath": "#/body/properties/age/range"
+                    }
+                ]);
+                expect(isValid).to.be.false;
+            });
+            it('should be failed by the prohibited keyword', function () {
+                let schemaEndpoint = schema['/keywords']['post'].responses['200'];
+
+                let isValid = schemaEndpoint.validate({
+                    headers:{},
+                    body:{ ages: 20, age: 20 }
+                });
+
+
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        "dataPath": ".body",
+                        "keyword": "not",
+                        "message": "should NOT be valid",
+                        "params": {},
+                        "schemaPath": "#/body/not"
+                    },
+                    {
+                        "dataPath": ".body",
+                        "keyword": "prohibited",
+                        "message": "should pass \"prohibited\" keyword validation",
+                        "params": {
+                            "keyword": "prohibited"
+                        },
+                        "schemaPath": "#/body/prohibited"
+                    }
+                ]);
+                expect(isValid).to.be.false;
+            });
+        });
+        describe("Formats", function(){
+            let schema, options = {
+                formats: [
+                    { name: 'abcName', pattern: /abc/ },
+                ],
+                contentTypeValidation: true
+            };
+
+            before(function () {
+                const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger-formats.yaml');
                 return schemaValidatorGenerator.buildSchema(swaggerPath,options).then(receivedSchema => {
-                    testerFactory = new TesterFactory(receivedSchema, options)
+                    schema = receivedSchema;
                 })
 
             });
-            it('should pass the validation by the range keyword', function (done) {
-                testerFactory.createTester()
-                    .post('/keywords')
-                    .send({ age: 20 })
-                    .expect(200, function (err, res) {
-                        if (err) {
-                            throw err;
-                        }
-                        expect(res.body.result).to.equal('OK');
-                        done();
-                    });
+
+
+            it("bad body - wrong format body (should be an abcName format)", function () {
+                let schemaEndpoint = schema['/pets']['get'].responses['200'];
+
+                let paramsValidationErrors = schemaEndpoint.validate({
+                    headers:{},
+                    body: {id: "111"}
+                });
+
+                expect(schemaEndpoint.errors).to.eql([
+                    {
+                        "dataPath": ".body.id",
+                        "keyword": "format",
+                        "message": "should match format \"abcName\"",
+                        "params": {
+                            "format": "abcName"
+                        },
+                        "schemaPath": "#/body/properties/id/format"
+                    }
+                ])
             });
-            it('should be failed by the range keyword', function (done) {
-                testerFactory.createTester()
-                    .post('/keywords')
-                    .send({ age: 50 })
-                    .expect(400, function (err, res) {
-                        if (err) {
-                            throw err;
-                        }
-                        expect(res.body.more_info).to.includes('body/age should be <= 30');
-                        done();
-                    });
-            });
-            it('should be failed by the prohibited keyword', function (done) {
-                testerFactory.createTester()
-                    .post('/keywords')
-                    .send({ ages: 20, age: 20 })
-                    .expect(400, function (err, res) {
-                        if (err) {
-                            throw err;
-                        }
-                        expect(res.body.more_info).to.includes('body should NOT be valid');
-                        done();
-                    });
+
+            it("valid body - good format", function () {
+                let schemaEndpoint = schema['/pets']['get'].responses['200'];
+
+                let paramsValidationErrors = schemaEndpoint.validate({
+                    headers:{},
+                    body: {id: "abc"}
+                });
+
+                expect(schemaEndpoint.errors).to.eql(null)
             });
         });
     });
 });
-
-
-
