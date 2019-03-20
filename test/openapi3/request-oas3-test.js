@@ -4,8 +4,7 @@ let chai = require('chai'),
     expect = chai.expect,
     chaiSinon = require('chai-sinon'),
     schemaValidatorGenerator = require('../../src/index'),
-    path = require('path'),
-    InputValidationError = require('../inputValidationError');
+    path = require('path');
 
 chai.use(chaiSinon);
 describe('oas3 check', function () {
@@ -226,12 +225,13 @@ describe('oas3 check', function () {
                         'bark': 'hav hav'
                     });
 
-                    const error = new InputValidationError(schemaEndpoint.body.errors,
-                        { beautifyErrors: true,
-                            firstError: true });
-                    expect(error.errors).to.be.equal('body/type should be equal to one of the allowed values [dog_object,cat_object]');
-
-                    // expect(schemaEndpoint.body.errors).to.be.equal('["Error: should be equal to one of the allowed values"]');
+                    expect(schemaEndpoint.body.errors[0].message).to.equal('should be equal to one of the allowed values');
+                    expect(schemaEndpoint.body.errors[0].dataPath).to.equal('.type');
+                    expect(schemaEndpoint.body.errors[0].keyword).to.equal('enum');
+                    expect(schemaEndpoint.body.errors[0].params.allowedValues).to.eql([
+                        'dog_object',
+                        'cat_object'
+                    ]);
                     expect(isBodysMatch).to.be.false;
                 });
                 it('when discriminator type is dog and missing field', function () {
@@ -272,12 +272,14 @@ describe('oas3 check', function () {
                         'fur': 'hav hav'
                     });
 
-                    const error = new InputValidationError(schemaEndpoint.body.errors,
-                        { beautifyErrors: true,
-                            firstError: true });
-                    expect(error.errors).to.be.equal('body/type should be equal to one of the allowed values [dog_multiple,cat_object]');
-
-                    // expect(schemaEndpoint.body.errors).to.be.equal('["Error: should be equal to one of the allowed values"]');
+                    expect(schemaEndpoint.body.errors[0].message).to.equal('should be equal to one of the allowed values');
+                    expect(schemaEndpoint.body.errors[0].dataPath).to.equal('.type');
+                    expect(schemaEndpoint.body.errors[0].keyword).to.equal('enum');
+                    expect(schemaEndpoint.body.errors[0].params.allowedValues).to.eql([
+                        'dog_multiple',
+                        'cat_object'
+                    ]);
+                    expect(isBodysMatch).to.be.false;
                     expect(isBodysMatch).to.be.false;
                 });
                 it('missing discriminator field on the on inside discriminator', function () {
@@ -286,10 +288,14 @@ describe('oas3 check', function () {
                         bark: 'hav hav',
                         type: 'dog_multiple'
                     });
-                    const error = new InputValidationError(schemaEndpoint.body.errors,
-                        { beautifyErrors: true,
-                            firstError: true });
-                    expect(error.errors).to.be.equal('body/model should be equal to one of the allowed values [small_dog,big_dog]');
+
+                    expect(schemaEndpoint.body.errors[0].message).to.equal('should be equal to one of the allowed values');
+                    expect(schemaEndpoint.body.errors[0].dataPath).to.equal('.model');
+                    expect(schemaEndpoint.body.errors[0].keyword).to.equal('enum');
+                    expect(schemaEndpoint.body.errors[0].params.allowedValues).to.eql([
+                        'small_dog', 'big_dog'
+                    ]);
+                    expect(isBodysMatch).to.be.false;
                     expect(isBodysMatch).to.be.false;
                 });
                 it('when discriminator type is dog_multiple and model small_dog and missing root field name and specific plane field', function () {
@@ -298,14 +304,10 @@ describe('oas3 check', function () {
                         type: 'dog_multiple',
                         model: 'small_dog'
                     });
-                    const error = new InputValidationError(schemaEndpoint.body.errors,
-                        { beautifyErrors: true,
-                            firstError: false });
-                    expect(error.errors).to.be.eql([
-                        "body should have required property 'max_length'",
-                        "body should have required property 'name'",
-                        "body should have required property 'dog_age'"
-                    ]);
+
+                    expect(schemaEndpoint.body.errors[0].message).to.equal('should have required property \'max_length\'');
+                    expect(schemaEndpoint.body.errors[1].message).to.equal('should have required property \'name\'');
+                    expect(schemaEndpoint.body.errors[2].message).to.equal('should have required property \'dog_age\'');
                     expect(isBodysMatch).to.be.false;
                 });
                 it('when valid discriminator type is dog_multiple and model small_dog', function () {
@@ -330,10 +332,14 @@ describe('oas3 check', function () {
                     let isBodysMatch = schemaEndpoint.body.validate({
                         fur: '6'
                     });
-                    const error = new InputValidationError(schemaEndpoint.body.errors,
-                        { beautifyErrors: true,
-                            firstError: true });
-                    expect(error.errors).to.be.equal('body/type should be equal to one of the allowed values [mapped_dog,mapped_cat]');
+
+                    expect(schemaEndpoint.body.errors[0].message).to.equal('should be equal to one of the allowed values');
+                    expect(schemaEndpoint.body.errors[0].dataPath).to.equal('.type');
+                    expect(schemaEndpoint.body.errors[0].keyword).to.equal('enum');
+                    expect(schemaEndpoint.body.errors[0].params.allowedValues).to.eql([
+                        'mapped_dog',
+                        'mapped_cat'
+                    ]);
                     expect(isBodysMatch).to.be.false;
                 });
                 it('when discriminator type is mapped_dog and model small_dog and missing root field name and specific dog field', function () {
@@ -342,10 +348,10 @@ describe('oas3 check', function () {
                         type: 'mapped_dog',
                         model: 'small_dog'
                     });
-                    const error = new InputValidationError(schemaEndpoint.body.errors,
-                        { beautifyErrors: true,
-                            firstError: true });
-                    expect(error.errors).to.be.equal('body should have required property \'max_length\'');
+
+                    expect(schemaEndpoint.body.errors[0].message).to.equal('should have required property \'max_length\'');
+                    expect(schemaEndpoint.body.errors[0].dataPath).to.equal('');
+                    expect(schemaEndpoint.body.errors[0].keyword).to.equal('required');
                     expect(isBodysMatch).to.be.false;
                 });
                 it('when valid discriminator type is mapped_dog and model small_dog', function () {

@@ -1448,7 +1448,6 @@ describe('oas2 - tests', () => {
                 path: '/pets',
                 method: 'get'
             });
-            console.log(paramsValidationErrors);
 
             expect(paramsValidationErrors).to.eql([ { keyword: 'format',
                 dataPath: '.id',
@@ -1464,7 +1463,6 @@ describe('oas2 - tests', () => {
                 path: '/pets',
                 method: 'get'
             });
-            console.log(paramsValidationErrors);
 
             expect(paramsValidationErrors).to.eql(undefined);
         });
@@ -1576,7 +1574,6 @@ describe('oas2 - tests', () => {
                 path: '/pets',
                 method: 'post'
             });
-            console.log(bodyValidationErrors[0]);
 
             expect(bodyValidationErrors[0].dataPath).to.equal('.petType');
             expect(bodyValidationErrors[0].params.allowedValues).to.eql([

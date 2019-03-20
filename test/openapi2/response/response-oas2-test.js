@@ -4,8 +4,7 @@ let chai = require('chai'),
     expect = chai.expect,
     chaiSinon = require('chai-sinon'),
     schemaValidatorGenerator = require('../../../src/index'),
-    path = require('path'),
-    InputValidationError = require('../../inputValidationError');
+    path = require('path');
 
 chai.use(chaiSinon);
 describe('oas2 check - response', function () {
@@ -391,11 +390,16 @@ describe('oas2 check - response', function () {
                     test: {
                         field1: '1234'
                     }
-                } });
+                },
+                headers: {} });
 
-                const customError = new InputValidationError(schemaEndpoint.errors,
-                    { beautifyErrors: true, firstError: true });
-                expect(customError.errors).to.be.equal('body/body.petType should be equal to one of the allowed values [Cat,Dog]');
+                expect(schemaEndpoint.errors.length).to.equal(1);
+                expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
+                expect(schemaEndpoint.errors[0].dataPath).to.equal('.body.petType');
+                expect(schemaEndpoint.errors[0].keyword).to.equal('enum');
+                expect(schemaEndpoint.errors[0].params.allowedValues).to.eql([
+                    'Cat', 'Dog'
+                ]);
                 expect(validatorMatch).to.be.false;
             });
             it('should fail for missing discriminator key', function () {
@@ -406,11 +410,18 @@ describe('oas2 check - response', function () {
                     test: {
                         field1: '1234'
                     }
+                },
+                headers: {
+
                 } });
 
-                const customError = new InputValidationError(schemaEndpoint.errors,
-                    { beautifyErrors: true, firstError: true });
-                expect(customError.errors).to.be.equal('body/body.petType should be equal to one of the allowed values [Cat,Dog]');
+                expect(schemaEndpoint.errors.length).to.equal(1);
+                expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
+                expect(schemaEndpoint.errors[0].dataPath).to.equal('.body.petType');
+                expect(schemaEndpoint.errors[0].keyword).to.equal('enum');
+                expect(schemaEndpoint.errors[0].params.allowedValues).to.eql([
+                    'Cat', 'Dog'
+                ]);
                 expect(validatorMatch).to.be.false;
             });
             it('should fail for missing attribute in inherited object (Dog)', function () {
@@ -422,11 +433,14 @@ describe('oas2 check - response', function () {
                     test: {
                         field1: '1234'
                     }
-                } });
+                },
+                headers: {} });
 
-                const customError = new InputValidationError(schemaEndpoint.errors,
-                    { beautifyErrors: true, firstError: true });
-                expect(customError.errors).to.be.equal('body/body should have required property \'packSize\'');
+                expect(schemaEndpoint.errors.length).to.equal(1);
+                expect(schemaEndpoint.errors[0].message).to.equal('should have required property \'packSize\'');
+                expect(schemaEndpoint.errors[0].dataPath).to.equal('.body');
+                expect(schemaEndpoint.errors[0].keyword).to.equal('required');
+                expect(schemaEndpoint.errors[0].params.missingProperty).to.eql('packSize');
                 expect(validatorMatch).to.be.false;
             });
             it('should fail for missing attribute in inherited object (cat)', function () {
@@ -438,11 +452,12 @@ describe('oas2 check - response', function () {
                     test: {
                         field1: '1234'
                     }
-                } });
+                },
+                headers: {} });
 
-                const customError = new InputValidationError(schemaEndpoint.errors,
-                    { beautifyErrors: true, firstError: true });
-                expect(customError.errors).to.be.eql('body/body should have required property \'huntingSkill\'');
+                expect(schemaEndpoint.errors.length).to.equal(1);
+                expect(schemaEndpoint.errors[0].message).to.be.eql('should have required property \'huntingSkill\'');
+                expect(schemaEndpoint.errors[0].params.missingProperty).to.eql('huntingSkill');
                 expect(validatorMatch).to.be.false;
             });
             it('should fail for missing attribute in inherited object (parent)', function () {
@@ -450,12 +465,14 @@ describe('oas2 check - response', function () {
                 let validatorMatch = schemaEndpoint.validate({ body: {
                     petType: 'Dog',
                     tag: 'tag',
+                    packSize: 1,
                     chip_number: '123454'
-                } });
+                },
+                headers: {} });
 
-                const customError = new InputValidationError(schemaEndpoint.errors,
-                    { beautifyErrors: true, firstError: true });
-                expect(customError.errors).to.be.equal('body/body should have required property \'name\'');
+                expect(schemaEndpoint.errors.length).to.equal(1);
+                expect(schemaEndpoint.errors[0].message).to.be.equal('should have required property \'name\'');
+                expect(schemaEndpoint.errors[0].params.missingProperty).to.eql('name');
                 expect(validatorMatch).to.be.false;
             });
         });
