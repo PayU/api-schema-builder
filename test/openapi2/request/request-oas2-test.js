@@ -4,7 +4,6 @@ var chai = require('chai'),
     schemaValidatorGenerator = require('../../../src/index'),
     { validateParams, validateBody } = require('../utils/schemaWrapper');
 
-
 describe('oas2 - tests', () => {
     describe('init function tests', function () {
         it('should reject the promise in case the file doesn\'t exists', function () {
@@ -20,7 +19,6 @@ describe('oas2 - tests', () => {
             return schemaValidatorGenerator.buildSchema(swaggerPath);
         });
     });
-
     describe('Simple server - no options', function () {
         let schemas;
         let options = {};
@@ -1472,9 +1470,7 @@ describe('oas2 - tests', () => {
                 { name: 'double', pattern: /\d+(\.\d+)?/ },
                 { name: 'int64', pattern: /^\d{1,19}$/ },
                 { name: 'int32', pattern: /^\d{1,10}$/ }
-            ],
-            beautifyErrors: true,
-            firstError: true
+            ]
         };
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger-inheritance.yaml');
@@ -1655,8 +1651,6 @@ describe('oas2 - tests', () => {
                 { name: 'int32', pattern: /^\d{1,10}$/ },
                 { name: 'file', validate: () => { return true } }
             ],
-            beautifyErrors: true,
-            firstError: true,
             expectFormFieldsInBody: true
         };
         before(function () {
@@ -1768,8 +1762,6 @@ describe('oas2 - tests', () => {
         var range = require('ajv-keywords/keywords/range');
         let schemas, options = {
             keywords: [range, { name: 'prohibited', definition }],
-            beautifyErrors: true,
-            firstError: true,
             expectFormFieldsInBody: true
         };
         before(function () {

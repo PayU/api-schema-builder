@@ -36,12 +36,19 @@ function buildValidations(referenced, dereferenced, options = {}) {
                 let parsedMethod = currentMethod.toLowerCase();
 
                 // build request validator
-                schemas[parsedPath][parsedMethod] = buildRequests && buildRequestValidator(referenced, dereferenced, currentPath,
-                    parsedPath, currentMethod, options);
+                let requestValidator;
+                if (buildRequests) {
+                    requestValidator = buildRequests && buildRequestValidator(referenced, dereferenced, currentPath,
+                        parsedPath, currentMethod, options);
+                }
 
                 // build response validator
-                schemas[parsedPath][parsedMethod].responses = buildResponses && buildResponseValidator(referenced, dereferenced,
-                    currentPath, parsedPath, currentMethod, options);
+                let responseValidator;
+                if (buildResponses) {
+                    responseValidator = buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options);
+                }
+
+                schemas[parsedPath][parsedMethod] = Object.assign({}, requestValidator, { responses: responseValidator });
             });
     });
     return schemas;

@@ -17,7 +17,6 @@ export interface format {
 export interface ajvValidatorOptions {
     ajvConfigBody?: object;
     ajvConfigParams?: object;
-    beautifyErrors?: boolean;
     contentTypeValidation?: boolean;
     expectFormFieldsInBody?: boolean;
     formats?: Array<format>;
