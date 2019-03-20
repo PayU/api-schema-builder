@@ -1,7 +1,10 @@
 
 # api-schema-builder
+[![NPM Version](https://img.shields.io/npm/v/api-schema-builder.svg?style=flat)](https://npmjs.org/package/express-ajv-swagger-validation)
 [![Build Status](https://travis-ci.org/Zooz/api-schema-builder.svg?branch=master)](https://travis-ci.org/Zooz/api-schema-builder)
 [![Coverage Status](https://coveralls.io/repos/github/Zooz/api-schema-builder/badge.svg?branch=master)](https://coveralls.io/github/Zooz/api-schema-builder?branch=master)
+[![Known Vulnerabilities](https://snyk.io/test/npm/api-schema-builder/badge.svg)](https://snyk.io/test/npm/api-schema-builder)
+[![Apache 2.0 License](https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat)](LICENSE)
 
 This package is used to build schema for input validation base on openapi doc [Swagger (Open API)](https://swagger.io/specification/) definition and [ajv](https://www.npmjs.com/package/ajv)
 
