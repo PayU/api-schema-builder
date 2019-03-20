@@ -879,7 +879,7 @@ describe('oas2 check - response', function () {
             it('bad body - wrong format body (should be an abcName format)', function () {
                 let schemaEndpoint = schema['/pets']['get'].responses['200'];
 
-                let paramsValidationErrors = schemaEndpoint.validate({
+                let isValid = schemaEndpoint.validate({
                     headers: {},
                     body: { id: '111' }
                 });
@@ -895,17 +895,21 @@ describe('oas2 check - response', function () {
                         'schemaPath': '#/body/properties/id/format'
                     }
                 ]);
+
+                expect(isValid).to.be.false;
             });
 
             it('valid body - good format', function () {
                 let schemaEndpoint = schema['/pets']['get'].responses['200'];
 
-                let paramsValidationErrors = schemaEndpoint.validate({
+                let isValid = schemaEndpoint.validate({
                     headers: {},
                     body: { id: 'abc' }
                 });
 
                 expect(schemaEndpoint.errors).to.eql(null);
+
+                expect(isValid).to.be.true;
             });
         });
     });
