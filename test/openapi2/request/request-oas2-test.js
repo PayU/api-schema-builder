@@ -2,10 +2,8 @@ var chai = require('chai'),
     expect = chai.expect,
     path = require('path'),
     schemaValidatorGenerator = require('../../../src/index'),
-    { validateParams, validateBody } = require('../utils/schemaWrapper'),
-    chaiLike = require('chai-like');
+    { validateParams, validateBody } = require('../utils/schemaWrapper');
 
-chai.use(chaiLike);
 
 describe('oas2 - tests', () => {
     describe('init function tests', function () {

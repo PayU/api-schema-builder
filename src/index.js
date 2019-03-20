@@ -9,16 +9,22 @@ var SwaggerParser = require('swagger-parser'),
     sourceResolver = require('./utils/sourceResolver'),
     Validators = require('./validators/index');
 
+const DEFAULT_SETTINGS = {
+    buildRequests: true,
+    buildResponses: true
+};
 function buildSchema(swaggerPath, options) {
+    let updatedOptions = Object.assign({}, DEFAULT_SETTINGS, options);
     return Promise.all([
         SwaggerParser.dereference(swaggerPath),
         SwaggerParser.parse(swaggerPath)
     ]).then(function ([dereferenced, referenced]) {
-        return buildValidations(referenced, dereferenced, options);
+        return buildValidations(referenced, dereferenced, updatedOptions);
     });
 }
 
 function buildValidations(referenced, dereferenced, options = {}) {
+    const { buildRequests, buildResponses } = options;
     const schemas = {};
     Object.keys(dereferenced.paths).forEach(function (currentPath) {
         let parsedPath = dereferenced.basePath && dereferenced.basePath !== '/'
@@ -28,11 +34,13 @@ function buildValidations(referenced, dereferenced, options = {}) {
         Object.keys(dereferenced.paths[currentPath]).filter(function (parameter) { return parameter !== 'parameters' })
             .forEach(function (currentMethod) {
                 let parsedMethod = currentMethod.toLowerCase();
-                schemas[parsedPath][parsedMethod] = buildRequestValidator(referenced, dereferenced, currentPath,
+
+                // build request validator
+                schemas[parsedPath][parsedMethod] = buildRequests && buildRequestValidator(referenced, dereferenced, currentPath,
                     parsedPath, currentMethod, options);
 
-                // response validation
-                schemas[parsedPath][parsedMethod].responses = buildResponseValidator(referenced, dereferenced,
+                // build response validator
+                schemas[parsedPath][parsedMethod].responses = buildResponses && buildResponseValidator(referenced, dereferenced,
                     currentPath, parsedPath, currentMethod, options);
             });
     });
@@ -41,7 +49,6 @@ function buildValidations(referenced, dereferenced, options = {}) {
 
 function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options){
     let requestSchema = {};
-
     let pathParameters = dereferenced.paths[currentPath].parameters || [];
     const isOpenApi3 = dereferenced.openapi === '3.0.0';
     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];

@@ -2,11 +2,9 @@
 
 let chai = require('chai'),
     expect = chai.expect,
-    chaiSinon = require('chai-sinon'),
     schemaValidatorGenerator = require('../../src/index'),
     path = require('path');
 
-chai.use(chaiSinon);
 describe('oas3 check', function () {
     let schema;
     before(function () {
