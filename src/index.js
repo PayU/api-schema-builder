@@ -9,11 +9,6 @@ var SwaggerParser = require('swagger-parser'),
     sourceResolver = require('./utils/sourceResolver'),
     Validators = require('./validators/index');
 
-/**
- * Initialize the input validation middleware`
- * @param {string} swaggerPath - the path for the swagger file
- * @param {Object} options - options.formats to add formats to ajv, options.beautifyErrors, options.firstError, options.expectFormFieldsInBody, options.fileNameField (default is 'fieldname' - multer package), options.ajvConfigBody and options.ajvConfigParams for config object that will be passed for creation of Ajv instance used for validation of body and parameters appropriately
- */
 function buildSchema(swaggerPath, options) {
     return Promise.all([
         SwaggerParser.dereference(swaggerPath),
