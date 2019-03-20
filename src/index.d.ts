@@ -19,6 +19,8 @@ export interface ajvValidatorOptions {
     ajvConfigParams?: object;
     contentTypeValidation?: boolean;
     expectFormFieldsInBody?: boolean;
+    buildRequests?: boolean;
+    buildResponses?: boolean;
     formats?: Array<format>;
     keywords?: any;
     makeOptionalAttributesNullable?: boolean;
