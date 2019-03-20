@@ -4,7 +4,7 @@ var chai = require('chai'),
     schemaValidatorGenerator = require('../../../src/index'),
     { validateParams, validateBody } = require('../utils/schemaWrapper');
 
-describe('oas2 - tests', () => {
+describe('oas2 tests - request', () => {
     describe('init function tests', function () {
         it('should reject the promise in case the file doesn\'t exists', function () {
             return schemaValidatorGenerator.buildSchema('test/pet-store-swagger1.yaml', {

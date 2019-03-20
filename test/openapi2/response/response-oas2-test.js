@@ -5,7 +5,7 @@ let chai = require('chai'),
     schemaValidatorGenerator = require('../../../src/index'),
     path = require('path');
 
-describe('oas2 check - response', function () {
+describe('oas2 tests - response', function () {
     describe('check body and headers', () => {
         let schema;
         before(function () {
