@@ -69,26 +69,30 @@ function buildValidations(referenced, dereferenced, options = {}) {
     return schemas;
 }
 
-
 function buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options){
     let responsesSchema = {};
 
     let responses = dereferenced.paths[currentPath][currentMethod].responses;
-    responses && Object.keys(responses).forEach(statusCode => {
-        if (statusCode !== 'default') {
-            let responseDereferenceSchema = responses[statusCode].schema;
-            let responseDereferenceHeaders = responses[statusCode].headers;
-            let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
-            let headersValidator = (responseDereferenceHeaders || contentTypes) ? buildHeadersValidation(responseDereferenceHeaders, contentTypes, options) : undefined;
+    if (responses) {
+        Object.keys(responses).forEach(statusCode => {
+            if (statusCode !== 'default') {
+                let responseDereferenceSchema = responses[statusCode].schema;
+                let responseDereferenceHeaders = responses[statusCode].headers;
+                let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
+                let headersValidator = (responseDereferenceHeaders || contentTypes) ? buildHeadersValidation(responseDereferenceHeaders, contentTypes, options) : undefined;
 
-            let responseSchema = referenced.paths[currentPath][currentMethod].responses[statusCode].schema;
-            let bodyValidator = responseSchema ? oas2.buildBodyValidation(responseDereferenceSchema, dereferenced.definitions, referenced, currentPath, currentMethod, parsedPath, options, responseSchema) : undefined;
+                let responseSchema = referenced.paths[currentPath][currentMethod].responses[statusCode].schema;
+                let bodyValidator = responseSchema ? oas2.buildBodyValidation(responseDereferenceSchema, dereferenced.definitions, referenced, currentPath, currentMethod, parsedPath, options, responseSchema) : undefined;
 
-            if (headersValidator || bodyValidator) {
-                responsesSchema[statusCode] = new Validators.ResponseValidator({ body: bodyValidator, headers: headersValidator });
+                if (headersValidator || bodyValidator) {
+                    responsesSchema[statusCode] = new Validators.ResponseValidator({
+                        body: bodyValidator,
+                        headers: headersValidator
+                    });
+                }
             }
-        }
-    });
+        });
+    }
 
     return responsesSchema;
 }
@@ -171,7 +175,7 @@ function buildParametersValidation(parameters, contentTypes, options) {
             }
             destination.properties[key] = data;
         }
-    }, this);
+    });
 
     ajvParametersSchema.properties.headers.content = createContentTypeHeaders(options.contentTypeValidation, contentTypes);
 
@@ -197,15 +201,17 @@ function buildHeadersValidation(headers, contentTypes, options) {
         additionalProperties: true
     };
 
-    headers && Object.keys(headers).forEach(key => {
-        let headerObj = Object.assign({}, headers[key]);
-        const headerName = key.toLowerCase();
-        const headerRequired = headerObj.required;
-        if (headerRequired) ajvHeadersSchema.required.push(key);
-        delete headerObj.name;
-        delete headerObj.required;
-        ajvHeadersSchema.properties[headerName] = headerObj;
-    }, this);
+    if (headers) {
+        Object.keys(headers).forEach(key => {
+            let headerObj = Object.assign({}, headers[key]);
+            const headerName = key.toLowerCase();
+            const headerRequired = headerObj.required;
+            if (headerRequired) ajvHeadersSchema.required.push(key);
+            delete headerObj.name;
+            delete headerObj.required;
+            ajvHeadersSchema.properties[headerName] = headerObj;
+        });
+    }
 
     ajvHeadersSchema.content = createContentTypeHeaders(options.contentTypeValidation, contentTypes);
 
