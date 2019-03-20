@@ -1,7 +1,10 @@
 
 # api-schema-builder
+[![NPM Version](https://img.shields.io/npm/v/api-schema-builder.svg?style=flat)](https://npmjs.org/package/express-ajv-swagger-validation)
 [![Build Status](https://travis-ci.org/Zooz/api-schema-builder.svg?branch=master)](https://travis-ci.org/Zooz/api-schema-builder)
 [![Coverage Status](https://coveralls.io/repos/github/Zooz/api-schema-builder/badge.svg?branch=master)](https://coveralls.io/github/Zooz/api-schema-builder?branch=master)
+[![Known Vulnerabilities](https://snyk.io/test/npm/api-schema-builder/badge.svg)](https://snyk.io/test/npm/api-schema-builder)
+[![Apache 2.0 License](https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat)](LICENSE)
 
 This package is used to build schema for input validation base on openapi doc [Swagger (Open API)](https://swagger.io/specification/) definition and [ajv](https://www.npmjs.com/package/ajv)
 
@@ -40,19 +43,19 @@ var apiSchemaBuilder = require('api-schema-builder');
 
 ### api-schema-builder.buildSchema(PathToSwaggerFile, options)
 
-buildSchema the middleware with the swagger definition.
+Build schema that contains ajv validators for each endpoint, it base on swagger definition.
 
 The function return Promise.
 
 #### Arguments
 
 * `PathToSwaggerFile` &ndash; Path to the swagger definition
-* `options` &ndash; Additional options for the middleware.
+* `options` &ndash; Additional options for build the schema.
 
 #### Response
 Array that contains:
-* `path_name`: the paths it written in the doc, for example `/pet`.
-    * `method`: the relevant method it written in the doc, for example `get`.
+* `path_name`: the paths it written in the api doc, for example `/pet`.
+    * `method`: the relevant method it written in the api doc, for example `get`.
         * `parameters`:
             * `validate`:  ajv validator that check: paths, files, queries and headers.
             * `errors`: in case of fail validation it return array of errors, otherwise return null
