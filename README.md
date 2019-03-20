@@ -62,6 +62,10 @@ Array that contains:
         * `body`:
             * `validate`: ajv validator that check: body only.
             * `errors`: in case of fail validation it return array of errors, otherwise return null
+        * `responses`: contain array of statusCodes
+            * `statusCode`:
+                * `validate`: ajv validator that check body and headers.
+                * `errors`: in case of fail validation it return array of errors, otherwise return null
 
 
 ##### Options
@@ -75,6 +79,8 @@ If the element is an object, it must include `name` and `definition`. If the ele
 - `ajvConfigParams` - Object that will be passed as config to new Ajv instance which will be used for validating request body. See Ajv documentation for supported values.
 - `contentTypeValidation` - Boolean that indicates if to perform content type validation in case `consume` field is specified and the request body is not empty.
 - `expectFormFieldsInBody` - Boolean that indicates whether form fields of non-file type that are specified in the schema should be validated against request body (e. g. Multer is copying text form fields to body)
+- `buildRequests` - Boolean that indicates whether if create validators for requests, default is true.
+- `buildResponses` - Boolean that indicates whether if create validators for responses, default is false.
 
 ```js
 formats: [
@@ -85,18 +91,20 @@ formats: [
 ```
 
 ## Usage Example
+
+### Validate request
 ```js
-apiSchemaBuilder.getSchema('test/unit-tests/input-validation/pet-store-swagger.yaml')
+apiSchemaBuilder.buildSchema('test/unit-tests/input-validation/pet-store-swagger.yaml')
 .then(function (schema) {
     let schemaEndpoint = schema['/pet']['post'];
     
-    //validate parameters
+    //validate request's parameters
     let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
     headers: { 'public-key': '1.0'},path: {},files: undefined });
     expect(schemaEndpoint.parameters.errors).to.be.equal(null);
     expect(isParametersMatch).to.be.true;
     
-    //validate body
+    //validate request's body
     let isBodysMatch =schemaEndpoint.body.validate({'bark': 111});
     expect(schemaEndpoint.body.errors).to.be.eql([{
             'dataPath': '.bark',
@@ -107,13 +115,38 @@ apiSchemaBuilder.getSchema('test/unit-tests/input-validation/pet-store-swagger.y
             },
             'schemaPath': '#/properties/bark/type'}
     ])
+    expect(isBodysMatch).to.be.false;
 });
-expect(isBodysMatch).to.be.false;
+```
+### Validate response
+```js
+apiSchemaBuilder.buildSchema('test/unit-tests/input-validation/pet-store-swagger.yaml')
+.then(function (schema) {
+    let schemaEndpoint = schema['/pet']['post'].responses['201'];
+    //validate response's body and headers
+    let isValid = schemaEndpoint.validate({
+            body :{ id:11, 'name': 111},
+            headers:{'x-next': '321'}
+        })
+    expect(schemaEndpoint.errors).to.be.eql([
+    {
+        'dataPath': '.body.name',
+        'keyword': 'type',
+        'message': 'should be string',
+        'params': {
+            'type': 'string'
+        },
+        'schemaPath': '#/body/properties/name/type'
+    }])
+    expect(isValid).to.be.false;
+
+});
 ```
 
 ## Important Notes
 
 - Objects - it is important to set any objects with the property `type: object` inside your swagger file, although it isn't a must in the Swagger (OpenAPI) spec in order to validate it accurately with [ajv](https://www.npmjs.com/package/ajv) it must be marked as `object`
+- Response validator - it support now only open api 2.
 
 ## Open api 3 - known issues
 - supporting inheritance with discriminator , only if the ancestor object is the discriminator.
