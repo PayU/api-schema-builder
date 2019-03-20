@@ -19,49 +19,63 @@ function buildSchema(swaggerPath, options) {
 }
 
 function buildValidations(referenced, dereferenced, options = {}) {
-    const { makeOptionalAttributesNullable = false } = options;
-
     const schemas = {};
     Object.keys(dereferenced.paths).forEach(function (currentPath) {
-        let pathParameters = dereferenced.paths[currentPath].parameters || [];
-        let parsedPath = dereferenced.basePath && dereferenced.basePath !== '/' ? dereferenced.basePath.concat(currentPath.replace(/{/g, ':').replace(/}/g, '')) : currentPath.replace(/{/g, ':').replace(/}/g, '');
+        let parsedPath = dereferenced.basePath && dereferenced.basePath !== '/'
+            ? dereferenced.basePath.concat(currentPath.replace(/{/g, ':').replace(/}/g, ''))
+            : currentPath.replace(/{/g, ':').replace(/}/g, '');
         schemas[parsedPath] = {};
         Object.keys(dereferenced.paths[currentPath]).filter(function (parameter) { return parameter !== 'parameters' })
             .forEach(function (currentMethod) {
-                schemas[parsedPath][currentMethod.toLowerCase()] = {};
-                const isOpenApi3 = dereferenced.openapi === '3.0.0';
-                const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
-                if (isOpenApi3) {
-                    schemas[parsedPath][currentMethod].body = oas3.buildBodyValidation(dereferenced, referenced, currentPath, currentMethod, options);
-                } else {
-                    let bodySchema = options.expectFormFieldsInBody
-                        ? parameters.filter(function (parameter) { return (parameter.in === 'body' || (parameter.in === 'formData' && parameter.type !== 'file')) })
-                        : parameters.filter(function (parameter) { return parameter.in === 'body' });
-                    if (makeOptionalAttributesNullable) {
-                        schemaPreprocessor.makeOptionalAttributesNullable(bodySchema);
-                    }
-                    if (bodySchema.length > 0) {
-                        const validatedBodySchema = oas2.getValidatedBodySchema(bodySchema);
-                        let bodySchemaReference = referenced.paths[currentPath][currentMethod].parameters.filter(function (parameter) { return parameter.in === 'body' })[0] || {};
-                        let schemaReference = bodySchemaReference.schema;
-                        schemas[parsedPath][currentMethod].body = oas2.buildBodyValidation(validatedBodySchema, dereferenced.definitions, referenced, currentPath, currentMethod, parsedPath, options, schemaReference);
-                    }
-                }
+                let parsedMethod = currentMethod.toLowerCase();
+                schemas[parsedPath][parsedMethod] = buildRequestValidator(referenced, dereferenced, currentPath,
+                    parsedPath, currentMethod, options);
 
                 // response validation
-                schemas[parsedPath][currentMethod].responses = buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options);
-
-                let localParameters = parameters.filter(function (parameter) {
-                    return parameter.in !== 'body';
-                }).concat(pathParameters);
-
-                if (localParameters.length > 0 || options.contentTypeValidation) {
-                    schemas[parsedPath][currentMethod].parameters = buildParametersValidation(localParameters,
-                        dereferenced.paths[currentPath][currentMethod].consumes || dereferenced.paths[currentPath].consumes || dereferenced.consumes, options);
-                }
+                schemas[parsedPath][parsedMethod].responses = buildResponseValidator(referenced, dereferenced,
+                    currentPath, parsedPath, currentMethod, options);
             });
     });
     return schemas;
+}
+
+function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options){
+    let requestSchema = {};
+
+    let pathParameters = dereferenced.paths[currentPath].parameters || [];
+    const isOpenApi3 = dereferenced.openapi === '3.0.0';
+    const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
+    if (isOpenApi3) {
+        requestSchema.body = oas3.buildBodyValidation(dereferenced, referenced, currentPath, currentMethod, options);
+    } else {
+        let bodySchema = options.expectFormFieldsInBody
+            ? parameters.filter(function (parameter) {
+                return (parameter.in === 'body' ||
+                (parameter.in === 'formData' && parameter.type !== 'file'));
+            })
+            : parameters.filter(function (parameter) { return parameter.in === 'body' });
+        if (options.makeOptionalAttributesNullable) {
+            schemaPreprocessor.makeOptionalAttributesNullable(bodySchema);
+        }
+        if (bodySchema.length > 0) {
+            const validatedBodySchema = oas2.getValidatedBodySchema(bodySchema);
+            let bodySchemaReference = referenced.paths[currentPath][currentMethod].parameters.filter(function (parameter) { return parameter.in === 'body' })[0] || {};
+            let schemaReference = bodySchemaReference.schema;
+            requestSchema.body = oas2.buildBodyValidation(validatedBodySchema, dereferenced.definitions, referenced,
+                currentPath, currentMethod, parsedPath, options, schemaReference);
+        }
+    }
+
+    let localParameters = parameters.filter(function (parameter) {
+        return parameter.in !== 'body';
+    }).concat(pathParameters);
+
+    if (localParameters.length > 0 || options.contentTypeValidation) {
+        requestSchema.parameters = buildParametersValidation(localParameters,
+            dereferenced.paths[currentPath][currentMethod].consumes || dereferenced.paths[currentPath].consumes || dereferenced.consumes, options);
+    }
+
+    return requestSchema;
 }
 
 function buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options){

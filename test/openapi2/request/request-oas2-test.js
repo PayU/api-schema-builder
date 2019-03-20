@@ -1453,7 +1453,7 @@ describe('oas2 - tests', () => {
                 dataPath: '.id',
                 schemaPath: '#/properties/id/format',
                 params: { format: 'abcName' },
-                message: 'should match format \'abcName\'' } ]);
+                message: 'should match format "abcName"' } ]);
         });
 
         it('valid body - good format', function () {
@@ -1807,7 +1807,7 @@ describe('oas2 - tests', () => {
                 'dataPath': '.age',
                 'schemaPath': '#/properties/age/range',
                 'params': { 'keyword': 'range' },
-                'message': 'should pass \'range\' keyword validation'
+                'message': 'should pass "range" keyword validation'
             }]);
         });
         it('should be failed by the prohibited keyword', function () {
@@ -1828,7 +1828,7 @@ describe('oas2 - tests', () => {
                 'dataPath': '',
                 'schemaPath': '#/prohibited',
                 'params': { 'keyword': 'prohibited' },
-                'message': 'should pass \'prohibited\' keyword validation'
+                'message': 'should pass "prohibited" keyword validation'
             }]);
         });
     });
