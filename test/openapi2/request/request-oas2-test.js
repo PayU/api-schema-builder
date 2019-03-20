@@ -77,7 +77,7 @@ describe('oas2 - tests', () => {
                 'dataPath': '.headers[\'api-version\']',
                 'schemaPath': '#/properties/headers/properties/api-version/pattern',
                 'params': { 'pattern': '^\\d{1,3}\\.\\d{1,3}$' },
-                'message': 'should match pattern \'^\\d{1,3}\\.\\d{1,3}$\''
+                'message': 'should match pattern "^\\d{1,3}\\.\\d{1,3}$"'
             }]);
         });
         it('bad header - empty header', function () {
@@ -510,7 +510,7 @@ describe('oas2 - tests', () => {
                 'dataPath': '.headers[\'api-version\']',
                 'schemaPath': '#/properties/headers/properties/api-version/pattern',
                 'params': { 'pattern': '^\\d{1,3}\\.\\d{1,3}$' },
-                'message': 'should match pattern \'^\\d{1,3}\\.\\d{1,3}$\''
+                'message': 'should match pattern "^\\d{1,3}\\.\\d{1,3}$"'
             }]);
         });
         it('bad header - empty header', function () {
@@ -813,7 +813,7 @@ describe('oas2 - tests', () => {
                 'dataPath': '.headers[\'api-version\']',
                 'schemaPath': '#/properties/headers/properties/api-version/pattern',
                 'params': { 'pattern': '^\\d{1,3}\\.\\d{1,3}$' },
-                'message': 'should match pattern \'^\\d{1,3}\\.\\d{1,3}$\''
+                'message': 'should match pattern "^\\d{1,3}\\.\\d{1,3}$"'
             }]);
         });
         it('bad header - empty header', function () {
@@ -1123,7 +1123,7 @@ describe('oas2 - tests', () => {
                 'dataPath': '.headers[\'api-version\']',
                 'schemaPath': '#/properties/headers/properties/api-version/pattern',
                 'params': { 'pattern': '^\\d{1,3}\\.\\d{1,3}$' },
-                'message': 'should match pattern \'^\\d{1,3}\\.\\d{1,3}$\''
+                'message': 'should match pattern "^\\d{1,3}\\.\\d{1,3}$"'
             }]);
         });
         it('bad header - empty header', function () {
