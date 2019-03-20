@@ -23,7 +23,7 @@ function buildSchema(swaggerPath, options) {
     });
 }
 
-function buildValidations(referenced, dereferenced, options = {}) {
+function buildValidations(referenced, dereferenced, options) {
     const { buildRequests, buildResponses } = options;
     const schemas = {};
     Object.keys(dereferenced.paths).forEach(function (currentPath) {
@@ -60,7 +60,7 @@ function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath
     const isOpenApi3 = dereferenced.openapi === '3.0.0';
     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
     if (isOpenApi3) {
-        requestSchema.body = oas3.buildBodyValidation(dereferenced, referenced, currentPath, currentMethod, options);
+        requestSchema.body = oas3.buildRequestBodyValidation(dereferenced, referenced, currentPath, currentMethod, options);
     } else {
         let bodySchema = options.expectFormFieldsInBody
             ? parameters.filter(function (parameter) {
@@ -73,10 +73,8 @@ function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath
         }
         if (bodySchema.length > 0) {
             const validatedBodySchema = oas2.getValidatedBodySchema(bodySchema);
-            let bodySchemaReference = referenced.paths[currentPath][currentMethod].parameters.filter(function (parameter) { return parameter.in === 'body' })[0] || {};
-            let schemaReference = bodySchemaReference.schema;
-            requestSchema.body = oas2.buildBodyValidation(validatedBodySchema, dereferenced.definitions, referenced,
-                currentPath, currentMethod, parsedPath, options, schemaReference);
+            requestSchema.body = oas2.buildRequestBodyValidation(validatedBodySchema, dereferenced.definitions, referenced,
+                currentPath, currentMethod, options);
         }
     }
 
@@ -93,9 +91,12 @@ function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath
 }
 
 function buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options){
+    // support now only oas2
+    if (dereferenced.openapi === '3.0.0'){ return }
     let responsesSchema = {};
 
     let responses = dereferenced.paths[currentPath][currentMethod].responses;
+
     if (responses) {
         Object.keys(responses).forEach(statusCode => {
             if (statusCode !== 'default') { // create validator only for real status code
@@ -104,8 +105,8 @@ function buildResponseValidator(referenced, dereferenced, currentPath, parsedPat
                 let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
                 let headersValidator = (responseDereferenceHeaders || contentTypes) ? buildHeadersValidation(responseDereferenceHeaders, contentTypes, options) : undefined;
 
-                let responseSchema = referenced.paths[currentPath][currentMethod].responses[statusCode].schema;
-                let bodyValidator = responseSchema ? oas2.buildBodyValidation(responseDereferenceSchema, dereferenced.definitions, referenced, currentPath, currentMethod, parsedPath, options, responseSchema) : undefined;
+                let bodyValidator = oas2.buildResponseBodyValidation(responseDereferenceSchema,
+                    dereferenced.definitions, referenced, currentPath, currentMethod, options, statusCode);
 
                 if (headersValidator || bodyValidator) {
                     responsesSchema[statusCode] = new Validators.ResponseValidator({
