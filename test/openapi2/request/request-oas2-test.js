@@ -3,7 +3,7 @@ var chai = require('chai'),
     chaiSinon = require('chai-sinon'),
     path = require('path'),
     schemaValidatorGenerator = require('../../../src/index'),
-    {validateParams, validateBody} = require('./utils/schemaWrapper'),
+    {validateParams, validateBody} = require('../utils/schemaWrapper'),
     chaiLike = require('chai-like')
 
 chai.use(chaiLike);

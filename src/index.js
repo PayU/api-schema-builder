@@ -75,7 +75,7 @@ function buildResponseValidator(referenced, dereferenced, currentPath, parsedPat
     let responses = dereferenced.paths[currentPath][currentMethod].responses;
     if (responses) {
         Object.keys(responses).forEach(statusCode => {
-            if (statusCode !== 'default') {
+            if (statusCode !== 'default') { // create validator only for real status code
                 let responseDereferenceSchema = responses[statusCode].schema;
                 let responseDereferenceHeaders = responses[statusCode].headers;
                 let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
