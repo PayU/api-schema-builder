@@ -7,7 +7,8 @@ var SwaggerParser = require('swagger-parser'),
     ajvUtils = require('./utils/ajv-utils'),
     Ajv = require('ajv'),
     sourceResolver = require('./utils/sourceResolver'),
-    Validators = require('./validators/index');
+    Validators = require('./validators/index'),
+    optionUtils = require('./utils/option-utils');
 
 const DEFAULT_SETTINGS = {
     buildRequests: true,
@@ -125,13 +126,6 @@ function buildResponseValidator(referenced, dereferenced, currentPath, parsedPat
 
     return responsesSchema;
 }
-function createContentTypeHeaders(validate, contentTypes) {
-    if (!validate || !contentTypes) return;
-
-    return {
-        types: contentTypes
-    };
-}
 
 function buildParametersValidation(parameters, contentTypes, options) {
     const defaultAjvOptions = {
@@ -206,41 +200,9 @@ function buildParametersValidation(parameters, contentTypes, options) {
         }
     });
 
-    ajvParametersSchema.properties.headers.content = createContentTypeHeaders(options.contentTypeValidation, contentTypes);
+    ajvParametersSchema.properties.headers.content = optionUtils.createContentTypeHeaders(options.contentTypeValidation, contentTypes);
 
     return new Validators.SimpleValidator(ajv.compile(ajvParametersSchema));
-}
-
-function buildHeadersValidation(headers, contentTypes, options) {
-    const defaultAjvOptions = {
-        allErrors: true,
-        coerceTypes: 'array'
-    };
-    const ajvOptions = Object.assign({}, defaultAjvOptions, options.ajvConfigParams);
-    let ajv = new Ajv(ajvOptions);
-
-    ajvUtils.addCustomKeyword(ajv, options.formats, options.keywords);
-
-    var ajvHeadersSchema = {
-        title: 'HTTP headers',
-        type: 'object',
-        properties: {},
-        additionalProperties: true
-    };
-
-    if (headers) {
-        Object.keys(headers).forEach(key => {
-            let headerObj = Object.assign({}, headers[key]);
-            const headerName = key.toLowerCase();
-            delete headerObj.name;
-            delete headerObj.required;
-            ajvHeadersSchema.properties[headerName] = headerObj;
-        });
-    }
-
-    ajvHeadersSchema.content = createContentTypeHeaders(options.contentTypeValidation, contentTypes);
-
-    return new Validators.SimpleValidator(ajv.compile(ajvHeadersSchema));
 }
 
 module.exports = {

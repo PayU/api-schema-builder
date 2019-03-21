@@ -1,7 +1,8 @@
 
 const Validators = require('../validators'),
     Ajv = require('ajv'),
-    ajvUtils = require('../utils/ajv-utils');
+    ajvUtils = require('../utils/ajv-utils'),
+    optionUtils = require('../utils/option-utils');
 
 module.exports = {
     getValidatedBodySchema,
@@ -81,14 +82,15 @@ function buildAjvValidator(ajvConfigBody, formats, keywords){
     return ajv;
 }
 
-function buildResponseBodyValidation(schema, swaggerDefinitions, originalSwagger, currentPath, currentMethod, options, statusCode) {
-    if (!schema){ return }
+function buildResponseBodyValidation(responses, swaggerDefinitions, originalSwagger, currentPath, currentMethod, options, statusCode) {
+    let schema = responses[statusCode] && responses[statusCode].schema;
+    if (!schema) return;
 
     let ajv = buildAjvValidator(options.ajvConfigBody, options.formats, options.keywords);
 
     if (schema.discriminator) {
-        let schemaReference = originalSwagger.paths[currentPath][currentMethod].responses[statusCode].schema;
-        return buildInheritance(schema.discriminator, swaggerDefinitions, originalSwagger, currentPath, currentMethod, ajv, schemaReference);
+        let referenceName = originalSwagger.paths[currentPath][currentMethod].responses[statusCode].schema['$ref'];
+        return buildInheritance(schema.discriminator, swaggerDefinitions, originalSwagger, currentPath, currentMethod, ajv, referenceName);
     } else {
         return new Validators.SimpleValidator(ajv.compile(schema));
     }
@@ -97,14 +99,14 @@ function buildRequestBodyValidation(schema, swaggerDefinitions, originalSwagger,
     let ajv = buildAjvValidator(options.ajvConfigBody, options.formats, options.keywords);
 
     if (schema.discriminator) {
-        let schemaReference = originalSwagger.paths[currentPath][currentMethod].parameters.filter(function (parameter) { return parameter.in === 'body' })[0].schema;
-        return buildInheritance(schema.discriminator, swaggerDefinitions, originalSwagger, currentPath, currentMethod, ajv, schemaReference);
+        let referenceName = originalSwagger.paths[currentPath][currentMethod].parameters.filter(function (parameter) { return parameter.in === 'body' })[0].schema['$ref'];
+        return buildInheritance(schema.discriminator, swaggerDefinitions, originalSwagger, currentPath, currentMethod, ajv, referenceName);
     } else {
         return new Validators.SimpleValidator(ajv.compile(schema));
     }
 }
 
-function buildInheritance(discriminator, dereferencedDefinitions, swagger, currentPath, currentMethod, ajv, schemaReference = {}) {
+function buildInheritance(discriminator, dereferencedDefinitions, swagger, currentPath, currentMethod, ajv, referenceName) {
     var inheritsObject = {
         inheritance: []
     };
@@ -113,7 +115,7 @@ function buildInheritance(discriminator, dereferencedDefinitions, swagger, curre
     Object.keys(swagger.definitions).forEach(key => {
         if (swagger.definitions[key].allOf) {
             swagger.definitions[key].allOf.forEach(element => {
-                if (element['$ref'] && element['$ref'] === schemaReference['$ref']) {
+                if (element['$ref'] && element['$ref'] === referenceName) {
                     inheritsObject[key] = ajv.compile(dereferencedDefinitions[key]);
                     inheritsObject.inheritance.push(key);
                 }
