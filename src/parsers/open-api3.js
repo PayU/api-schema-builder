@@ -6,7 +6,9 @@ const Validators = require('../validators/index'),
     { Node } = require('../data_structures/tree');
 
 module.exports = {
-    buildRequestBodyValidation
+    buildRequestBodyValidation,
+    buildResponseBodyValidation,
+    buildHeadersValidation
 };
 
 function buildRequestBodyValidation(dereferenced, originalSwagger, currentPath, currentMethod, options) {

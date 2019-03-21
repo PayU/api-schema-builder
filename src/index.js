@@ -91,28 +91,33 @@ function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath
 }
 
 function buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options){
-    // support now only oas2
-    if (dereferenced.openapi === '3.0.0'){ return }
     let responsesSchema = {};
-
     let responses = dereferenced.paths[currentPath][currentMethod].responses;
-
     if (responses) {
         Object.keys(responses).forEach(statusCode => {
             if (statusCode !== 'default') { // create validator only for real status code
-                let responseDereferenceSchema = responses[statusCode].schema;
-                let responseDereferenceHeaders = responses[statusCode].headers;
-                let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
-                let headersValidator = (responseDereferenceHeaders || contentTypes) ? buildHeadersValidation(responseDereferenceHeaders, contentTypes, options) : undefined;
+                if (dereferenced.openapi === '3.0.0') {
+                    let headersValidator = oas3.buildHeadersValidation(responses, options, statusCode);
+                    let bodyValidator = oas3.buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, options, statusCode);
 
-                let bodyValidator = oas2.buildResponseBodyValidation(responseDereferenceSchema,
-                    dereferenced.definitions, referenced, currentPath, currentMethod, options, statusCode);
+                    if (headersValidator || bodyValidator) {
+                        responsesSchema[statusCode] = new Validators.ResponseValidator({
+                            body: bodyValidator,
+                            headers: headersValidator
+                        });
+                    }
+                } else {
+                    let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
+                    let headersValidator = oas2.buildHeadersValidation(responses, contentTypes, options, statusCode);
+                    let bodyValidator = oas2.buildResponseBodyValidation(responses,
+                        dereferenced.definitions, referenced, currentPath, currentMethod, options, statusCode);
 
-                if (headersValidator || bodyValidator) {
-                    responsesSchema[statusCode] = new Validators.ResponseValidator({
-                        body: bodyValidator,
-                        headers: headersValidator
-                    });
+                    if (headersValidator || bodyValidator) {
+                        responsesSchema[statusCode] = new Validators.ResponseValidator({
+                            body: bodyValidator,
+                            headers: headersValidator
+                        });
+                    }
                 }
             }
         });

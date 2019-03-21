@@ -6,7 +6,8 @@ const Validators = require('../validators'),
 module.exports = {
     getValidatedBodySchema,
     buildResponseBodyValidation,
-    buildRequestBodyValidation
+    buildRequestBodyValidation,
+    buildHeadersValidation
 };
 
 function getValidatedBodySchema(bodySchema) {
@@ -32,6 +33,41 @@ function getValidatedBodySchema(bodySchema) {
         });
     }
     return validatedBodySchema;
+}
+
+function buildHeadersValidation(responses, contentTypes, options, statusCode) {
+    let headers = responses[statusCode] && responses[statusCode].headers;
+    if (!headers && !contentTypes) return;
+
+    const defaultAjvOptions = {
+        allErrors: true,
+        coerceTypes: 'array'
+    };
+    const ajvOptions = Object.assign({}, defaultAjvOptions, options.ajvConfigParams);
+    let ajv = new Ajv(ajvOptions);
+
+    ajvUtils.addCustomKeyword(ajv, options.formats, options.keywords);
+
+    var ajvHeadersSchema = {
+        title: 'HTTP headers',
+        type: 'object',
+        properties: {},
+        additionalProperties: true
+    };
+
+    if (headers) {
+        Object.keys(headers).forEach(key => {
+            let headerObj = Object.assign({}, headers[key]);
+            const headerName = key.toLowerCase();
+            delete headerObj.name;
+            delete headerObj.required;
+            ajvHeadersSchema.properties[headerName] = headerObj;
+        });
+    }
+
+    ajvHeadersSchema.content = optionUtils.createContentTypeHeaders(options.contentTypeValidation, contentTypes);
+
+    return new Validators.SimpleValidator(ajv.compile(ajvHeadersSchema));
 }
 
 function buildAjvValidator(ajvConfigBody, formats, keywords){
