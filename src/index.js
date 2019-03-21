@@ -206,7 +206,6 @@ function buildParametersValidation(parameters, contentTypes, options) {
     return new Validators.SimpleValidator(ajv.compile(ajvParametersSchema));
 }
 
-// split to diff parsers if needed
 function buildHeadersValidation(headers, contentTypes, options) {
     const defaultAjvOptions = {
         allErrors: true,
@@ -221,7 +220,6 @@ function buildHeadersValidation(headers, contentTypes, options) {
         title: 'HTTP headers',
         type: 'object',
         properties: {},
-        required: [],
         additionalProperties: true
     };
 
@@ -229,8 +227,6 @@ function buildHeadersValidation(headers, contentTypes, options) {
         Object.keys(headers).forEach(key => {
             let headerObj = Object.assign({}, headers[key]);
             const headerName = key.toLowerCase();
-            const headerRequired = headerObj.required;
-            if (headerRequired) ajvHeadersSchema.required.push(key);
             delete headerObj.name;
             delete headerObj.required;
             ajvHeadersSchema.properties[headerName] = headerObj;
