@@ -8,12 +8,45 @@ let chai = require('chai'),
 
 describe('oas3 check - general', function () {
     let schema;
-    describe('check body', function () {
-        let schemaEndpoint;
-        before(function () {
-            schemaEndpoint = schema['/dog']['post'].responses['201'];
+    before(function () {
+        const swaggerPath = path.join(__dirname, 'pets-response.yaml');
+        return schemaValidatorGenerator.buildSchema(swaggerPath, {}).then(receivedSchema => {
+            schema = receivedSchema;
         });
+    });
+
+    describe('check headers', function () {
+        let schemaEndpoint;
+        before(function() {
+            schemaEndpoint = schema['/pet-header']['get'].responses['200'];
+        });
+        it('valid headers', function () {
+            let isMatch = schemaEndpoint.validate({ headers: { 'x-zooz-request-id': uuid() } });
+            expect(schemaEndpoint.errors).to.be.equal(null);
+            expect(isMatch).to.be.true;
+        });
+        it('invalid type for headers', function () {
+            let isMatch = schemaEndpoint.validate({ headers: { 'x-zooz-request-id': '123' } });
+            expect(schemaEndpoint.errors).to.be.eql([{
+                'keyword': 'format',
+                'dataPath': ".headers['x-zooz-request-id']",
+                'schemaPath': '#/headers/properties/x-zooz-request-id/format',
+                'params': {
+                    'format': 'uuid'
+                },
+                'message': 'should match format "uuid"'
+            }]);
+            expect(isMatch).to.be.false;
+        });
+    });
+
+    describe('check body', function () {
         describe('simple body', function () {
+            let schemaEndpoint;
+
+            before(function () {
+                schemaEndpoint = schema['/dog']['post'].responses['201'];
+            });
             it('valid simple body', function () {
                 let isMatch = schemaEndpoint.validate({ body:
                         {
@@ -62,7 +95,41 @@ describe('oas3 check - general', function () {
                 expect(isMatch).to.be.false;
             });
         });
+        describe('schema with route', function () {
+            let schemaEndpoint;
+
+            before(function () {
+                schemaEndpoint = schema['/pets-path/:name']['get'].responses['200'];
+            });
+            it('valid simple body', function () {
+                let isMatch = schemaEndpoint.validate({ body:
+                        {
+                            'fur': '1'
+                        },
+                headers: {} });
+                expect(schemaEndpoint.errors).to.be.equal(null);
+                expect(isMatch).to.be.true;
+            });
+
+            it('missing required field', function () {
+                let isMatch = schemaEndpoint.validate({ body:
+                        {
+                            'fur': 'hav hav'
+                        },
+                headers: {} });
+
+                expect(schemaEndpoint.errors[0].message).to.be.equal("should have required property 'bark'");
+                expect(schemaEndpoint.errors[1].message).to.be.equal('should match pattern "^\\d+$"');
+                expect(schemaEndpoint.errors[2].message).to.be.equal('should match exactly one schema in oneOf');
+                expect(isMatch).to.be.false;
+            });
+        });
         describe('body with discriminator', function () {
+            let schemaEndpoint;
+
+            before(function () {
+                schemaEndpoint = schema['/dog']['post'].responses['201'];
+            });
             describe('discriminator-pet', function () {
                 let schemaEndpoint;
                 before(function () {
