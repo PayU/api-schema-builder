@@ -2,7 +2,7 @@
 
 let chai = require('chai'),
     expect = chai.expect,
-    schemaValidatorGenerator = require('../../src/index'),
+    schemaValidatorGenerator = require('../../../src/index'),
     path = require('path');
 
 describe('oas3 check', function () {

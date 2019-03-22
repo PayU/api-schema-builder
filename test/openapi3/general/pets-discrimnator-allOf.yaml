@@ -1,0 +1,157 @@
+openapi: 3.0.0
+servers:
+- url: 'https://api.paymentsos.com/'
+info:
+  x-logo:
+    url: payos_logo_blue_pad.png
+    backgroundColor: white
+  description: >
+    # Overview
+  version: 1.2.0
+  title: PaymentsOS API
+tags:
+- name: Tokens
+  description: >-
+    Tokenization is a process that safeguards sensitive card data, converting
+    a card's details to a representative token.
+x-tagGroups:
+- name: Reference
+  tags:
+  - Tokens
+security:
+- app-id: []
+  private-key: []
+paths:
+  /pet-allOf:
+    post:
+      summary: Create a Pet
+      security:
+      - public-key: []
+      description: >-
+      tags:
+      - pets
+      parameters:
+      - $ref: '#/components/parameters/public-key'
+      responses:
+        '201':
+          description: pet created
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/pet-allOf'
+        '400':
+          description: Bad request
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+        '401':
+          description: Unauthorize
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+        '500':
+          description: Internal error
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pet'
+        description: Create pet
+        required: true
+components:
+  parameters:
+    public-key:
+      name: public-key
+      in: header
+      required: true
+      example: f8948bac-8f29-4a82-8cef-704fb1e6b7ca
+      schema:
+        type: string
+    page:
+      name: page
+      in: query
+      required: true
+      example: 2
+      schema:
+        type: string
+    name:
+      name: name
+      in: path
+      required: true
+      example: kity
+      schema:
+        type: string
+  schemas:
+    error_model:
+      required:
+      - description
+      - category
+      properties:
+        category:
+          type: string
+          description: Error code.
+        description:
+          type: string
+          description: Error message for the developer.
+        more_info:
+          type: string
+          description: 'More info about the error, can include link to the documentation.'
+    pet:
+      description: pet
+      type: object
+      oneOf:
+      - $ref: '#/components/schemas/dog_object'
+      - $ref: '#/components/schemas/cat_object'
+    pets:
+      type: array
+      items:
+        $ref: "#/components/schemas/pet"
+    pet-allOf:
+      description: pet
+      type: object
+      discriminator:
+        propertyName: type
+      allOf:
+      - $ref: '#/components/schemas/dog_object'
+      - $ref: '#/components/schemas/cat_object'
+    dog_object:
+      type: object
+      required:
+      - bark
+      properties:
+        bark:
+          type: string
+    cat_object:
+      type: object
+      required:
+      - fur
+      properties:
+        fur:
+          type: string
+          pattern: '^\d+$'
