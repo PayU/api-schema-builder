@@ -98,28 +98,22 @@ function buildResponseValidator(referenced, dereferenced, currentPath, parsedPat
     if (responses) {
         Object.keys(responses).forEach(statusCode => {
             if (statusCode !== 'default') { // create validator only for real status code
+                let headersValidator, bodyValidator;
                 if (isOpenApi3) {
-                    let headersValidator = oas3.buildHeadersValidation(responses, options, statusCode);
-                    let bodyValidator = oas3.buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, options, statusCode);
-
-                    if (headersValidator || bodyValidator) {
-                        responsesSchema[statusCode] = new Validators.ResponseValidator({
-                            body: bodyValidator,
-                            headers: headersValidator
-                        });
-                    }
+                    headersValidator = oas3.buildHeadersValidation(responses, options, statusCode);
+                    bodyValidator = oas3.buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, options, statusCode);
                 } else {
                     let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
-                    let headersValidator = oas2.buildHeadersValidation(responses, contentTypes, options, statusCode);
-                    let bodyValidator = oas2.buildResponseBodyValidation(responses,
+                    headersValidator = oas2.buildHeadersValidation(responses, contentTypes, options, statusCode);
+                    bodyValidator = oas2.buildResponseBodyValidation(responses,
                         dereferenced.definitions, referenced, currentPath, currentMethod, options, statusCode);
+                }
 
-                    if (headersValidator || bodyValidator) {
-                        responsesSchema[statusCode] = new Validators.ResponseValidator({
-                            body: bodyValidator,
-                            headers: headersValidator
-                        });
-                    }
+                if (headersValidator || bodyValidator) {
+                    responsesSchema[statusCode] = new Validators.ResponseValidator({
+                        body: bodyValidator,
+                        headers: headersValidator
+                    });
                 }
             }
         });
