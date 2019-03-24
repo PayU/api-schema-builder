@@ -38,7 +38,7 @@ function buildValidations(referenced, dereferenced, options) {
                 // build request validator
                 let requestValidator;
                 if (buildRequests) {
-                    requestValidator = buildRequests && buildRequestValidator(referenced, dereferenced, currentPath,
+                    requestValidator = buildRequestValidator(referenced, dereferenced, currentPath,
                         parsedPath, currentMethod, options);
                 }
 
