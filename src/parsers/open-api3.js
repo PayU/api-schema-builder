@@ -62,6 +62,7 @@ function buildRequestBodyValidation(dereferenced, referenced, currentPath, curre
     const defaultAjvOptions = {
         allErrors: true
     };
+
     const ajvOptions = Object.assign({}, defaultAjvOptions, options.ajvConfigBody);
     let ajv = new Ajv(ajvOptions);
 

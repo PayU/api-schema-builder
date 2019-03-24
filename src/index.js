@@ -39,7 +39,7 @@ function buildValidations(referenced, dereferenced, options) {
                 // build request validator
                 let requestValidator;
                 if (buildRequests) {
-                    requestValidator = buildRequests && buildRequestValidator(referenced, dereferenced, currentPath,
+                    requestValidator = buildRequestValidator(referenced, dereferenced, currentPath,
                         parsedPath, currentMethod, options);
                 }
 
@@ -93,11 +93,12 @@ function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath
 
 function buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options){
     let responsesSchema = {};
+    const isOpenApi3 = dereferenced.openapi === '3.0.0';
     let responses = dereferenced.paths[currentPath][currentMethod].responses;
     if (responses) {
         Object.keys(responses).forEach(statusCode => {
             if (statusCode !== 'default') { // create validator only for real status code
-                if (dereferenced.openapi === '3.0.0') {
+                if (isOpenApi3) {
                     let headersValidator = oas3.buildHeadersValidation(responses, options, statusCode);
                     let bodyValidator = oas3.buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, options, statusCode);
 
