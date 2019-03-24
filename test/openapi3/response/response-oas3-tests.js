@@ -95,6 +95,211 @@ describe('oas3 check - general', function () {
                 expect(isMatch).to.be.false;
             });
         });
+        describe('anyOf body', function () {
+            let schemaEndpoint;
+            before(function () {
+                schemaEndpoint = schema['/pet-any-of']['post'].responses['201'];
+            });
+            it('valid full body', function () {
+                let isMatch = schemaEndpoint.validate({ body:
+                        {
+                            'bark': 'hav hav',
+                            'fur': 1
+                        },
+                headers: {} });
+                expect(schemaEndpoint.errors).to.be.equal(null);
+                expect(isMatch).to.be.true;
+            });
+
+            it('missing required field in body', function () {
+                let isMatch = schemaEndpoint.validate({ body:
+                        {},
+                headers: {} });
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        'dataPath': '.body',
+                        'keyword': 'required',
+                        'message': "should have required property 'bark'",
+                        'params': {
+                            'missingProperty': 'bark'
+                        },
+                        'schemaPath': '#/body/anyOf/0/required'
+                    },
+                    {
+                        'dataPath': '.body',
+                        'keyword': 'required',
+                        'message': "should have required property 'fur'",
+                        'params': {
+                            'missingProperty': 'fur'
+                        },
+                        'schemaPath': '#/body/anyOf/1/required'
+                    },
+                    {
+                        'dataPath': '.body',
+                        'keyword': 'anyOf',
+                        'message': 'should match some schema in anyOf',
+                        'params': {},
+                        'schemaPath': '#/body/anyOf'
+                    }
+                ]);
+                expect(isMatch).to.be.false;
+            });
+            it('invalid field type in body', function () {
+                let isMatch = schemaEndpoint.validate({ body:
+                        {
+                            'bark': 111,
+                            'fur': 'wrong'
+                        },
+                headers: {} });
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        'dataPath': '.body.bark',
+                        'keyword': 'type',
+                        'message': 'should be string',
+                        'params': {
+                            'type': 'string'
+                        },
+                        'schemaPath': '#/body/anyOf/0/properties/bark/type'
+                    },
+                    {
+                        'dataPath': '.body.fur',
+                        'keyword': 'pattern',
+                        'message': 'should match pattern "^\\d+$"',
+                        'params': {
+                            'pattern': '^\\d+$'
+                        },
+                        'schemaPath': '#/body/anyOf/1/properties/fur/pattern'
+                    },
+                    {
+                        'dataPath': '.body',
+                        'keyword': 'anyOf',
+                        'message': 'should match some schema in anyOf',
+                        'params': {},
+                        'schemaPath': '#/body/anyOf'
+                    }
+                ]);
+                expect(isMatch).to.be.false;
+            });
+        });
+        describe('allOf body', function () {
+            let schemaEndpoint;
+
+            before(function () {
+                schemaEndpoint = schema['/pet-all-of']['post'].responses['201'];
+            });
+            it('valid full body', function () {
+                let isMatch = schemaEndpoint.validate({ body:
+                        {
+                            'bark': 'hav hav',
+                            'fur': '11'
+                        },
+                headers: {} });
+                expect(schemaEndpoint.errors).to.be.equal(null);
+                expect(isMatch).to.be.true;
+            });
+            it('missing required field in body', function () {
+                let isMatch = schemaEndpoint.validate({ body:
+                        {
+                            'bark': 'hav hav'
+                        },
+                headers: {} });
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        'dataPath': '.body',
+                        'keyword': 'required',
+                        'message': "should have required property 'fur'",
+                        'params': {
+                            'missingProperty': 'fur'
+                        },
+                        'schemaPath': '#/body/allOf/1/required'
+                    }
+                ]);
+                expect(isMatch).to.be.false;
+            });
+            it('invalid field type in body', function () {
+                let isMatch = schemaEndpoint.validate({ body:
+                        {
+                            'bark': 111,
+                            'fur': 'wrong'
+                        },
+                headers: {} });
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        'dataPath': '.body.bark',
+                        'keyword': 'type',
+                        'message': 'should be string',
+                        'params': {
+                            'type': 'string'
+                        },
+                        'schemaPath': '#/body/allOf/0/properties/bark/type'
+                    },
+                    {
+                        'dataPath': '.body.fur',
+                        'keyword': 'pattern',
+                        'message': 'should match pattern "^\\d+$"',
+                        'params': {
+                            'pattern': '^\\d+$'
+                        },
+                        'schemaPath': '#/body/allOf/1/properties/fur/pattern'
+                    }
+                ]);
+                expect(isMatch).to.be.false;
+            });
+        });
+        describe('simple body', function () {
+            let schemaEndpoint;
+
+            before(function () {
+                schemaEndpoint = schema['/dog']['post'].responses['201'];
+            });
+            it('valid simple body', function () {
+                let isMatch = schemaEndpoint.validate({ body:
+                        {
+                            'bark': 'hav hav'
+                        },
+                headers: {} });
+                expect(schemaEndpoint.errors).to.be.equal(null);
+                expect(isMatch).to.be.true;
+            });
+            it('missing required field in simple body', function () {
+                let isMatch = schemaEndpoint.validate({ body:
+                        {
+                            'bark1': 'hav hav'
+                        },
+                headers: {} });
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        'dataPath': '.body',
+                        'keyword': 'required',
+                        'message': "should have required property 'bark'",
+                        'params': {
+                            'missingProperty': 'bark'
+                        },
+                        'schemaPath': '#/body/required'
+                    }
+                ]);
+                expect(isMatch).to.be.false;
+            });
+            it('invalid field type in simple body', function () {
+                let isMatch = schemaEndpoint.validate({ body:
+                        {
+                            'bark': 123
+                        },
+                headers: {} });
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        'dataPath': '.body.bark',
+                        'keyword': 'type',
+                        'message': 'should be string',
+                        'params': {
+                            'type': 'string'
+                        },
+                        'schemaPath': '#/body/properties/bark/type'
+                    }
+                ]);
+                expect(isMatch).to.be.false;
+            });
+        });
         describe('schema with route', function () {
             let schemaEndpoint;
 
@@ -311,6 +516,85 @@ describe('oas3 check - general', function () {
                     expect(isMatch).to.be.true;
                 });
             });
+        });
+    });
+
+    describe('check body and headers', () => {
+        let schema;
+        before(function () {
+            const swaggerPath = path.join(__dirname, './pets-response.yaml');
+            return schemaValidatorGenerator.buildSchema(swaggerPath, {}).then((receivedSchema) => {
+                schema = receivedSchema;
+            });
+        });
+        it('valid body and bad headers validation', function () {
+            let schemaEndpoint = schema['/pet']['post'].responses['201'];
+            let validatorMatch = schemaEndpoint.validate({ body: {
+                fur: '321'
+            },
+            headers: {
+                'x-zooz-request-id': '321'
+            } });
+            expect(schemaEndpoint.errors).to.be.eql([
+                {
+                    'dataPath': ".headers['x-zooz-request-id']",
+                    'keyword': 'format',
+                    'message': 'should match format "uuid"',
+                    'params': {
+                        'format': 'uuid'
+                    },
+                    'schemaPath': '#/headers/properties/x-zooz-request-id/format'
+                }
+            ]);
+            expect(validatorMatch).to.be.false;
+        });
+        it('valid headers and bad body validation', function () {
+            let schemaEndpoint = schema['/pet']['post'].responses['201'];
+            let validatorMatch = schemaEndpoint.validate({ body: {
+                fur: 11
+            },
+            headers: {
+                'x-zooz-request-id': uuid()
+            } });
+            expect(schemaEndpoint.errors[0].dataPath).to.be.equal('.body');
+            expect(schemaEndpoint.errors[0].message).to.be.equal('should have required property \'bark\'');
+            expect(schemaEndpoint.errors[1].dataPath).to.be.equal('.body.fur');
+            expect(schemaEndpoint.errors[1].message).to.be.equal('should be string');
+            expect(schemaEndpoint.errors[2].dataPath).to.be.equal('.body');
+            expect(schemaEndpoint.errors[2].message).to.be.equal('should match exactly one schema in oneOf');
+
+            expect(validatorMatch).to.be.false;
+        });
+        it('bad headers and body validation', function () {
+            let schemaEndpoint = schema['/pet']['post'].responses['201'];
+            let validatorMatch = schemaEndpoint.validate({ body: {
+                fur: 111
+            },
+            headers: {
+                'x-zooz-request-id': 111
+            } });
+
+            expect(schemaEndpoint.errors[0].dataPath).to.be.equal('.body');
+            expect(schemaEndpoint.errors[0].message).to.be.equal('should have required property \'bark\'');
+            expect(schemaEndpoint.errors[1].dataPath).to.be.equal('.body.fur');
+            expect(schemaEndpoint.errors[1].message).to.be.equal('should be string');
+            expect(schemaEndpoint.errors[2].dataPath).to.be.equal('.body');
+            expect(schemaEndpoint.errors[2].message).to.be.equal('should match exactly one schema in oneOf');
+            expect(schemaEndpoint.errors[3].dataPath).to.be.equal('.headers[\'x-zooz-request-id\']');
+            expect(schemaEndpoint.errors[3].message).to.be.equal('should match format "uuid"');
+
+            expect(validatorMatch).to.be.false;
+        });
+        it('valid headers and body validation', function () {
+            let schemaEndpoint = schema['/pet']['post'].responses['201'];
+            let validatorMatch = schemaEndpoint.validate({ body: {
+                fur: '321'
+            },
+            headers: {
+                'x-zooz-request-id': uuid()
+            } });
+            expect(schemaEndpoint.errors).to.be.eql(null);
+            expect(validatorMatch).to.be.true;
         });
     });
 });

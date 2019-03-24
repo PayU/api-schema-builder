@@ -253,6 +253,7 @@ paths:
               description: request id
               schema:
                 type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -297,6 +298,89 @@ paths:
               $ref: '#/components/schemas/pet'
         description: Create pet
         required: true
+  /pet-any-of:
+    post:
+      summary: Create a Pet
+      security:
+      - public-key: []
+      description: >-
+      tags:
+      - pets
+      parameters:
+      - $ref: '#/components/parameters/public-key'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pet'
+        description: Create pet
+        required: true
+      responses:
+        '201':
+          description: pet created
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/pet-any-of'
+        'default':
+          description: Bad request
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+  /pet-all-of:
+    post:
+      summary: Create a Pet
+      security:
+      - public-key: []
+      description: >-
+      tags:
+      - pets
+      parameters:
+      - $ref: '#/components/parameters/public-key'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pet'
+        description: Create pet
+        required: true
+      responses:
+        '201':
+          description: pet created
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/pet-all-of'
+        'default':
+          description: Bad request
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+
   /pet-file:
     post:
       summary: Create a Pet
@@ -655,6 +739,18 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/pet"
+    pet-any-of:
+      description: pet
+      type: object
+      anyOf:
+      - $ref: '#/components/schemas/dog_object'
+      - $ref: '#/components/schemas/cat_object'
+    pet-all-of:
+      description: pet
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/dog_object'
+      - $ref: '#/components/schemas/cat_object'
     pet-discriminator-on-child:
       description: pet
       type: object

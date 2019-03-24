@@ -210,7 +210,146 @@ describe('oas3 check', function () {
                 expect(isBodysMatch).to.be.false;
             });
         });
+        describe('anyOf body', function () {
+            let schemaEndpoint;
+            before(function () {
+                schemaEndpoint = schema['/pet-any-of']['post'].body;
+            });
+            it('valid full body', function () {
+                let isMatch = schemaEndpoint.validate(
+                    {
+                        'bark': 'hav hav',
+                        'fur': 1
+                    });
+                expect(schemaEndpoint.errors).to.be.equal(null);
+                expect(isMatch).to.be.true;
+            });
 
+            it('missing required field in body', function () {
+                let isMatch = schemaEndpoint.validate({ });
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        'dataPath': '',
+                        'keyword': 'required',
+                        'message': "should have required property 'bark'",
+                        'params': {
+                            'missingProperty': 'bark'
+                        },
+                        'schemaPath': '#/anyOf/0/required'
+                    },
+                    {
+                        'dataPath': '',
+                        'keyword': 'required',
+                        'message': "should have required property 'fur'",
+                        'params': {
+                            'missingProperty': 'fur'
+                        },
+                        'schemaPath': '#/anyOf/1/required'
+                    },
+                    {
+                        'dataPath': '',
+                        'keyword': 'anyOf',
+                        'message': 'should match some schema in anyOf',
+                        'params': {},
+                        'schemaPath': '#/anyOf'
+                    }
+                ]);
+                expect(isMatch).to.be.false;
+            });
+            it('invalid field type in body', function () {
+                let isMatch = schemaEndpoint.validate({
+                    'bark': 111,
+                    'fur': 'wrong'
+                });
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        'dataPath': '.bark',
+                        'keyword': 'type',
+                        'message': 'should be string',
+                        'params': {
+                            'type': 'string'
+                        },
+                        'schemaPath': '#/anyOf/0/properties/bark/type'
+                    },
+                    {
+                        'dataPath': '.fur',
+                        'keyword': 'pattern',
+                        'message': 'should match pattern "^\\d+$"',
+                        'params': {
+                            'pattern': '^\\d+$'
+                        },
+                        'schemaPath': '#/anyOf/1/properties/fur/pattern'
+                    },
+                    {
+                        'dataPath': '',
+                        'keyword': 'anyOf',
+                        'message': 'should match some schema in anyOf',
+                        'params': {},
+                        'schemaPath': '#/anyOf'
+                    }
+                ]);
+                expect(isMatch).to.be.false;
+            });
+        });
+        describe('allOf body', function () {
+            let schemaEndpoint;
+
+            before(function () {
+                schemaEndpoint = schema['/pet-all-of']['post'].body;
+            });
+            it('valid full body', function () {
+                let isMatch = schemaEndpoint.validate({
+                    'bark': 'hav hav',
+                    'fur': '11'
+                });
+                expect(schemaEndpoint.errors).to.be.equal(null);
+                expect(isMatch).to.be.true;
+            });
+            it('missing required field in body', function () {
+                let isMatch = schemaEndpoint.validate({
+                    'bark': 'hav hav'
+                });
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        'dataPath': '',
+                        'keyword': 'required',
+                        'message': "should have required property 'fur'",
+                        'params': {
+                            'missingProperty': 'fur'
+                        },
+                        'schemaPath': '#/allOf/1/required'
+                    }
+                ]);
+                expect(isMatch).to.be.false;
+            });
+            it('invalid field type in body', function () {
+                let isMatch = schemaEndpoint.validate({
+                    'bark': 111,
+                    'fur': 'wrong'
+                });
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        'dataPath': '.bark',
+                        'keyword': 'type',
+                        'message': 'should be string',
+                        'params': {
+                            'type': 'string'
+                        },
+                        'schemaPath': '#/allOf/0/properties/bark/type'
+                    },
+                    {
+                        'dataPath': '.fur',
+                        'keyword': 'pattern',
+                        'message': 'should match pattern "^\\d+$"',
+                        'params': {
+                            'pattern': '^\\d+$'
+                        },
+                        'schemaPath': '#/allOf/1/properties/fur/pattern'
+                    }
+                ]);
+                expect(isMatch).to.be.false;
+            });
+        });
         describe('body with discriminator', function () {
             describe('discriminator-pet', function () {
                 let schemaEndpoint;
