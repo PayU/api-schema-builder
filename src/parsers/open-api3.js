@@ -6,8 +6,27 @@ const Validators = require('../validators/index'),
     { Node } = require('../data_structures/tree');
 
 module.exports = {
-    buildRequestBodyValidation
+    buildRequestBodyValidation,
+    buildPathParameters
 };
+
+function buildPathParameters(parameters, pathParameters) {
+    let allParameters = [].concat(parameters, pathParameters);
+    let localParameters = allParameters.map(handleSchema);
+    return localParameters;
+}
+
+function handleSchema(data) {
+    let clonedData = cloneDeep(data);
+    let schema = data.schema;
+    if (schema) {
+        delete clonedData['schema'];
+        Object.keys(schema).forEach(key => {
+            clonedData[key] = schema[key];
+        });
+    }
+    return clonedData;
+}
 
 function buildRequestBodyValidation(dereferenced, originalSwagger, currentPath, currentMethod, options) {
     if (!dereferenced.paths[currentPath][currentMethod].requestBody) {

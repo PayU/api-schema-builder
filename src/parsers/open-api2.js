@@ -6,7 +6,8 @@ const Validators = require('../validators'),
 module.exports = {
     getValidatedBodySchema,
     buildResponseBodyValidation,
-    buildRequestBodyValidation
+    buildRequestBodyValidation,
+    buildPathParameters
 };
 
 function getValidatedBodySchema(bodySchema) {
@@ -86,4 +87,11 @@ function buildInheritance(discriminator, dereferencedDefinitions, swagger, curre
     }, this);
 
     return new Validators.OneOfValidator(inheritsObject);
+}
+
+function buildPathParameters(parameters, pathParameters) {
+    let localParameters = parameters.filter(function (parameter) {
+        return parameter.in !== 'body';
+    }).concat(pathParameters);
+    return localParameters;
 }
