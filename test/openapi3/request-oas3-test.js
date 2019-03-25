@@ -121,21 +121,21 @@ describe('oas3 check', function () {
             expect(schemaEndpoint.parameters.errors).to.be.eql([
                 {
                     'dataPath': '.query',
-                    'keyword': 'required',
-                    'message': "should have required property 'page'",
-                    'params': {
-                        'missingProperty': 'page'
-                    },
-                    'schemaPath': '#/properties/query/required'
-                },
-                {
-                    'dataPath': '.query',
                     'keyword': 'additionalProperties',
                     'message': 'should NOT have additional properties',
                     'params': {
                         'additionalProperty': 'wrong_query'
                     },
                     'schemaPath': '#/properties/query/additionalProperties'
+                },
+                {
+                    'dataPath': '.query',
+                    'keyword': 'required',
+                    'message': "should have required property 'page'",
+                    'params': {
+                        'missingProperty': 'page'
+                    },
+                    'schemaPath': '#/properties/query/required'
                 }
             ]);
             expect(isParametersMatch).to.be.false;
@@ -195,21 +195,21 @@ describe('oas3 check', function () {
             expect(schemaEndpoint.parameters.errors).to.be.eql([
                 {
                     'dataPath': '.path',
-                    'keyword': 'required',
-                    'message': "should have required property 'name'",
-                    'params': {
-                        'missingProperty': 'name'
-                    },
-                    'schemaPath': '#/properties/path/required'
-                },
-                {
-                    'dataPath': '.path',
                     'keyword': 'additionalProperties',
                     'message': 'should NOT have additional properties',
                     'params': {
                         'additionalProperty': 'namee'
                     },
                     'schemaPath': '#/properties/path/additionalProperties'
+                },
+                {
+                    'dataPath': '.path',
+                    'keyword': 'required',
+                    'message': "should have required property 'name'",
+                    'params': {
+                        'missingProperty': 'name'
+                    },
+                    'schemaPath': '#/properties/path/required'
                 }
             ]);
             expect(isParametersMatch).to.be.false;

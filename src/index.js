@@ -77,7 +77,7 @@ function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath
             requestSchema.body = oas2.buildRequestBodyValidation(validatedBodySchema, dereferenced.definitions, referenced,
                 currentPath, currentMethod, options);
         }
-        localParameters = oas3.buildPathParameters(parameters, pathParameters);
+        localParameters = oas2.buildPathParameters(parameters, pathParameters);
     }
 
     if (localParameters.length > 0 || options.contentTypeValidation) {
