@@ -83,6 +83,9 @@ paths:
       description: >-
       tags:
       - pets
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/query_uuid'
       responses:
         '200':
           description: list of pets
@@ -106,30 +109,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error_model'
-        '401':
-          description: Unauthorize
-          headers:
-            x-zooz-request-id:
-              description: request id
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error_model'
-        '500':
-          description: Internal error
-          headers:
-            x-zooz-request-id:
-              description: request id
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error_model'
+
+  /pets/{pet_id}:
+    get:
+      summary: get pet by id
+      security:
+      - public-key: []
+      description: >-
+      tags:
+      - pets
+      operationId: listPets
       parameters:
-      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/header_uuid'
+      - in: path
+        name: pet_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: get pet with id
   /pets-path/{name}:
     get:
       summary: get all pets
@@ -185,7 +185,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error_model'
-
   /dog:
     post:
       summary: Create a Dog
@@ -256,6 +255,7 @@ paths:
       - pets
       parameters:
       - $ref: '#/components/parameters/public-key'
+      - $ref: '#/components/parameters/header_uuid'
       responses:
         '201':
           description: pet created
@@ -641,6 +641,18 @@ components:
       example: kity
       schema:
         type: string
+    header_uuid:
+      name: header_uuid
+      in: header
+      schema:
+        type: string
+        format: uuid
+    query_uuid:
+      name: query_uuid
+      in: query
+      schema:
+        type: string
+        format: uuid
   schemas:
     error_model:
       required:

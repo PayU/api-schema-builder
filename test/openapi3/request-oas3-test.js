@@ -3,7 +3,8 @@
 let chai = require('chai'),
     expect = chai.expect,
     schemaValidatorGenerator = require('../../src/index'),
-    path = require('path');
+    path = require('path'),
+    uuid = require('uuid');
 
 describe('oas3 check', function () {
     let schema;
@@ -45,6 +46,7 @@ describe('oas3 check', function () {
             }]);
             expect(isParametersMatch).to.be.false;
         });
+
         it('invalid type for headers', function () {
             // parameters match
             let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
@@ -61,6 +63,38 @@ describe('oas3 check', function () {
                 'schemaPath': '#/properties/headers/type'
             }]);
             expect(isParametersMatch).to.be.false;
+        });
+
+        it('invalid format for headers', function () {
+            // parameters match
+            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
+                headers: { 'public-key': '1.0',
+                    'header_uuid': '321' },
+                path: {},
+                files: undefined });
+            expect(schemaEndpoint.parameters.errors).to.be.eql([
+                {
+                    'dataPath': '.headers.header_uuid',
+                    'keyword': 'format',
+                    'message': 'should match format "uuid"',
+                    'params': {
+                        'format': 'uuid'
+                    },
+                    'schemaPath': '#/properties/headers/properties/header_uuid/format'
+                }
+            ]);
+            expect(isParametersMatch).to.be.false;
+        });
+
+        it('valid format for headers', function () {
+            // parameters match
+            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
+                headers: { 'public-key': '1.0',
+                    'header_uuid': uuid() },
+                path: {},
+                files: undefined });
+            expect(schemaEndpoint.parameters.errors).to.be.eql(null);
+            expect(isParametersMatch).to.be.true;
         });
     });
 
@@ -106,14 +140,41 @@ describe('oas3 check', function () {
             ]);
             expect(isParametersMatch).to.be.false;
         });
+
+        it('valid format query', function () {
+            let isParametersMatch = schemaEndpoint.parameters.validate({
+                query: { page: '1', 'query_uuid': uuid() },
+                headers: {},
+                path: {},
+                files: undefined });
+            expect(schemaEndpoint.parameters.errors).to.be.equal(null);
+            expect(isParametersMatch).to.be.true;
+        });
+
+        it('invalid format query', function () {
+            let isParametersMatch = schemaEndpoint.parameters.validate({
+                query: { page: '1', 'query_uuid': 321 },
+                headers: {},
+                path: {},
+                files: undefined });
+            expect(schemaEndpoint.parameters.errors).to.be.eql([
+                {
+                    'dataPath': '.query.query_uuid',
+                    'keyword': 'format',
+                    'message': 'should match format "uuid"',
+                    'params': {
+                        'format': 'uuid'
+                    },
+                    'schemaPath': '#/properties/query/properties/query_uuid/format'
+                }
+            ]);
+            expect(isParametersMatch).to.be.false;
+        });
     });
 
     describe('check path', function () {
-        let schemaEndpoint;
-        before(function () {
-            schemaEndpoint = schema['/pets-path/:name']['get'];
-        });
         it('valid headers', function () {
+            let schemaEndpoint = schema['/pets-path/:name']['get'];
             // parameters match
             let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
                 headers: { 'public-key': '1.0'
@@ -124,6 +185,8 @@ describe('oas3 check', function () {
             expect(isParametersMatch).to.be.true;
         });
         it('missing required path', function () {
+            let schemaEndpoint = schema['/pets-path/:name']['get'];
+
             // parameters match
             let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
                 headers: { 'host': 'test' },
@@ -147,6 +210,38 @@ describe('oas3 check', function () {
                         'additionalProperty': 'namee'
                     },
                     'schemaPath': '#/properties/path/additionalProperties'
+                }
+            ]);
+            expect(isParametersMatch).to.be.false;
+        });
+
+        it('valid headers format', function () {
+            let schemaEndpoint = schema['/pets/:pet_id']['get'];
+            // parameters match
+            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
+                headers: { },
+                path: { pet_id: uuid() },
+                files: undefined });
+            expect(schemaEndpoint.parameters.errors).to.be.equal(null);
+            expect(isParametersMatch).to.be.true;
+        });
+
+        it('invalid headers format', function () {
+            let schemaEndpoint = schema['/pets/:pet_id']['get'];
+            // parameters match
+            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
+                headers: { },
+                path: { pet_id: 321 },
+                files: undefined });
+            expect(schemaEndpoint.parameters.errors).to.be.eql([
+                {
+                    'dataPath': '.path.pet_id',
+                    'keyword': 'format',
+                    'message': 'should match format "uuid"',
+                    'params': {
+                        'format': 'uuid'
+                    },
+                    'schemaPath': '#/properties/path/properties/pet_id/format'
                 }
             ]);
             expect(isParametersMatch).to.be.false;
