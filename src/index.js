@@ -31,7 +31,8 @@ function buildValidations(referenced, dereferenced, options) {
             ? dereferenced.basePath.concat(currentPath.replace(/{/g, ':').replace(/}/g, ''))
             : currentPath.replace(/{/g, ':').replace(/}/g, '');
         schemas[parsedPath] = {};
-        Object.keys(dereferenced.paths[currentPath]).filter(function (parameter) { return parameter !== 'parameters' })
+        Object.keys(dereferenced.paths[currentPath])
+            .filter(function (parameter) { return parameter !== 'parameters' })
             .forEach(function (currentMethod) {
                 let parsedMethod = currentMethod.toLowerCase();
 
