@@ -43,4 +43,13 @@ describe('oas2 - general tests', () => {
             });
         });
     });
+    describe('No options are sent', function(){
+        it('Should load schema', () => {
+            const swaggerPath = path.join(__dirname, './pet-store-swagger.yaml');
+            return schemaValidatorGenerator.buildSchema(swaggerPath).then(receivedSchema => {
+                expect(typeof receivedSchema['/pets']['post'].body).to.exist;
+                expect(typeof receivedSchema['/pets']['post'].parameters).to.exist;
+            });
+        });
+    });
 });
