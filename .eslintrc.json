@@ -17,6 +17,6 @@
         "semi": ["error", "always",{ "omitLastInOneLineBlock": true}],
         "one-var": ["off"],
         "space-before-blocks": ["off"],
-        "camelcase": ["warn"],
+        "camelcase": ["warn"]
     }
-  }
+}
