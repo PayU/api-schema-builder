@@ -36,18 +36,11 @@ function buildValidations(referenced, dereferenced, options) {
             .forEach(function (currentMethod) {
                 let parsedMethod = currentMethod.toLowerCase();
 
-                // build request validator
-                let requestValidator;
-                if (buildRequests) {
-                    requestValidator = buildRequestValidator(referenced, dereferenced, currentPath,
-                        parsedPath, currentMethod, options);
-                }
+                let requestValidator = buildRequests && buildRequestValidator(referenced, dereferenced, currentPath,
+                    parsedPath, currentMethod, options);
 
-                // build response validator
-                let responseValidator;
-                if (buildResponses) {
-                    responseValidator = buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options);
-                }
+                let responseValidator = buildResponses &&
+                    buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options);
 
                 schemas[parsedPath][parsedMethod] = Object.assign({}, requestValidator, { responses: responseValidator });
             });
@@ -69,9 +62,9 @@ function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath
                 (parameter.in === 'formData' && parameter.type !== 'file'));
             })
             : parameters.filter(function (parameter) { return parameter.in === 'body' });
-        if (options.makeOptionalAttributesNullable) {
-            schemaPreprocessor.makeOptionalAttributesNullable(bodySchema);
-        }
+
+        options.makeOptionalAttributesNullable && schemaPreprocessor.makeOptionalAttributesNullable(bodySchema);
+
         if (bodySchema.length > 0) {
             const validatedBodySchema = oas2.getValidatedBodySchema(bodySchema);
             requestSchema.body = oas2.buildRequestBodyValidation(validatedBodySchema, dereferenced.definitions, referenced,
@@ -94,19 +87,18 @@ function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath
 function buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options){
     // support now only oas2
     if (dereferenced.openapi === '3.0.0'){ return }
-    let responsesSchema = {};
+    const responsesSchema = {};
 
-    let responses = dereferenced.paths[currentPath][currentMethod].responses;
+    const responses = dereferenced.paths[currentPath][currentMethod].responses;
 
     if (responses) {
         Object.keys(responses).forEach(statusCode => {
-            if (statusCode !== 'default') { // create validator only for real status code
                 let responseDereferenceSchema = responses[statusCode].schema;
                 let responseDereferenceHeaders = responses[statusCode].headers;
                 let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
                 let headersValidator = (responseDereferenceHeaders || contentTypes) ? buildHeadersValidation(responseDereferenceHeaders, contentTypes, options) : undefined;
 
-                let bodyValidator = oas2.buildResponseBodyValidation(responseDereferenceSchema,
+                let bodyValidator = responseDereferenceSchema && oas2.buildResponseBodyValidation(responseDereferenceSchema,
                     dereferenced.definitions, referenced, currentPath, currentMethod, options, statusCode);
 
                 if (headersValidator || bodyValidator) {
@@ -115,7 +107,6 @@ function buildResponseValidator(referenced, dereferenced, currentPath, parsedPat
                         headers: headersValidator
                     });
                 }
-            }
         });
     }
 

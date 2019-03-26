@@ -315,7 +315,61 @@ describe('oas2 tests - response', function () {
                 ]);
                 expect(validatorMatch).to.be.false;
             });
+            it('valid default body', function () {
+                let schemaEndpoint = schema['/pet-with-object']['get'].responses['default'];
+                let validatorMatch = schemaEndpoint.validate({ body: {
+                        code:  321,
+                        message: 'msg'
+                    },
+                headers:{}});
+
+                expect(schemaEndpoint.errors).to.be.eql(null);
+                expect(validatorMatch).to.be.true;
+            });
+            it('missing field in default body', function () {
+                let schemaEndpoint = schema['/pet-with-object']['get'].responses['default'];
+                let validatorMatch = schemaEndpoint.validate({ body: {
+                        code:  321
+                    },
+                    headers:{}});
+
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        "dataPath": ".body",
+                        "keyword": "required",
+                        "message": "should have required property 'message'",
+                        "params": {
+                            "missingProperty": "message"
+                        },
+                        "schemaPath": "#/body/required"
+                    }
+                ]);
+                expect(validatorMatch).to.be.false;
+            });
+
+            it('wrong field type in default body', function () {
+                let schemaEndpoint = schema['/pet-with-object']['get'].responses['default'];
+                let validatorMatch = schemaEndpoint.validate({ body: {
+                        code:  321,
+                        message: 321
+                    },
+                    headers:{}});
+
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        "dataPath": ".body.message",
+                        "keyword": "type",
+                        "message": "should be string",
+                        "params": {
+                            "type": "string"
+                        },
+                        "schemaPath": "#/body/properties/message/type"
+                    }
+                ]);
+                expect(validatorMatch).to.be.false;
+            });
         });
+
         describe('base path', function () {
             let schema;
             before(() => {
@@ -565,6 +619,43 @@ describe('oas2 tests - response', function () {
                 expect(schemaEndpoint.errors).to.be.equal(null);
                 expect(isValid).to.be.true;
             });
+            it('valid header - default response', function () {
+                let schemaEndpoint = schema['/pet-with-object']['get'].responses['default'];
+                let validatorMatch = schemaEndpoint.validate({ body: {
+                        code:  321,
+                        message: 'msg'
+                    },
+                    headers:{
+                     'x-next': '321'
+                    }});
+
+                expect(schemaEndpoint.errors).to.be.eql(null);
+                expect(validatorMatch).to.be.true;
+            });
+            it('wrong field type - response body', function () {
+                let schemaEndpoint = schema['/pet-with-object']['get'].responses['default'];
+                let validatorMatch = schemaEndpoint.validate({ body: {
+                        code:  321,
+                        message: 'msg'
+                    },
+                    headers:{
+                        'x-next': {}
+                    }});
+
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        "dataPath": ".headers['x-next']",
+                        "keyword": "type",
+                        "message": "should be string",
+                        "params": {
+                            "type": "string"
+                        },
+                        "schemaPath": "#/headers/properties/x-next/type"
+                    }
+                ]);
+                expect(validatorMatch).to.be.false;
+            });
+
         });
         describe('with base path', function () {
             let schema;

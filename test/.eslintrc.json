@@ -18,5 +18,6 @@
         "one-var": ["off"],
         "space-before-blocks": ["off"],
         "camelcase": ["warn"],
+        "no-unused-expressions": 0
     }
   }

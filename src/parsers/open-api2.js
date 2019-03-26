@@ -46,8 +46,6 @@ function buildAjvValidator(ajvConfigBody, formats, keywords){
 }
 
 function buildResponseBodyValidation(schema, swaggerDefinitions, originalSwagger, currentPath, currentMethod, options, statusCode) {
-    if (!schema){ return }
-
     let ajv = buildAjvValidator(options.ajvConfigBody, options.formats, options.keywords);
 
     if (schema.discriminator) {
