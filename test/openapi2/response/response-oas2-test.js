@@ -318,10 +318,10 @@ describe('oas2 tests - response', function () {
             it('valid default body', function () {
                 let schemaEndpoint = schema['/pet-with-object']['get'].responses['default'];
                 let validatorMatch = schemaEndpoint.validate({ body: {
-                        code:  321,
-                        message: 'msg'
-                    },
-                headers:{}});
+                    code: 321,
+                    message: 'msg'
+                },
+                headers: {} });
 
                 expect(schemaEndpoint.errors).to.be.eql(null);
                 expect(validatorMatch).to.be.true;
@@ -329,19 +329,19 @@ describe('oas2 tests - response', function () {
             it('missing field in default body', function () {
                 let schemaEndpoint = schema['/pet-with-object']['get'].responses['default'];
                 let validatorMatch = schemaEndpoint.validate({ body: {
-                        code:  321
-                    },
-                    headers:{}});
+                    code: 321
+                },
+                headers: {} });
 
                 expect(schemaEndpoint.errors).to.be.eql([
                     {
-                        "dataPath": ".body",
-                        "keyword": "required",
-                        "message": "should have required property 'message'",
-                        "params": {
-                            "missingProperty": "message"
+                        'dataPath': '.body',
+                        'keyword': 'required',
+                        'message': "should have required property 'message'",
+                        'params': {
+                            'missingProperty': 'message'
                         },
-                        "schemaPath": "#/body/required"
+                        'schemaPath': '#/body/required'
                     }
                 ]);
                 expect(validatorMatch).to.be.false;
@@ -350,20 +350,20 @@ describe('oas2 tests - response', function () {
             it('wrong field type in default body', function () {
                 let schemaEndpoint = schema['/pet-with-object']['get'].responses['default'];
                 let validatorMatch = schemaEndpoint.validate({ body: {
-                        code:  321,
-                        message: 321
-                    },
-                    headers:{}});
+                    code: 321,
+                    message: 321
+                },
+                headers: {} });
 
                 expect(schemaEndpoint.errors).to.be.eql([
                     {
-                        "dataPath": ".body.message",
-                        "keyword": "type",
-                        "message": "should be string",
-                        "params": {
-                            "type": "string"
+                        'dataPath': '.body.message',
+                        'keyword': 'type',
+                        'message': 'should be string',
+                        'params': {
+                            'type': 'string'
                         },
-                        "schemaPath": "#/body/properties/message/type"
+                        'schemaPath': '#/body/properties/message/type'
                     }
                 ]);
                 expect(validatorMatch).to.be.false;
@@ -622,12 +622,12 @@ describe('oas2 tests - response', function () {
             it('valid header - default response', function () {
                 let schemaEndpoint = schema['/pet-with-object']['get'].responses['default'];
                 let validatorMatch = schemaEndpoint.validate({ body: {
-                        code:  321,
-                        message: 'msg'
-                    },
-                    headers:{
-                     'x-next': '321'
-                    }});
+                    code: 321,
+                    message: 'msg'
+                },
+                headers: {
+                    'x-next': '321'
+                } });
 
                 expect(schemaEndpoint.errors).to.be.eql(null);
                 expect(validatorMatch).to.be.true;
@@ -635,27 +635,26 @@ describe('oas2 tests - response', function () {
             it('wrong field type - response body', function () {
                 let schemaEndpoint = schema['/pet-with-object']['get'].responses['default'];
                 let validatorMatch = schemaEndpoint.validate({ body: {
-                        code:  321,
-                        message: 'msg'
-                    },
-                    headers:{
-                        'x-next': {}
-                    }});
+                    code: 321,
+                    message: 'msg'
+                },
+                headers: {
+                    'x-next': {}
+                } });
 
                 expect(schemaEndpoint.errors).to.be.eql([
                     {
-                        "dataPath": ".headers['x-next']",
-                        "keyword": "type",
-                        "message": "should be string",
-                        "params": {
-                            "type": "string"
+                        'dataPath': ".headers['x-next']",
+                        'keyword': 'type',
+                        'message': 'should be string',
+                        'params': {
+                            'type': 'string'
                         },
-                        "schemaPath": "#/headers/properties/x-next/type"
+                        'schemaPath': '#/headers/properties/x-next/type'
                     }
                 ]);
                 expect(validatorMatch).to.be.false;
             });
-
         });
         describe('with base path', function () {
             let schema;

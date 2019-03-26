@@ -9,7 +9,7 @@ module.exports = {
     buildRequestBodyValidation
 };
 
-function buildRequestBodyValidation(dereferenced, originalSwagger, currentPath, currentMethod, options) {
+function buildRequestBodyValidation(dereferenced, originalSwagger, currentPath, currentMethod, { ajvConfigBody, formats, keywords }) {
     if (!dereferenced.paths[currentPath][currentMethod].requestBody) {
         return;
     }
@@ -17,10 +17,10 @@ function buildRequestBodyValidation(dereferenced, originalSwagger, currentPath, 
     const defaultAjvOptions = {
         allErrors: true
     };
-    const ajvOptions = Object.assign({}, defaultAjvOptions, options.ajvConfigBody);
+    const ajvOptions = Object.assign({}, defaultAjvOptions, ajvConfigBody);
     let ajv = new Ajv(ajvOptions);
 
-    ajvUtils.addCustomKeyword(ajv, options.formats, options.keywords);
+    ajvUtils.addCustomKeyword(ajv, formats, keywords);
 
     if (bodySchemaV3.discriminator) {
         return buildV3Inheritance(dereferenced, originalSwagger, currentPath, currentMethod, ajv);

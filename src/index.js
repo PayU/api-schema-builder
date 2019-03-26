@@ -93,20 +93,20 @@ function buildResponseValidator(referenced, dereferenced, currentPath, parsedPat
 
     if (responses) {
         Object.keys(responses).forEach(statusCode => {
-                let responseDereferenceSchema = responses[statusCode].schema;
-                let responseDereferenceHeaders = responses[statusCode].headers;
-                let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
-                let headersValidator = (responseDereferenceHeaders || contentTypes) ? buildHeadersValidation(responseDereferenceHeaders, contentTypes, options) : undefined;
+            let responseDereferenceSchema = responses[statusCode].schema;
+            let responseDereferenceHeaders = responses[statusCode].headers;
+            let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
+            let headersValidator = (responseDereferenceHeaders || contentTypes) ? buildHeadersValidation(responseDereferenceHeaders, contentTypes, options) : undefined;
 
-                let bodyValidator = responseDereferenceSchema && oas2.buildResponseBodyValidation(responseDereferenceSchema,
-                    dereferenced.definitions, referenced, currentPath, currentMethod, options, statusCode);
+            let bodyValidator = responseDereferenceSchema && oas2.buildResponseBodyValidation(responseDereferenceSchema,
+                dereferenced.definitions, referenced, currentPath, currentMethod, options, statusCode);
 
-                if (headersValidator || bodyValidator) {
-                    responsesSchema[statusCode] = new Validators.ResponseValidator({
-                        body: bodyValidator,
-                        headers: headersValidator
-                    });
-                }
+            if (headersValidator || bodyValidator) {
+                responsesSchema[statusCode] = new Validators.ResponseValidator({
+                    body: bodyValidator,
+                    headers: headersValidator
+                });
+            }
         });
     }
 
