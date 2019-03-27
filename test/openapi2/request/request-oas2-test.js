@@ -1,4 +1,5 @@
-var chai = require('chai'),
+var chaiAsPromised = require('chai-as-promised'),
+    chai = require('chai').use(chaiAsPromised),
     expect = chai.expect,
     path = require('path'),
     schemaValidatorGenerator = require('../../../src/index'),
@@ -7,12 +8,9 @@ var chai = require('chai'),
 describe('oas2 tests - request', () => {
     describe('init function tests', function () {
         it('should reject the promise in case the file doesn\'t exists', function () {
-            return schemaValidatorGenerator.buildSchema('test/pet-store-swagger1.yaml', {
-                ajvConfigBody: true
-            })
-                .catch(function (err) {
-                    expect(err).to.exist;
-                });
+            const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger1.yaml');
+            return expect(schemaValidatorGenerator.buildSchema(swaggerPath, { ajvConfigBody: true }))
+                .to.be.rejected;
         });
         it('should resolve without formats', function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger.yaml');
@@ -323,6 +321,79 @@ describe('oas2 tests - request', () => {
                 'params': { 'type': 'array' },
                 'message': 'should be array'
             }]);
+        });
+        it('valid body - quantitive test', function () {
+            let bodyValidationErrors = validateBody({
+                schemas: schemas,
+                body: { 'fieldNum1': 1, 'fieldNum2': 2, 'fieldNum3': 3, 'fieldStr1': 'name1', 'fieldStr2': 'name2', 'fieldStr3': 'name3' },
+                path: '/many-attributes',
+                method: 'post'
+            });
+            expect(bodyValidationErrors).to.eql(undefined);
+        });
+        it('bad body - quantitive test', function () {
+            let bodyValidationErrors = validateBody({
+                schemas: schemas,
+                body: { 'fieldNum1': 'name1', 'fieldNum2': 'name2', 'fieldNum3': 'name3', 'fieldStr1': 1, 'fieldStr2': 2, 'fieldStr3': 3 },
+                path: '/many-attributes',
+                method: 'post'
+            });
+            expect(bodyValidationErrors).to.eql([
+                {
+                    'keyword': 'type',
+                    'dataPath': '.fieldNum1',
+                    'schemaPath': '#/properties/fieldNum1/type',
+                    'params': {
+                        'type': 'integer'
+                    },
+                    'message': 'should be integer'
+                },
+                {
+                    'keyword': 'type',
+                    'dataPath': '.fieldNum2',
+                    'schemaPath': '#/properties/fieldNum2/type',
+                    'params': {
+                        'type': 'integer'
+                    },
+                    'message': 'should be integer'
+                },
+                {
+                    'keyword': 'type',
+                    'dataPath': '.fieldNum3',
+                    'schemaPath': '#/properties/fieldNum3/type',
+                    'params': {
+                        'type': 'integer'
+                    },
+                    'message': 'should be integer'
+                },
+                {
+                    'keyword': 'type',
+                    'dataPath': '.fieldStr1',
+                    'schemaPath': '#/properties/fieldStr1/type',
+                    'params': {
+                        'type': 'string'
+                    },
+                    'message': 'should be string'
+                },
+                {
+                    'keyword': 'type',
+                    'dataPath': '.fieldStr2',
+                    'schemaPath': '#/properties/fieldStr2/type',
+                    'params': {
+                        'type': 'string'
+                    },
+                    'message': 'should be string'
+                },
+                {
+                    'keyword': 'type',
+                    'dataPath': '.fieldStr3',
+                    'schemaPath': '#/properties/fieldStr3/type',
+                    'params': {
+                        'type': 'string'
+                    },
+                    'message': 'should be string'
+                }
+            ]);
         });
     });
     describe('Simple server - type coercion enabled', function () {

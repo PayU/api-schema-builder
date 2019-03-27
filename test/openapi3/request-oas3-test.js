@@ -157,14 +157,9 @@ describe('oas3 check', function () {
     describe.skip('check file', function () {});
 
     describe('check body', function () {
-        let schemaEndpoint;
-        before(function () {
-            schemaEndpoint = schema['/dog']['post'];
-        });
-
         describe('simple body', function () {
             it('valid simple body', function () {
-                // body match
+                let schemaEndpoint = schema['/dog']['post'];
                 let isBodysMatch = schemaEndpoint.body.validate({
                     'bark': 'hav hav'
                 });
@@ -172,7 +167,8 @@ describe('oas3 check', function () {
                 expect(isBodysMatch).to.be.true;
             });
             it('missing required field in simple body', function () {
-                // body match
+                let schemaEndpoint = schema['/dog']['post'];
+
                 let isBodysMatch = schemaEndpoint.body.validate({
                     'fur': 'hav hav'
                 });
@@ -191,7 +187,8 @@ describe('oas3 check', function () {
                 expect(isBodysMatch).to.be.false;
             });
             it('invalid field type in simple body', function () {
-                // body match
+                let schemaEndpoint = schema['/dog']['post'];
+
                 let isBodysMatch = schemaEndpoint.body.validate({
                     'bark': 111
                 });
@@ -205,6 +202,82 @@ describe('oas3 check', function () {
                             'type': 'string'
                         },
                         'schemaPath': '#/properties/bark/type'
+                    }
+                ]);
+                expect(isBodysMatch).to.be.false;
+            });
+            it('valid body - quantitive test', function () {
+                let schemaEndpoint = schema['/many-attributes']['post'];
+
+                let isBodysMatch = schemaEndpoint.body.validate({ 'fieldNum1': 1,
+                    'fieldNum2': 2,
+                    'fieldNum3': 3,
+                    'fieldStr1': 'name1',
+                    'fieldStr2': 'name2',
+                    'fieldStr3': 'name3' });
+
+                expect(schemaEndpoint.body.errors).to.be.eql(null);
+                expect(isBodysMatch).to.be.true;
+            });
+            it('invalid body - quantitive test', function () {
+                let schemaEndpoint = schema['/many-attributes']['post'];
+
+                let isBodysMatch = schemaEndpoint.body.validate({ 'fieldNum1': 'name1', 'fieldNum2': 'name2', 'fieldNum3': 'name3', 'fieldStr1': 1, 'fieldStr2': 2, 'fieldStr3': 3 });
+
+                expect(schemaEndpoint.body.errors).to.be.eql([
+                    {
+                        'keyword': 'type',
+                        'dataPath': '.fieldNum1',
+                        'schemaPath': '#/properties/fieldNum1/type',
+                        'params': {
+                            'type': 'number'
+                        },
+                        'message': 'should be number'
+                    },
+                    {
+                        'keyword': 'type',
+                        'dataPath': '.fieldNum2',
+                        'schemaPath': '#/properties/fieldNum2/type',
+                        'params': {
+                            'type': 'number'
+                        },
+                        'message': 'should be number'
+                    },
+                    {
+                        'keyword': 'type',
+                        'dataPath': '.fieldNum3',
+                        'schemaPath': '#/properties/fieldNum3/type',
+                        'params': {
+                            'type': 'number'
+                        },
+                        'message': 'should be number'
+                    },
+                    {
+                        'keyword': 'type',
+                        'dataPath': '.fieldStr1',
+                        'schemaPath': '#/properties/fieldStr1/type',
+                        'params': {
+                            'type': 'string'
+                        },
+                        'message': 'should be string'
+                    },
+                    {
+                        'keyword': 'type',
+                        'dataPath': '.fieldStr2',
+                        'schemaPath': '#/properties/fieldStr2/type',
+                        'params': {
+                            'type': 'string'
+                        },
+                        'message': 'should be string'
+                    },
+                    {
+                        'keyword': 'type',
+                        'dataPath': '.fieldStr3',
+                        'schemaPath': '#/properties/fieldStr3/type',
+                        'params': {
+                            'type': 'string'
+                        },
+                        'message': 'should be string'
                     }
                 ]);
                 expect(isBodysMatch).to.be.false;
@@ -261,6 +334,7 @@ describe('oas3 check', function () {
                 });
             });
             describe('discriminator-multiple pet', function () {
+                let schemaEndpoint;
                 before(function () {
                     schemaEndpoint = schema['/pet-discriminator-multiple']['post'];
                 });
@@ -322,6 +396,7 @@ describe('oas3 check', function () {
                 });
             });
             describe('discriminator-mapping pet', function () {
+                let schemaEndpoint;
                 before(function () {
                     schemaEndpoint = schema['/pet-discriminator-mapping']['post'];
                 });
