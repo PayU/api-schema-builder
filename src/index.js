@@ -36,11 +36,16 @@ function buildValidations(referenced, dereferenced, options) {
             .forEach(function (currentMethod) {
                 let parsedMethod = currentMethod.toLowerCase();
 
-                let requestValidator = buildRequests && buildRequestValidator(referenced, dereferenced, currentPath,
-                    parsedPath, currentMethod, options);
+                let requestValidator;
+                if (buildRequests) {
+                    requestValidator = buildRequestValidator(referenced, dereferenced, currentPath,
+                        parsedPath, currentMethod, options);
+                }
 
-                let responseValidator = buildResponses &&
-                    buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options);
+                let responseValidator;
+                if (buildResponses){
+                    responseValidator = buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options);
+                }
 
                 schemas[parsedPath][parsedMethod] = Object.assign({}, requestValidator, { responses: responseValidator });
             });
@@ -98,8 +103,8 @@ function buildResponseValidator(referenced, dereferenced, currentPath, parsedPat
             let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
             let headersValidator = (responseDereferenceHeaders || contentTypes) ? buildHeadersValidation(responseDereferenceHeaders, contentTypes, options) : undefined;
 
-            let bodyValidator = responseDereferenceSchema && oas2.buildResponseBodyValidation(responseDereferenceSchema,
-                dereferenced.definitions, referenced, currentPath, currentMethod, options, statusCode);
+            let bodyValidator = responseDereferenceSchema ? oas2.buildResponseBodyValidation(responseDereferenceSchema,
+                dereferenced.definitions, referenced, currentPath, currentMethod, options, statusCode) : undefined;
 
             if (headersValidator || bodyValidator) {
                 responsesSchema[statusCode] = new Validators.ResponseValidator({
