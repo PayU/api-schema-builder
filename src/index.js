@@ -96,23 +96,23 @@ function buildResponseValidator(referenced, dereferenced, currentPath, parsedPat
     let responses = dereferenced.paths[currentPath][currentMethod].responses;
     if (responses) {
         Object.keys(responses).forEach(statusCode => {
-                let headersValidator, bodyValidator;
-                if (isOpenApi3) {
-                    headersValidator = oas3.buildHeadersValidation(responses, options, statusCode);
-                    bodyValidator = oas3.buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, options, statusCode);
-                } else {
-                    let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
-                    headersValidator = oas2.buildHeadersValidation(responses, contentTypes, options, statusCode);
-                    bodyValidator = oas2.buildResponseBodyValidation(responses,
-                        dereferenced.definitions, referenced, currentPath, currentMethod, options, statusCode);
-                }
+            let headersValidator, bodyValidator;
+            if (isOpenApi3) {
+                headersValidator = oas3.buildHeadersValidation(responses, options, statusCode);
+                bodyValidator = oas3.buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, options, statusCode);
+            } else {
+                let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
+                headersValidator = oas2.buildHeadersValidation(responses, contentTypes, options, statusCode);
+                bodyValidator = oas2.buildResponseBodyValidation(responses,
+                    dereferenced.definitions, referenced, currentPath, currentMethod, options, statusCode);
+            }
 
-                if (headersValidator || bodyValidator) {
-                    responsesSchema[statusCode] = new Validators.ResponseValidator({
-                        body: bodyValidator,
-                        headers: headersValidator
-                    });
-                }
+            if (headersValidator || bodyValidator) {
+                responsesSchema[statusCode] = new Validators.ResponseValidator({
+                    body: bodyValidator,
+                    headers: headersValidator
+                });
+            }
         });
     }
 

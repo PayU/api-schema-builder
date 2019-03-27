@@ -28,7 +28,7 @@ function getRequestSchema(jsonDoc, currentPath, currentMethod){
         jsonDoc.paths[currentPath][currentMethod].requestBody.content[OAI3_RESPONSE_CONTENT_TYPE].schema;
 }
 
-function buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, options, statusCode) {
+function buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, { ajvConfigBody, formats, keywords }, statusCode) {
     let requestDereferenceBody = getResponseSchema(dereferenced, currentPath, currentMethod, statusCode);
     let requestReferenceBody = getResponseSchema(referenced, currentPath, currentMethod, statusCode);
 
@@ -37,10 +37,10 @@ function buildResponseBodyValidation(dereferenced, referenced, currentPath, curr
     const defaultAjvOptions = {
         allErrors: true
     };
-    const ajvOptions = Object.assign({}, defaultAjvOptions, options.ajvConfigBody);
+    const ajvOptions = Object.assign({}, defaultAjvOptions, ajvConfigBody);
     let ajv = new Ajv(ajvOptions);
 
-    ajvUtils.addCustomKeyword(ajv, options.formats, options.keywords);
+    ajvUtils.addCustomKeyword(ajv, formats, keywords);
 
     if (requestDereferenceBody.discriminator) {
         let referencedSchemas = referenced.components.schemas;
@@ -53,7 +53,7 @@ function buildResponseBodyValidation(dereferenced, referenced, currentPath, curr
     }
 }
 
-function buildRequestBodyValidation(dereferenced, referenced, currentPath, currentMethod, options) {
+function buildRequestBodyValidation(dereferenced, referenced, currentPath, currentMethod, { ajvConfigBody, formats, keywords }) {
     let requestDereferenceBody = getRequestSchema(dereferenced, currentPath, currentMethod);
     let requestReferenceBody = getRequestSchema(referenced, currentPath, currentMethod);
 
@@ -63,10 +63,10 @@ function buildRequestBodyValidation(dereferenced, referenced, currentPath, curre
         allErrors: true
     };
 
-    const ajvOptions = Object.assign({}, defaultAjvOptions, options.ajvConfigBody);
+    const ajvOptions = Object.assign({}, defaultAjvOptions, ajvConfigBody);
     let ajv = new Ajv(ajvOptions);
 
-    ajvUtils.addCustomKeyword(ajv, options.formats, options.keywords);
+    ajvUtils.addCustomKeyword(ajv, formats, keywords);
 
     if (requestDereferenceBody.discriminator) {
         let referencedSchemas = referenced.components.schemas;
@@ -79,7 +79,7 @@ function buildRequestBodyValidation(dereferenced, referenced, currentPath, curre
     }
 }
 
-function buildHeadersValidation(responses, options, statusCode) {
+function buildHeadersValidation(responses, { ajvConfigParams, formats, keywords, contentTypeValidation }, statusCode) {
     let headers = responses[statusCode].headers;
     if (!headers) return;
 
@@ -87,10 +87,10 @@ function buildHeadersValidation(responses, options, statusCode) {
         allErrors: true,
         coerceTypes: 'array'
     };
-    const ajvOptions = Object.assign({}, defaultAjvOptions, options.ajvConfigParams);
+    const ajvOptions = Object.assign({}, defaultAjvOptions, ajvConfigParams);
     let ajv = new Ajv(ajvOptions);
 
-    ajvUtils.addCustomKeyword(ajv, options.formats, options.keywords);
+    ajvUtils.addCustomKeyword(ajv, formats, keywords);
 
     var ajvHeadersSchema = {
         title: 'HTTP headers',
@@ -108,7 +108,7 @@ function buildHeadersValidation(responses, options, statusCode) {
         ajvHeadersSchema.properties[headerName] = headerObj;
     });
 
-    ajvHeadersSchema.content = optionUtils.createContentTypeHeaders(options.contentTypeValidation, OAI3_RESPONSE_CONTENT_TYPE);
+    ajvHeadersSchema.content = optionUtils.createContentTypeHeaders(contentTypeValidation, OAI3_RESPONSE_CONTENT_TYPE);
 
     return new Validators.SimpleValidator(ajv.compile(ajvHeadersSchema));
 }
