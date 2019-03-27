@@ -1,7 +1,7 @@
 var chai = require('chai'),
     expect = chai.expect,
     path = require('path'),
-    schemaValidatorGenerator = require('../../src/index');
+    schemaValidatorGenerator = require('../../../src/index');
 
 describe('oai2 - general tests', () => {
     describe('BuildRequests and BuildResponses option', function () {

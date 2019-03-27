@@ -81,7 +81,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/pet'
+              $ref: '#/components/schemas/pet-allOf'
         description: Create pet
         required: true
 components:

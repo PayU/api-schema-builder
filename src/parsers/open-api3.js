@@ -1,10 +1,10 @@
-
 const Validators = require('../validators/index'),
     Ajv = require('ajv'),
     cloneDeep = require('clone-deep'),
     ajvUtils = require('../utils/ajv-utils'),
     { Node } = require('../data_structures/tree'),
-    optionUtils = require('../utils/option-utils');
+    optionUtils = require('../utils/option-utils'),
+    get = require('lodash.get');
 
 const OAI3_RESPONSE_CONTENT_TYPE = 'application/json';
 
@@ -33,50 +33,19 @@ function handleSchema(data) {
     return clonedData;
 }
 
-function getResponseSchema(jsonDoc, currentPath, currentMethod, statusCode){
-    return jsonDoc.paths[currentPath][currentMethod].responses &&
-        jsonDoc.paths[currentPath][currentMethod].responses[statusCode] &&
-        jsonDoc.paths[currentPath][currentMethod].responses[statusCode].content &&
-        jsonDoc.paths[currentPath][currentMethod].responses[statusCode].content[OAI3_RESPONSE_CONTENT_TYPE] &&
-        jsonDoc.paths[currentPath][currentMethod].responses[statusCode].content[OAI3_RESPONSE_CONTENT_TYPE].schema;
+function buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, statusCode, options) {
+    let dereferenceBodySchema = get(dereferenced.paths[currentPath][currentMethod],
+        `responses[${statusCode}].content[${OAI3_RESPONSE_CONTENT_TYPE}].schema`);
+    let referenceBodySchema = get(referenced.paths[currentPath][currentMethod],
+        `responses[${statusCode}].content[${OAI3_RESPONSE_CONTENT_TYPE}].schema`);
+
+    return handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
+        dereferenceBodySchema, referenceBodySchema, options);
 }
 
-function getRequestSchema(jsonDoc, currentPath, currentMethod){
-    return jsonDoc.paths[currentPath][currentMethod].requestBody && jsonDoc.paths[currentPath][currentMethod].requestBody.content &&
-        jsonDoc.paths[currentPath][currentMethod].requestBody.content[OAI3_RESPONSE_CONTENT_TYPE] &&
-        jsonDoc.paths[currentPath][currentMethod].requestBody.content[OAI3_RESPONSE_CONTENT_TYPE].schema;
-}
-
-function buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, { ajvConfigBody, formats, keywords }, statusCode) {
-    let requestDereferenceBody = getResponseSchema(dereferenced, currentPath, currentMethod, statusCode);
-    let requestReferenceBody = getResponseSchema(referenced, currentPath, currentMethod, statusCode);
-
-    if (!requestDereferenceBody || !requestReferenceBody) return;
-
-    const defaultAjvOptions = {
-        allErrors: true
-    };
-    const ajvOptions = Object.assign({}, defaultAjvOptions, ajvConfigBody);
-    let ajv = new Ajv(ajvOptions);
-
-    ajvUtils.addCustomKeyword(ajv, formats, keywords);
-
-    if (requestDereferenceBody.discriminator) {
-        let referencedSchemas = referenced.components.schemas;
-        let dereferencedSchemas = dereferenced.components.schemas;
-        let referenceName = requestReferenceBody['$ref'];
-
-        return buildV3Inheritance(referencedSchemas, dereferencedSchemas, currentPath, currentMethod, ajv, referenceName);
-    } else {
-        return new Validators.SimpleValidator(ajv.compile(requestDereferenceBody));
-    }
-}
-
-function buildRequestBodyValidation(dereferenced, referenced, currentPath, currentMethod, { ajvConfigBody, formats, keywords }) {
-    let requestDereferenceBody = getRequestSchema(dereferenced, currentPath, currentMethod);
-    let requestReferenceBody = getRequestSchema(referenced, currentPath, currentMethod);
-
-    if (!requestDereferenceBody || !requestReferenceBody) return;
+function handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
+    dereferenceBodySchema, referenceBodySchema, { ajvConfigBody, formats, keywords }){
+    if (!dereferenceBodySchema || !referenceBodySchema) return;
 
     const defaultAjvOptions = {
         allErrors: true
@@ -87,19 +56,29 @@ function buildRequestBodyValidation(dereferenced, referenced, currentPath, curre
 
     ajvUtils.addCustomKeyword(ajv, formats, keywords);
 
-    if (requestDereferenceBody.discriminator) {
+    if (dereferenceBodySchema.discriminator) {
         let referencedSchemas = referenced.components.schemas;
         let dereferencedSchemas = dereferenced.components.schemas;
-        let referenceName = requestReferenceBody['$ref'];
+        let referenceName = referenceBodySchema['$ref'];
 
         return buildV3Inheritance(referencedSchemas, dereferencedSchemas, currentPath, currentMethod, ajv, referenceName);
     } else {
-        return new Validators.SimpleValidator(ajv.compile(requestDereferenceBody));
+        return new Validators.SimpleValidator(ajv.compile(dereferenceBodySchema));
     }
 }
 
-function buildHeadersValidation(responses, { ajvConfigParams, formats, keywords, contentTypeValidation }, statusCode) {
-    let headers = responses[statusCode].headers;
+function buildRequestBodyValidation(dereferenced, referenced, currentPath, currentMethod, options) {
+    let dereferenceBodySchema = get(dereferenced.paths[currentPath][currentMethod],
+        `requestBody.content[${OAI3_RESPONSE_CONTENT_TYPE}].schema`);
+    let referenceBodySchema = get(referenced.paths[currentPath][currentMethod],
+        `requestBody.content[${OAI3_RESPONSE_CONTENT_TYPE}].schema`);
+
+    return handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
+        dereferenceBodySchema, referenceBodySchema, options);
+}
+
+function buildHeadersValidation(responses, statusCode, { ajvConfigParams, formats, keywords, contentTypeValidation }) {
+    let headers = get(responses[statusCode], 'headers');
     if (!headers) return;
 
     const defaultAjvOptions = {

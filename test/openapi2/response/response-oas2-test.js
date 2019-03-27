@@ -127,15 +127,6 @@ describe('oai2 - response tests', function () {
                 expect(schemaEndpoint.errors).to.be.equal(null);
                 expect(validatorMatch).to.be.true;
             });
-            it('valid response - should pass validation', function () {
-                let schemaEndpoint = schema['/pets/:petId']['get'].responses['200'];
-                let validatorMatch = schemaEndpoint.validate({ body: {
-                    id: 1,
-                    name: 'Roxy'
-                } });
-                expect(schemaEndpoint.errors).to.be.equal(null);
-                expect(validatorMatch).to.be.true;
-            });
             it('bad body - wrong type integer', function () {
                 let schemaEndpoint = schema['/pets/:petId']['get'].responses['200'];
                 let validatorMatch = schemaEndpoint.validate({ body: {
@@ -806,7 +797,6 @@ describe('oai2 - response tests', function () {
                 });
                 it('more detailed content-type - should pass validation', function () {
                     schemaEndpoint = schema['/pet-with-header']['get'].responses['200'];
-                    // todo - should I validate content type only if content-length bigger then 1?
                     let isValid = schemaEndpoint.validate({
                         headers: {
                             'content-type': 'application/json; charset=utf-8',
