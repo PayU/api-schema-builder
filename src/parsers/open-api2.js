@@ -61,7 +61,6 @@ function buildHeadersValidation(responses, contentTypes, options, statusCode) {
             let headerObj = Object.assign({}, headers[key]);
             const headerName = key.toLowerCase();
             delete headerObj.name;
-            delete headerObj.required;
             ajvHeadersSchema.properties[headerName] = headerObj;
         });
     }

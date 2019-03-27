@@ -146,7 +146,7 @@ apiSchemaBuilder.buildSchema('test/unit-tests/input-validation/pet-store-swagger
 ## Important Notes
 
 - Objects - it is important to set any objects with the property `type: object` inside your swagger file, although it isn't a must in the Swagger (OpenAPI) spec in order to validate it accurately with [ajv](https://www.npmjs.com/package/ajv) it must be marked as `object`
-- Response validator does not support default and readOnly attribute
+- Response validator does not support readOnly attribute
 
 ## Open api 3 - known issues
 - supporting inheritance with discriminator , only if the ancestor object is the discriminator.
