@@ -1,6 +1,6 @@
 {
   "name": "api-schema-builder",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "build schema with validators for each endpoint",
   "main": "src/index.js",
   "files": [
@@ -21,8 +21,8 @@
   },
   "license": "Apache-2.0",
   "scripts": {
-    "test": "node_modules/mocha/bin/_mocha ./test/*/*-test.js ./test/*/*/*-test.js --recursive",
-    "test:coverage": "nyc node_modules/mocha/bin/_mocha --recursive ./test/*/*-test.js ./test/*/*/*-test.js ",
+    "test": "mocha --recursive",
+    "test:coverage": "nyc npm test ",
     "coveralls": "cat ./coverage/lcov.info |./node_modules/.bin/coveralls",
     "lint": "./node_modules/.bin/eslint src"
   },

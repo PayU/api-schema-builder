@@ -315,7 +315,141 @@ describe('oas2 tests - response', function () {
                 ]);
                 expect(validatorMatch).to.be.false;
             });
+            it('valid default body', function () {
+                let schemaEndpoint = schema['/pet-with-object']['get'].responses['default'];
+                let validatorMatch = schemaEndpoint.validate({ body: {
+                    code: 321,
+                    message: 'msg'
+                },
+                headers: {} });
+
+                expect(schemaEndpoint.errors).to.be.eql(null);
+                expect(validatorMatch).to.be.true;
+            });
+            it('missing field in default body', function () {
+                let schemaEndpoint = schema['/pet-with-object']['get'].responses['default'];
+                let validatorMatch = schemaEndpoint.validate({ body: {
+                    code: 321
+                },
+                headers: {} });
+
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        'dataPath': '.body',
+                        'keyword': 'required',
+                        'message': "should have required property 'message'",
+                        'params': {
+                            'missingProperty': 'message'
+                        },
+                        'schemaPath': '#/body/required'
+                    }
+                ]);
+                expect(validatorMatch).to.be.false;
+            });
+            it('wrong field type in default body', function () {
+                let schemaEndpoint = schema['/pet-with-object']['get'].responses['default'];
+                let validatorMatch = schemaEndpoint.validate({ body: {
+                    code: 321,
+                    message: 321
+                },
+                headers: {} });
+
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        'dataPath': '.body.message',
+                        'keyword': 'type',
+                        'message': 'should be string',
+                        'params': {
+                            'type': 'string'
+                        },
+                        'schemaPath': '#/body/properties/message/type'
+                    }
+                ]);
+                expect(validatorMatch).to.be.false;
+            });
+            it('bad body - quantitive test', function () {
+                let schemaEndpoint = schema['/many-attributes']['post'].responses['200'];
+                let validatorMatch = schemaEndpoint.validate({ body: { 'fieldNum1': 'name1',
+                    'fieldNum2': 'name2',
+                    'fieldNum3': 'name3',
+                    'fieldStr1': 1,
+                    'fieldStr2': 2,
+                    'fieldStr3': 3 },
+                headers: {} });
+
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        'keyword': 'type',
+                        'dataPath': '.body.fieldNum1',
+                        'schemaPath': '#/body/properties/fieldNum1/type',
+                        'params': {
+                            'type': 'integer'
+                        },
+                        'message': 'should be integer'
+                    },
+                    {
+                        'keyword': 'type',
+                        'dataPath': '.body.fieldNum2',
+                        'schemaPath': '#/body/properties/fieldNum2/type',
+                        'params': {
+                            'type': 'integer'
+                        },
+                        'message': 'should be integer'
+                    },
+                    {
+                        'keyword': 'type',
+                        'dataPath': '.body.fieldNum3',
+                        'schemaPath': '#/body/properties/fieldNum3/type',
+                        'params': {
+                            'type': 'integer'
+                        },
+                        'message': 'should be integer'
+                    },
+                    {
+                        'keyword': 'type',
+                        'dataPath': '.body.fieldStr1',
+                        'schemaPath': '#/body/properties/fieldStr1/type',
+                        'params': {
+                            'type': 'string'
+                        },
+                        'message': 'should be string'
+                    },
+                    {
+                        'keyword': 'type',
+                        'dataPath': '.body.fieldStr2',
+                        'schemaPath': '#/body/properties/fieldStr2/type',
+                        'params': {
+                            'type': 'string'
+                        },
+                        'message': 'should be string'
+                    },
+                    {
+                        'keyword': 'type',
+                        'dataPath': '.body.fieldStr3',
+                        'schemaPath': '#/body/properties/fieldStr3/type',
+                        'params': {
+                            'type': 'string'
+                        },
+                        'message': 'should be string'
+                    }
+                ]);
+                expect(validatorMatch).to.be.false;
+            });
+            it('valid body - quantitive test', function () {
+                let schemaEndpoint = schema['/many-attributes']['post'].responses['200'];
+                let validatorMatch = schemaEndpoint.validate({ body: { 'fieldNum1': 1,
+                    'fieldNum2': 2,
+                    'fieldNum3': 3,
+                    'fieldStr1': 'name1',
+                    'fieldStr2': 'name2',
+                    'fieldStr3': 'name3' },
+                headers: {} });
+
+                expect(schemaEndpoint.errors).to.be.eql(null);
+                expect(validatorMatch).to.be.true;
+            });
         });
+
         describe('base path', function () {
             let schema;
             before(() => {
@@ -564,6 +698,42 @@ describe('oas2 tests - response', function () {
 
                 expect(schemaEndpoint.errors).to.be.equal(null);
                 expect(isValid).to.be.true;
+            });
+            it('valid header - default response', function () {
+                let schemaEndpoint = schema['/pet-with-object']['get'].responses['default'];
+                let validatorMatch = schemaEndpoint.validate({ body: {
+                    code: 321,
+                    message: 'msg'
+                },
+                headers: {
+                    'x-next': '321'
+                } });
+
+                expect(schemaEndpoint.errors).to.be.eql(null);
+                expect(validatorMatch).to.be.true;
+            });
+            it('wrong field type - response body', function () {
+                let schemaEndpoint = schema['/pet-with-object']['get'].responses['default'];
+                let validatorMatch = schemaEndpoint.validate({ body: {
+                    code: 321,
+                    message: 'msg'
+                },
+                headers: {
+                    'x-next': {}
+                } });
+
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        'dataPath': ".headers['x-next']",
+                        'keyword': 'type',
+                        'message': 'should be string',
+                        'params': {
+                            'type': 'string'
+                        },
+                        'schemaPath': '#/headers/properties/x-next/type'
+                    }
+                ]);
+                expect(validatorMatch).to.be.false;
             });
         });
         describe('with base path', function () {

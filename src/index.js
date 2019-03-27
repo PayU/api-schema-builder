@@ -32,18 +32,17 @@ function buildValidations(referenced, dereferenced, options) {
             ? dereferenced.basePath.concat(currentPath.replace(/{/g, ':').replace(/}/g, ''))
             : currentPath.replace(/{/g, ':').replace(/}/g, '');
         schemas[parsedPath] = {};
-        Object.keys(dereferenced.paths[currentPath]).filter(function (parameter) { return parameter !== 'parameters' })
+        Object.keys(dereferenced.paths[currentPath])
+            .filter(function (parameter) { return parameter !== 'parameters' })
             .forEach(function (currentMethod) {
                 let parsedMethod = currentMethod.toLowerCase();
 
-                // build request validator
                 let requestValidator;
                 if (buildRequests) {
                     requestValidator = buildRequestValidator(referenced, dereferenced, currentPath,
                         parsedPath, currentMethod, options);
                 }
 
-                // build response validator
                 let responseValidator;
                 if (buildResponses) {
                     responseValidator = buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options);
@@ -69,9 +68,9 @@ function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath
                 (parameter.in === 'formData' && parameter.type !== 'file'));
             })
             : parameters.filter(function (parameter) { return parameter.in === 'body' });
-        if (options.makeOptionalAttributesNullable) {
-            schemaPreprocessor.makeOptionalAttributesNullable(bodySchema);
-        }
+
+        options.makeOptionalAttributesNullable && schemaPreprocessor.makeOptionalAttributesNullable(bodySchema);
+
         if (bodySchema.length > 0) {
             const validatedBodySchema = oas2.getValidatedBodySchema(bodySchema);
             requestSchema.body = oas2.buildRequestBodyValidation(validatedBodySchema, dereferenced.definitions, referenced,
@@ -97,7 +96,6 @@ function buildResponseValidator(referenced, dereferenced, currentPath, parsedPat
     let responses = dereferenced.paths[currentPath][currentMethod].responses;
     if (responses) {
         Object.keys(responses).forEach(statusCode => {
-            if (statusCode !== 'default') { // create validator only for real status code
                 let headersValidator, bodyValidator;
                 if (isOpenApi3) {
                     headersValidator = oas3.buildHeadersValidation(responses, options, statusCode);
@@ -115,7 +113,6 @@ function buildResponseValidator(referenced, dereferenced, currentPath, parsedPat
                         headers: headersValidator
                     });
                 }
-            }
         });
     }
 

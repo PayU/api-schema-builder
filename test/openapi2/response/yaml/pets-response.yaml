@@ -31,6 +31,11 @@ paths:
 
         default:
           description: unexpected error
+          headers:
+            x-next:
+              type: string
+              description: A link to the next page of responses
+              # require: true
           schema:
             $ref: '#/definitions/Error'
   /pet-test:
@@ -389,6 +394,30 @@ paths:
           description: Expected response to a valid request
           test:
             type: string
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /many-attributes:
+    post:
+      responses:
+        "200":
+          description: Expected response to a valid request
+          schema:
+            type: object
+            properties:
+              fieldNum1:
+                type: integer
+              fieldNum2:
+                type: integer
+              fieldNum3:
+                type: integer
+              fieldStr1:
+                type: string
+              fieldStr2:
+                type: string
+              fieldStr3:
+                type: string
         default:
           description: unexpected error
           schema:
