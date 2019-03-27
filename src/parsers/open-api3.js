@@ -16,9 +16,9 @@ const OAI3_RESPONSE_CONTENT_TYPE = 'application/json';
 
 function buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, statusCode, options) {
     let dereferenceBodySchema = get(dereferenced.paths[currentPath][currentMethod],
-        `responses[statusCode].content[${OAI3_RESPONSE_CONTENT_TYPE}].schema`);
+        `responses[${statusCode}].content[${OAI3_RESPONSE_CONTENT_TYPE}].schema`);
     let referenceBodySchema = get(referenced.paths[currentPath][currentMethod],
-        `responses[statusCode].content[${OAI3_RESPONSE_CONTENT_TYPE}].schema`);
+        `responses[${statusCode}].content[${OAI3_RESPONSE_CONTENT_TYPE}].schema`);
 
     return handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
         dereferenceBodySchema, referenceBodySchema, options);
