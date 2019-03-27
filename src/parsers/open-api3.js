@@ -28,7 +28,7 @@ function getRequestSchema(jsonDoc, currentPath, currentMethod){
         jsonDoc.paths[currentPath][currentMethod].requestBody.content[OAI3_RESPONSE_CONTENT_TYPE].schema;
 }
 
-function buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, { ajvConfigBody, formats, keywords }, statusCode) {
+function buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, statusCode, { ajvConfigBody, formats, keywords }) {
     let requestDereferenceBody = getResponseSchema(dereferenced, currentPath, currentMethod, statusCode);
     let requestReferenceBody = getResponseSchema(referenced, currentPath, currentMethod, statusCode);
 
@@ -79,7 +79,7 @@ function buildRequestBodyValidation(dereferenced, referenced, currentPath, curre
     }
 }
 
-function buildHeadersValidation(responses, { ajvConfigParams, formats, keywords, contentTypeValidation }, statusCode) {
+function buildHeadersValidation(responses, statusCode, { ajvConfigParams, formats, keywords, contentTypeValidation }) {
     let headers = responses[statusCode].headers;
     if (!headers) return;
 

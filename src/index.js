@@ -98,13 +98,13 @@ function buildResponseValidator(referenced, dereferenced, currentPath, parsedPat
         Object.keys(responses).forEach(statusCode => {
             let headersValidator, bodyValidator;
             if (isOpenApi3) {
-                headersValidator = oai3.buildHeadersValidation(responses, options, statusCode);
-                bodyValidator = oai3.buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, options, statusCode);
+                headersValidator = oai3.buildHeadersValidation(responses, statusCode, options);
+                bodyValidator = oai3.buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, statusCode, options);
             } else {
                 let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
-                headersValidator = oai2.buildHeadersValidation(responses, contentTypes, options, statusCode);
+                headersValidator = oai2.buildHeadersValidation(responses, contentTypes, statusCode, options);
                 bodyValidator = oai2.buildResponseBodyValidation(responses,
-                    dereferenced.definitions, referenced, currentPath, currentMethod, options, statusCode);
+                    dereferenced.definitions, referenced, currentPath, currentMethod, statusCode, options);
             }
 
             if (headersValidator || bodyValidator) {

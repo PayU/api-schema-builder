@@ -36,7 +36,7 @@ function getValidatedBodySchema(bodySchema) {
     return validatedBodySchema;
 }
 
-function buildHeadersValidation(responses, contentTypes, options, statusCode) {
+function buildHeadersValidation(responses, contentTypes, statusCode, options) {
     let headers = responses[statusCode] && responses[statusCode].headers;
     if (!headers && !contentTypes) return;
 
@@ -81,7 +81,7 @@ function buildAjvValidator(ajvConfigBody, formats, keywords){
     return ajv;
 }
 
-function buildResponseBodyValidation(responses, swaggerDefinitions, originalSwagger, currentPath, currentMethod, options, statusCode) {
+function buildResponseBodyValidation(responses, swaggerDefinitions, originalSwagger, currentPath, currentMethod, statusCode, options) {
     let schema = responses[statusCode] && responses[statusCode].schema;
     if (!schema) return;
 
