@@ -398,7 +398,7 @@ paths:
           description: unexpected error
           schema:
             $ref: '#/definitions/Error'
-  /many-attributes:
+  /many-body-fields:
     post:
       responses:
         "200":

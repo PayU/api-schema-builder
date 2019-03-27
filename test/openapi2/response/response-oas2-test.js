@@ -5,7 +5,7 @@ let chai = require('chai'),
     schemaValidatorGenerator = require('../../../src/index'),
     path = require('path');
 
-describe('oas2 tests - response', function () {
+describe('oai2 - response tests', function () {
     describe('check body and headers', () => {
         let schema;
         before(function () {
@@ -377,7 +377,7 @@ describe('oas2 tests - response', function () {
                 expect(validatorMatch).to.be.false;
             });
             it('bad body - quantitive test', function () {
-                let schemaEndpoint = schema['/many-attributes']['post'].responses['200'];
+                let schemaEndpoint = schema['/many-body-fields']['post'].responses['200'];
                 let validatorMatch = schemaEndpoint.validate({ body: { 'fieldNum1': 'name1',
                     'fieldNum2': 'name2',
                     'fieldNum3': 'name3',
@@ -445,7 +445,7 @@ describe('oas2 tests - response', function () {
                 expect(validatorMatch).to.be.false;
             });
             it('valid body - quantitive test', function () {
-                let schemaEndpoint = schema['/many-attributes']['post'].responses['200'];
+                let schemaEndpoint = schema['/many-body-fields']['post'].responses['200'];
                 let validatorMatch = schemaEndpoint.validate({ body: { 'fieldNum1': 1,
                     'fieldNum2': 2,
                     'fieldNum3': 3,

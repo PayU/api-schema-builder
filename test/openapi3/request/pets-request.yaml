@@ -697,7 +697,7 @@ paths:
               $ref: '#/components/schemas/pet-discriminator-on-child'
         description: Create pet
         required: true
-  /many-attributes:
+  /many-body-fields:
     post:
       summary: many attributes
       security:

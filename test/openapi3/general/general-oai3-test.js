@@ -5,7 +5,7 @@ let chai = require('chai').use(require('chai-as-promised')),
     schemaValidatorGenerator = require('../../../src/index'),
     path = require('path');
 
-describe('oas3 check - general', function () {
+describe('oai3 - general tests', function () {
     describe('loading yaml with discriminator with anyOf', function () {
         it('fail to load with relevant error', function () {
             const swaggerPath = path.join(__dirname, 'pets-discriminator-allOf.yaml');

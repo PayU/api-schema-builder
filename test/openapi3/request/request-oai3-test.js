@@ -5,7 +5,7 @@ let chai = require('chai'),
     schemaValidatorGenerator = require('../../../src/index'),
     path = require('path');
 
-describe('oas3 check', function () {
+describe('oai3 - request tests', function () {
     let schema;
     before(function () {
         const swaggerPath = path.join(__dirname, 'pets-request.yaml');
@@ -207,7 +207,7 @@ describe('oas3 check', function () {
                 expect(isBodysMatch).to.be.false;
             });
             it('valid body - quantitive test', function () {
-                let schemaEndpoint = schema['/many-attributes']['post'];
+                let schemaEndpoint = schema['/many-body-fields']['post'];
 
                 let isBodysMatch = schemaEndpoint.body.validate({ 'fieldNum1': 1,
                     'fieldNum2': 2,
@@ -220,7 +220,7 @@ describe('oas3 check', function () {
                 expect(isBodysMatch).to.be.true;
             });
             it('invalid body - quantitive test', function () {
-                let schemaEndpoint = schema['/many-attributes']['post'];
+                let schemaEndpoint = schema['/many-body-fields']['post'];
 
                 let isBodysMatch = schemaEndpoint.body.validate({ 'fieldNum1': 'name1', 'fieldNum2': 'name2', 'fieldNum3': 'name3', 'fieldStr1': 1, 'fieldStr2': 2, 'fieldStr3': 3 });
 
