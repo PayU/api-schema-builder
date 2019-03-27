@@ -90,7 +90,7 @@ function buildResponseBodyValidation(responses, swaggerDefinitions, originalSwag
 
     if (schema.discriminator) {
         let referenceName = originalSwagger.paths[currentPath][currentMethod].responses[statusCode].schema['$ref'];
-        return buildInheritance(schema.discriminator, swaggerDefinitions, originalSwagger, currentPath, currentMethod, ajv, referenceName);
+        return buildInheritance(schema.discriminator, swaggerDefinitions, originalSwagger, ajv, referenceName);
     } else {
         return new Validators.SimpleValidator(ajv.compile(schema));
     }
@@ -100,13 +100,13 @@ function buildRequestBodyValidation(schema, swaggerDefinitions, originalSwagger,
 
     if (schema.discriminator) {
         let referenceName = originalSwagger.paths[currentPath][currentMethod].parameters.filter(function (parameter) { return parameter.in === 'body' })[0].schema['$ref'];
-        return buildInheritance(schema.discriminator, swaggerDefinitions, originalSwagger, currentPath, currentMethod, ajv, referenceName);
+        return buildInheritance(schema.discriminator, swaggerDefinitions, originalSwagger, ajv, referenceName);
     } else {
         return new Validators.SimpleValidator(ajv.compile(schema));
     }
 }
 
-function buildInheritance(discriminator, dereferencedDefinitions, swagger, currentPath, currentMethod, ajv, referenceName) {
+function buildInheritance(discriminator, dereferencedDefinitions, swagger, ajv, referenceName) {
     var inheritsObject = {
         inheritance: []
     };
