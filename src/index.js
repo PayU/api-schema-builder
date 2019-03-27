@@ -56,11 +56,13 @@ function buildValidations(referenced, dereferenced, options) {
 
 function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options){
     let requestSchema = {};
+    let localParameters = [];
     let pathParameters = dereferenced.paths[currentPath].parameters || [];
     const isOpenApi3 = dereferenced.openapi === '3.0.0';
     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
     if (isOpenApi3) {
         requestSchema.body = oai3.buildRequestBodyValidation(dereferenced, referenced, currentPath, currentMethod, options);
+        localParameters = oai3.buildPathParameters(parameters, pathParameters);
     } else {
         let bodySchema = options.expectFormFieldsInBody
             ? parameters.filter(function (parameter) {
@@ -76,11 +78,9 @@ function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath
             requestSchema.body = oai2.buildRequestBodyValidation(validatedBodySchema, dereferenced.definitions, referenced,
                 currentPath, currentMethod, options);
         }
-    }
 
-    let localParameters = parameters.filter(function (parameter) {
-        return parameter.in !== 'body';
-    }).concat(pathParameters);
+        localParameters = oai2.buildPathParameters(parameters, pathParameters);
+    }
 
     if (localParameters.length > 0 || options.contentTypeValidation) {
         requestSchema.parameters = buildParametersValidation(localParameters,

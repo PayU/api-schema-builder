@@ -6,13 +6,32 @@ const Validators = require('../validators/index'),
     { Node } = require('../data_structures/tree'),
     optionUtils = require('../utils/option-utils');
 
+const OAI3_RESPONSE_CONTENT_TYPE = 'application/json';
+
 module.exports = {
     buildRequestBodyValidation,
     buildResponseBodyValidation,
-    buildHeadersValidation
+    buildHeadersValidation,
+    buildPathParameters
 };
 
-const OAI3_RESPONSE_CONTENT_TYPE = 'application/json';
+function buildPathParameters(parameters, pathParameters) {
+    let allParameters = [].concat(parameters, pathParameters);
+    let localParameters = allParameters.map(handleSchema);
+    return localParameters;
+}
+
+function handleSchema(data) {
+    let clonedData = cloneDeep(data);
+    let schema = data.schema;
+    if (schema) {
+        delete clonedData['schema'];
+        Object.keys(schema).forEach(key => {
+            clonedData[key] = schema[key];
+        });
+    }
+    return clonedData;
+}
 
 function getResponseSchema(jsonDoc, currentPath, currentMethod, statusCode){
     return jsonDoc.paths[currentPath][currentMethod].responses &&
