@@ -1,0 +1,64 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  license:
+    name: MIT
+paths:
+  /text:
+    put:
+      requestBody:
+        content:
+          plain/text:
+            schema:
+              type: string
+        required: true
+      responses:
+        "200":
+          description: Expected response to a valid request
+          content:
+            plain/text:
+              schema:
+                properties:
+                  lastname:
+                    type: string
+        default:
+          description: unexpected error
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /empty:
+    post:
+      requestBody:
+        description: Expected response to a valid request
+        required: true
+      responses:
+        "200":
+          description: Expected response to a valid request
+          content:
+            plain/text:
+              schema:
+                properties:
+                  lastname:
+                    type: string
+        default:
+          description: unexpected error
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/Error"
+servers:
+- url: http://petstore.swagger.io
+components:
+  schemas:
+    Error:
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+        message:
+          type: string

@@ -22,9 +22,8 @@ function responseValidator(response, data) {
 
     let errors = bodyValidationErrors.concat(headersValidationErrors);
     this.errors = errors.length === 0 ? null : errors;
-    let result = bodyValidationResult && headersValidationResult;
 
-    return result;
+    return bodyValidationResult && headersValidationResult;
 }
 
 function addErrorPrefix(errors, prefix) {

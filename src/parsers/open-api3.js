@@ -3,57 +3,119 @@ const Validators = require('../validators/index'),
     Ajv = require('ajv'),
     cloneDeep = require('clone-deep'),
     ajvUtils = require('../utils/ajv-utils'),
-    { Node } = require('../data_structures/tree');
+    { Node } = require('../data_structures/tree'),
+    optionUtils = require('../utils/option-utils');
 
 module.exports = {
     buildRequestBodyValidation,
-    buildPathParameters
+    buildResponseBodyValidation,
+    buildHeadersValidation
 };
 
-function buildPathParameters(parameters, pathParameters) {
-    let allParameters = [].concat(parameters, pathParameters);
-    let localParameters = allParameters.map(handleSchema);
-    return localParameters;
+const OAI3_RESPONSE_CONTENT_TYPE = 'application/json';
+
+function getResponseSchema(jsonDoc, currentPath, currentMethod, statusCode){
+    return jsonDoc.paths[currentPath][currentMethod].responses &&
+        jsonDoc.paths[currentPath][currentMethod].responses[statusCode] &&
+        jsonDoc.paths[currentPath][currentMethod].responses[statusCode].content &&
+        jsonDoc.paths[currentPath][currentMethod].responses[statusCode].content[OAI3_RESPONSE_CONTENT_TYPE] &&
+        jsonDoc.paths[currentPath][currentMethod].responses[statusCode].content[OAI3_RESPONSE_CONTENT_TYPE].schema;
 }
 
-function handleSchema(data) {
-    let clonedData = cloneDeep(data);
-    let schema = data.schema;
-    if (schema) {
-        delete clonedData['schema'];
-        Object.keys(schema).forEach(key => {
-            clonedData[key] = schema[key];
-        });
-    }
-    return clonedData;
+function getRequestSchema(jsonDoc, currentPath, currentMethod){
+    return jsonDoc.paths[currentPath][currentMethod].requestBody && jsonDoc.paths[currentPath][currentMethod].requestBody.content &&
+        jsonDoc.paths[currentPath][currentMethod].requestBody.content[OAI3_RESPONSE_CONTENT_TYPE] &&
+        jsonDoc.paths[currentPath][currentMethod].requestBody.content[OAI3_RESPONSE_CONTENT_TYPE].schema;
 }
 
-function buildRequestBodyValidation(dereferenced, originalSwagger, currentPath, currentMethod, options) {
-    if (!dereferenced.paths[currentPath][currentMethod].requestBody) {
-        return;
-    }
-    const bodySchemaV3 = dereferenced.paths[currentPath][currentMethod].requestBody.content['application/json'].schema;
+function buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, { ajvConfigBody, formats, keywords }, statusCode) {
+    let requestDereferenceBody = getResponseSchema(dereferenced, currentPath, currentMethod, statusCode);
+    let requestReferenceBody = getResponseSchema(referenced, currentPath, currentMethod, statusCode);
+
+    if (!requestDereferenceBody || !requestReferenceBody) return;
+
     const defaultAjvOptions = {
         allErrors: true
     };
-    const ajvOptions = Object.assign({}, defaultAjvOptions, options.ajvConfigBody);
+    const ajvOptions = Object.assign({}, defaultAjvOptions, ajvConfigBody);
     let ajv = new Ajv(ajvOptions);
 
-    ajvUtils.addCustomKeyword(ajv, options.formats, options.keywords);
+    ajvUtils.addCustomKeyword(ajv, formats, keywords);
 
-    if (bodySchemaV3.discriminator) {
-        return buildV3Inheritance(dereferenced, originalSwagger, currentPath, currentMethod, ajv);
+    if (requestDereferenceBody.discriminator) {
+        let referencedSchemas = referenced.components.schemas;
+        let dereferencedSchemas = dereferenced.components.schemas;
+        let referenceName = requestReferenceBody['$ref'];
+
+        return buildV3Inheritance(referencedSchemas, dereferencedSchemas, currentPath, currentMethod, ajv, referenceName);
     } else {
-        return new Validators.SimpleValidator(ajv.compile(bodySchemaV3));
+        return new Validators.SimpleValidator(ajv.compile(requestDereferenceBody));
     }
 }
 
-function buildV3Inheritance(dereferencedDefinitions, swagger, currentPath, currentMethod, ajv) {
+function buildRequestBodyValidation(dereferenced, referenced, currentPath, currentMethod, { ajvConfigBody, formats, keywords }) {
+    let requestDereferenceBody = getRequestSchema(dereferenced, currentPath, currentMethod);
+    let requestReferenceBody = getRequestSchema(referenced, currentPath, currentMethod);
+
+    if (!requestDereferenceBody || !requestReferenceBody) return;
+
+    const defaultAjvOptions = {
+        allErrors: true
+    };
+
+    const ajvOptions = Object.assign({}, defaultAjvOptions, ajvConfigBody);
+    let ajv = new Ajv(ajvOptions);
+
+    ajvUtils.addCustomKeyword(ajv, formats, keywords);
+
+    if (requestDereferenceBody.discriminator) {
+        let referencedSchemas = referenced.components.schemas;
+        let dereferencedSchemas = dereferenced.components.schemas;
+        let referenceName = requestReferenceBody['$ref'];
+
+        return buildV3Inheritance(referencedSchemas, dereferencedSchemas, currentPath, currentMethod, ajv, referenceName);
+    } else {
+        return new Validators.SimpleValidator(ajv.compile(requestDereferenceBody));
+    }
+}
+
+function buildHeadersValidation(responses, { ajvConfigParams, formats, keywords, contentTypeValidation }, statusCode) {
+    let headers = responses[statusCode].headers;
+    if (!headers) return;
+
+    const defaultAjvOptions = {
+        allErrors: true,
+        coerceTypes: 'array'
+    };
+    const ajvOptions = Object.assign({}, defaultAjvOptions, ajvConfigParams);
+    let ajv = new Ajv(ajvOptions);
+
+    ajvUtils.addCustomKeyword(ajv, formats, keywords);
+
+    var ajvHeadersSchema = {
+        title: 'HTTP headers',
+        type: 'object',
+        properties: {},
+        required: [],
+        additionalProperties: true
+    };
+
+    Object.keys(headers).forEach(key => {
+        let headerObj = Object.assign({}, headers[key].schema);
+        const headerName = key.toLowerCase();
+        delete headerObj.name;
+        delete headerObj.required;
+        ajvHeadersSchema.properties[headerName] = headerObj;
+    });
+
+    ajvHeadersSchema.content = optionUtils.createContentTypeHeaders(contentTypeValidation, OAI3_RESPONSE_CONTENT_TYPE);
+
+    return new Validators.SimpleValidator(ajv.compile(ajvHeadersSchema));
+}
+
+function buildV3Inheritance(referencedSchemas, dereferencedSchemas, currentPath, currentMethod, ajv, referenceName) {
     const RECURSIVE__MAX_DEPTH = 20;
-    const bodySchema = swagger.paths[currentPath][currentMethod].requestBody.content['application/json'];
-    const schemas = swagger.components.schemas;
-    const dereferencedSchemas = dereferencedDefinitions.components.schemas;
-    const rootKey = bodySchema.schema['$ref'].split('/components/schemas/')[1];
+    const rootKey = referenceName.split('/components/schemas/')[1];
     const tree = new Node();
     function getKeyFromRef(ref) {
         return ref.split('/components/schemas/')[1];
@@ -65,7 +127,7 @@ function buildV3Inheritance(dereferencedDefinitions, swagger, currentPath, curre
             throw new Error(`swagger schema exceed maximum supported depth of ${RECURSIVE__MAX_DEPTH} for swagger definitions inheritance`);
         }
         const discriminator = dereferencedSchemas[refValue].discriminator,
-            currentSchema = schemas[refValue],
+            currentSchema = referencedSchemas[refValue],
             currentDereferencedSchema = dereferencedSchemas[refValue];
 
         if (!discriminator) {

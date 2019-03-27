@@ -307,6 +307,86 @@ paths:
               $ref: '#/components/schemas/pet'
         description: Create pet
         required: true
+  /pet-any-of:
+    post:
+      summary: Create a Pet
+      security:
+      - public-key: []
+      description: >-
+      tags:
+      - pets
+      parameters:
+      - $ref: '#/components/parameters/public-key'
+      responses:
+        '201':
+          description: pet created
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/pet-any-of'
+        'default':
+          description: Internal error
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pet-any-of'
+        description: Create pet
+        required: true
+  /pet-all-of:
+    post:
+      summary: Create a Pet
+      security:
+      - public-key: []
+      description: >-
+      tags:
+      - pets
+      parameters:
+      - $ref: '#/components/parameters/public-key'
+      responses:
+        '201':
+          description: pet created
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/pet-all-of'
+        'default':
+          description: Internal error
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pet-all-of'
+        description: Create pet
+        required: true
   /pet-file:
     post:
       summary: Create a Pet
@@ -617,6 +697,54 @@ paths:
               $ref: '#/components/schemas/pet-discriminator-on-child'
         description: Create pet
         required: true
+  /many-body-fields:
+    post:
+      summary: many attributes
+      security:
+      - public-key: []
+      description: >-
+      tags:
+      - dogs
+      responses:
+        '201':
+          description: pet created
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/pet'
+        'default':
+          description: Bad request
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                fieldNum1:
+                  type: number
+                fieldNum2:
+                  type: number
+                fieldNum3:
+                  type: number
+                fieldStr1:
+                  type: string
+                fieldStr2:
+                  type: string
+                fieldStr3:
+                  type: string
 components:
   parameters:
     public-key:
@@ -671,6 +799,18 @@ components:
       description: pet
       type: object
       oneOf:
+      - $ref: '#/components/schemas/dog_object'
+      - $ref: '#/components/schemas/cat_object'
+    pet-any-of:
+      description: pet
+      type: object
+      anyOf:
+      - $ref: '#/components/schemas/dog_object'
+      - $ref: '#/components/schemas/cat_object'
+    pet-all-of:
+      description: pet
+      type: object
+      allOf:
       - $ref: '#/components/schemas/dog_object'
       - $ref: '#/components/schemas/cat_object'
     pets:
