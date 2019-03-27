@@ -8,7 +8,8 @@ var SwaggerParser = require('swagger-parser'),
     Ajv = require('ajv'),
     sourceResolver = require('./utils/sourceResolver'),
     Validators = require('./validators/index'),
-    optionUtils = require('./utils/option-utils');
+    optionUtils = require('./utils/option-utils'),
+    get = require('lodash.get');
 
 const DEFAULT_SETTINGS = {
     buildRequests: true,
@@ -93,13 +94,14 @@ function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath
 function buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options){
     let responsesSchema = {};
     const isOpenApi3 = dereferenced.openapi === '3.0.0';
-    let responses = dereferenced.paths[currentPath][currentMethod].responses;
+    let responses = get(dereferenced.paths[currentPath][currentMethod], 'responses');
     if (responses) {
         Object.keys(responses).forEach(statusCode => {
             let headersValidator, bodyValidator;
             if (isOpenApi3) {
                 headersValidator = oai3.buildHeadersValidation(responses, statusCode, options);
-                bodyValidator = oai3.buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, statusCode, options);
+                bodyValidator = oai3.buildResponseBodyValidation(dereferenced, referenced,
+                    currentPath, currentMethod, statusCode, options);
             } else {
                 let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
                 headersValidator = oai2.buildHeadersValidation(responses, contentTypes, statusCode, options);

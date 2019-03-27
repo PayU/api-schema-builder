@@ -6,7 +6,7 @@ let chai = require('chai').use(require('chai-as-promised')),
     path = require('path');
 
 describe('oai3 - general tests', function () {
-    describe('loading yaml with discriminator with anyOf', function () {
+    describe('loading yaml with discriminator with allOf', function () {
         it('fail to load with relevant error', function () {
             const swaggerPath = path.join(__dirname, 'pets-discriminator-allOf.yaml');
             return expect(schemaValidatorGenerator.buildSchema(swaggerPath, {})).to.be.rejectedWith('oneOf must be part of discriminator');

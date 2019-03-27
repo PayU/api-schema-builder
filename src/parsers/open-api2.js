@@ -2,7 +2,8 @@
 const Validators = require('../validators'),
     Ajv = require('ajv'),
     ajvUtils = require('../utils/ajv-utils'),
-    optionUtils = require('../utils/option-utils');
+    optionUtils = require('../utils/option-utils'),
+    get = require('lodash.get');
 
 module.exports = {
     getValidatedBodySchema,
@@ -37,7 +38,7 @@ function getValidatedBodySchema(bodySchema) {
 }
 
 function buildHeadersValidation(responses, contentTypes, statusCode, options) {
-    let headers = responses[statusCode] && responses[statusCode].headers;
+    let headers = get(responses[statusCode], 'headers');
     if (!headers && !contentTypes) return;
 
     const defaultAjvOptions = {
@@ -82,7 +83,7 @@ function buildAjvValidator(ajvConfigBody, formats, keywords){
 }
 
 function buildResponseBodyValidation(responses, swaggerDefinitions, originalSwagger, currentPath, currentMethod, statusCode, options) {
-    let schema = responses[statusCode] && responses[statusCode].schema;
+    let schema = get(responses[statusCode], 'schema');
     if (!schema) return;
 
     let ajv = buildAjvValidator(options.ajvConfigBody, options.formats, options.keywords);
