@@ -9,59 +9,114 @@ var SwaggerParser = require('swagger-parser'),
     sourceResolver = require('./utils/sourceResolver'),
     Validators = require('./validators/index');
 
-/**
- * Initialize the input validation middleware
- * @param {string} swaggerPath - the path for the swagger file
- * @param {Object} options - options.formats to add formats to ajv, options.beautifyErrors, options.firstError, options.expectFormFieldsInBody, options.fileNameField (default is 'fieldname' - multer package), options.ajvConfigBody and options.ajvConfigParams for config object that will be passed for creation of Ajv instance used for validation of body and parameters appropriately
- */
+const DEFAULT_SETTINGS = {
+    buildRequests: true,
+    buildResponses: true
+};
 function buildSchema(swaggerPath, options) {
-    let schemas = {};
-    let middlewareOptions = options || {};
-    const makeOptionalAttributesNullable = middlewareOptions.makeOptionalAttributesNullable || false;
-
+    let updatedOptions = Object.assign({}, DEFAULT_SETTINGS, options);
     return Promise.all([
         SwaggerParser.dereference(swaggerPath),
         SwaggerParser.parse(swaggerPath)
-    ]).then(function (swaggers) {
-        const dereferenced = swaggers[0];
-        Object.keys(dereferenced.paths).forEach(function (currentPath) {
-            let pathParameters = dereferenced.paths[currentPath].parameters || [];
-            let parsedPath = dereferenced.basePath && dereferenced.basePath !== '/' ? dereferenced.basePath.concat(currentPath.replace(/{/g, ':').replace(/}/g, '')) : currentPath.replace(/{/g, ':').replace(/}/g, '');
-            schemas[parsedPath] = {};
-            Object.keys(dereferenced.paths[currentPath]).filter(function (parameter) { return parameter !== 'parameters' })
-                .forEach(function (currentMethod) {
-                    schemas[parsedPath][currentMethod.toLowerCase()] = {};
-                    const isOpenApi3 = dereferenced.openapi === '3.0.0';
-                    const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
-                    if (isOpenApi3){
-                        schemas[parsedPath][currentMethod].body = oas3.buildBodyValidation(dereferenced, swaggers[1], currentPath, currentMethod, middlewareOptions);
-                    } else {
-                        let bodySchema = middlewareOptions.expectFormFieldsInBody
-                            ? parameters.filter(function (parameter) { return (parameter.in === 'body' || (parameter.in === 'formData' && parameter.type !== 'file')) })
-                            : parameters.filter(function (parameter) { return parameter.in === 'body' });
-                        if (makeOptionalAttributesNullable) {
-                            schemaPreprocessor.makeOptionalAttributesNullable(bodySchema);
-                        }
-                        if (bodySchema.length > 0) {
-                            const validatedBodySchema = oas2.getValidatedBodySchema(bodySchema);
-                            schemas[parsedPath][currentMethod].body = oas2.buildBodyValidation(validatedBodySchema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath, middlewareOptions);
-                        }
-                    }
-
-                    let localParameters = parameters.filter(function (parameter) {
-                        return parameter.in !== 'body';
-                    }).concat(pathParameters);
-
-                    if (localParameters.length > 0 || middlewareOptions.contentTypeValidation) {
-                        schemas[parsedPath][currentMethod].parameters = buildParametersValidation(localParameters,
-                            dereferenced.paths[currentPath][currentMethod].consumes || dereferenced.paths[currentPath].consumes || dereferenced.consumes, middlewareOptions);
-                    }
-                });
-        });
-        return schemas;
+    ]).then(function ([dereferenced, referenced]) {
+        return buildValidations(referenced, dereferenced, updatedOptions);
     });
 }
 
+function buildValidations(referenced, dereferenced, options) {
+    const { buildRequests, buildResponses } = options;
+    const schemas = {};
+    Object.keys(dereferenced.paths).forEach(function (currentPath) {
+        let parsedPath = dereferenced.basePath && dereferenced.basePath !== '/'
+            ? dereferenced.basePath.concat(currentPath.replace(/{/g, ':').replace(/}/g, ''))
+            : currentPath.replace(/{/g, ':').replace(/}/g, '');
+        schemas[parsedPath] = {};
+        Object.keys(dereferenced.paths[currentPath])
+            .filter(function (parameter) { return parameter !== 'parameters' })
+            .forEach(function (currentMethod) {
+                let parsedMethod = currentMethod.toLowerCase();
+
+                let requestValidator;
+                if (buildRequests) {
+                    requestValidator = buildRequestValidator(referenced, dereferenced, currentPath,
+                        parsedPath, currentMethod, options);
+                }
+
+                let responseValidator;
+                if (buildResponses){
+                    responseValidator = buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options);
+                }
+
+                schemas[parsedPath][parsedMethod] = Object.assign({}, requestValidator, { responses: responseValidator });
+            });
+    });
+    return schemas;
+}
+
+function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options){
+    let requestSchema = {};
+    let pathParameters = dereferenced.paths[currentPath].parameters || [];
+    const isOpenApi3 = dereferenced.openapi === '3.0.0';
+    const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
+    if (isOpenApi3) {
+        requestSchema.body = oas3.buildRequestBodyValidation(dereferenced, referenced, currentPath, currentMethod, options);
+    } else {
+        let bodySchema = options.expectFormFieldsInBody
+            ? parameters.filter(function (parameter) {
+                return (parameter.in === 'body' ||
+                (parameter.in === 'formData' && parameter.type !== 'file'));
+            })
+            : parameters.filter(function (parameter) { return parameter.in === 'body' });
+
+        options.makeOptionalAttributesNullable && schemaPreprocessor.makeOptionalAttributesNullable(bodySchema);
+
+        if (bodySchema.length > 0) {
+            const validatedBodySchema = oas2.getValidatedBodySchema(bodySchema);
+            requestSchema.body = oas2.buildRequestBodyValidation(validatedBodySchema, dereferenced.definitions, referenced,
+                currentPath, currentMethod, options);
+        }
+    }
+
+    let localParameters = parameters.filter(function (parameter) {
+        return parameter.in !== 'body';
+    }).concat(pathParameters);
+
+    if (localParameters.length > 0 || options.contentTypeValidation) {
+        requestSchema.parameters = buildParametersValidation(localParameters,
+            dereferenced.paths[currentPath][currentMethod].consumes || dereferenced.paths[currentPath].consumes || dereferenced.consumes, options);
+    }
+
+    return requestSchema;
+}
+
+function buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options){
+    // support now only oas2
+    if (dereferenced.openapi === '3.0.0'){ return }
+    const responsesSchema = {};
+
+    const responses = dereferenced.paths[currentPath][currentMethod].responses;
+
+    if (responses) {
+        Object.keys(responses).forEach(statusCode => {
+            let responseDereferenceSchema = responses[statusCode].schema;
+            let responseDereferenceHeaders = responses[statusCode].headers;
+            let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
+            let headersValidator = (responseDereferenceHeaders || contentTypes) ? buildHeadersValidation(responseDereferenceHeaders, contentTypes, options) : undefined;
+
+            let bodyValidator = responseDereferenceSchema ? oas2.buildResponseBodyValidation(responseDereferenceSchema,
+                dereferenced.definitions, referenced, currentPath, currentMethod, options, statusCode) : undefined;
+
+            if (headersValidator || bodyValidator) {
+                responsesSchema[statusCode] = new Validators.ResponseValidator({
+                    body: bodyValidator,
+                    headers: headersValidator
+                });
+            }
+        });
+    }
+
+    return responsesSchema;
+}
 function createContentTypeHeaders(validate, contentTypes) {
     if (!validate || !contentTypes) return;
 
@@ -70,16 +125,16 @@ function createContentTypeHeaders(validate, contentTypes) {
     };
 }
 
-function buildParametersValidation(parameters, contentTypes, middlewareOptions) {
+function buildParametersValidation(parameters, contentTypes, options) {
     const defaultAjvOptions = {
         allErrors: true,
         coerceTypes: 'array'
         // unknownFormats: 'ignore'
     };
-    const options = Object.assign({}, defaultAjvOptions, middlewareOptions.ajvConfigParams);
-    let ajv = new Ajv(options);
+    const ajvOptions = Object.assign({}, defaultAjvOptions, options.ajvConfigParams);
+    let ajv = new Ajv(ajvOptions);
 
-    ajvUtils.addCustomKeyword(ajv, middlewareOptions.formats, middlewareOptions.keywords);
+    ajvUtils.addCustomKeyword(ajv, options.formats, options.keywords);
 
     var ajvParametersSchema = {
         title: 'HTTP parameters',
@@ -129,7 +184,7 @@ function buildParametersValidation(parameters, contentTypes, middlewareOptions) 
         delete data.required;
 
         if (data.type === 'file') {
-            if (required){
+            if (required) {
                 destination.files.required.push(key);
             } else {
                 destination.files.optional.push(key);
@@ -141,13 +196,46 @@ function buildParametersValidation(parameters, contentTypes, middlewareOptions) 
             }
             destination.properties[key] = data;
         }
-    }, this);
+    });
 
-    ajvParametersSchema.properties.headers.content = createContentTypeHeaders(middlewareOptions.contentTypeValidation, contentTypes);
+    ajvParametersSchema.properties.headers.content = createContentTypeHeaders(options.contentTypeValidation, contentTypes);
 
     return new Validators.SimpleValidator(ajv.compile(ajvParametersSchema));
 }
 
+function buildHeadersValidation(headers, contentTypes, options) {
+    const defaultAjvOptions = {
+        allErrors: true,
+        coerceTypes: 'array'
+    };
+    const ajvOptions = Object.assign({}, defaultAjvOptions, options.ajvConfigParams);
+    let ajv = new Ajv(ajvOptions);
+
+    ajvUtils.addCustomKeyword(ajv, options.formats, options.keywords);
+
+    var ajvHeadersSchema = {
+        title: 'HTTP headers',
+        type: 'object',
+        properties: {},
+        additionalProperties: true
+    };
+
+    if (headers) {
+        Object.keys(headers).forEach(key => {
+            let headerObj = Object.assign({}, headers[key]);
+            const headerName = key.toLowerCase();
+            delete headerObj.name;
+            delete headerObj.required;
+            ajvHeadersSchema.properties[headerName] = headerObj;
+        });
+    }
+
+    ajvHeadersSchema.content = createContentTypeHeaders(options.contentTypeValidation, contentTypes);
+
+    return new Validators.SimpleValidator(ajv.compile(ajvHeadersSchema));
+}
+
 module.exports = {
-    buildSchema: buildSchema
+    buildSchema,
+    buildValidations
 };

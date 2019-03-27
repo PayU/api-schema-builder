@@ -6,21 +6,21 @@ const Validators = require('../validators/index'),
     { Node } = require('../data_structures/tree');
 
 module.exports = {
-    buildBodyValidation
+    buildRequestBodyValidation
 };
 
-function buildBodyValidation(dereferenced, originalSwagger, currentPath, currentMethod, middlewareOptions = {}) {
-    if (!dereferenced.paths[currentPath][currentMethod].requestBody){
+function buildRequestBodyValidation(dereferenced, originalSwagger, currentPath, currentMethod, { ajvConfigBody, formats, keywords }) {
+    if (!dereferenced.paths[currentPath][currentMethod].requestBody) {
         return;
     }
     const bodySchemaV3 = dereferenced.paths[currentPath][currentMethod].requestBody.content['application/json'].schema;
     const defaultAjvOptions = {
         allErrors: true
     };
-    const options = Object.assign({}, defaultAjvOptions, middlewareOptions.ajvConfigBody);
-    let ajv = new Ajv(options);
+    const ajvOptions = Object.assign({}, defaultAjvOptions, ajvConfigBody);
+    let ajv = new Ajv(ajvOptions);
 
-    ajvUtils.addCustomKeyword(ajv, middlewareOptions.formats, middlewareOptions.keywords);
+    ajvUtils.addCustomKeyword(ajv, formats, keywords);
 
     if (bodySchemaV3.discriminator) {
         return buildV3Inheritance(dereferenced, originalSwagger, currentPath, currentMethod, ajv);
@@ -42,14 +42,14 @@ function buildV3Inheritance(dereferencedDefinitions, swagger, currentPath, curre
 
     function recursiveDiscriminatorBuilder(ancestor, option, refValue, propertiesAcc = { required: [], properties: {} }, depth = RECURSIVE__MAX_DEPTH) {
         // assume first time is discriminator.
-        if (depth === 0){
+        if (depth === 0) {
             throw new Error(`swagger schema exceed maximum supported depth of ${RECURSIVE__MAX_DEPTH} for swagger definitions inheritance`);
         }
         const discriminator = dereferencedSchemas[refValue].discriminator,
             currentSchema = schemas[refValue],
             currentDereferencedSchema = dereferencedSchemas[refValue];
 
-        if (!discriminator){
+        if (!discriminator) {
             // need to stop and just add validator on ancesstor;
             const newSchema = cloneDeep(currentDereferencedSchema);
             newSchema.required.push(...(propertiesAcc.required || []));
@@ -65,13 +65,13 @@ function buildV3Inheritance(dereferencedDefinitions, swagger, currentPath, curre
         discriminatorObject.discriminator = discriminator.propertyName;
 
         const currentDiscriminatorNode = new Node(discriminatorObject);
-        if (!ancestor.getValue()){
+        if (!ancestor.getValue()) {
             ancestor.setData(currentDiscriminatorNode);
         } else {
             ancestor.addChild(currentDiscriminatorNode, option);
         }
 
-        if (!currentSchema.oneOf){
+        if (!currentSchema.oneOf) {
             throw new Error('oneOf must be part of discriminator');
         }
 
@@ -90,12 +90,12 @@ function buildV3Inheritance(dereferencedDefinitions, swagger, currentPath, curre
 }
 
 function findKey(object, searchFunc) {
-    if (!object){
+    if (!object) {
         return;
     }
     const keys = Object.keys(object);
-    for (let i = 0; i < keys.length; i++){
-        if (searchFunc(object[keys[i]])){
+    for (let i = 0; i < keys.length; i++) {
+        if (searchFunc(object[keys[i]])) {
             return keys[i];
         }
     }

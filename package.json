@@ -1,18 +1,17 @@
 {
   "name": "api-schema-builder",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "build schema with validators for each endpoint",
   "main": "src/index.js",
+  "files": [
+    "src"
+  ],
   "nyc": {
     "report-dir": "./coverage",
     "lines": 95,
     "statements": 95,
     "functions": 100,
     "branches": 90,
-    "include": [
-      "src/*.js",
-      "src/*/*.js"
-    ],
     "reporter": [
       "lcov",
       "text"
@@ -20,14 +19,11 @@
     "cache": true,
     "all": true
   },
-  "files": [
-    "src"
-  ],
   "license": "Apache-2.0",
   "scripts": {
-    "test": "node_modules/mocha/bin/_mocha ./test/*/*-test.js --recursive",
-    "test:coverage": "nyc node_modules/mocha/bin/_mocha --recursive ./test/*/*-test.js ",
-    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
+    "test": "mocha --recursive",
+    "test:coverage": "nyc npm test ",
+    "coveralls": "cat ./coverage/lcov.info |./node_modules/.bin/coveralls",
     "lint": "./node_modules/.bin/eslint src"
   },
   "repository": {
@@ -55,9 +51,8 @@
   "devDependencies": {
     "ajv-keywords": "^3.4.0",
     "chai": "^4.2.0",
-    "chai-like": "^1.1.1",
-    "chai-sinon": "^2.8.1",
-    "coveralls": "^3.0.2",
+    "chai-as-promised": "^7.1.1",
+    "coveralls": "^3.0.3",
     "eslint": "^5.15.1",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-chai-friendly": "^0.4.1",
@@ -65,12 +60,8 @@
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
-    "form-data": "^2.3.3",
-    "lodash": "^4.17.11",
     "mocha": "^6.0.2",
-    "nyc": "^13.3.0",
-    "request": "^2.88.0",
-    "sinon": "^4.5.0"
+    "nyc": "^13.3.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"

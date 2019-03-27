@@ -185,7 +185,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error_model'
-
   /dog:
     post:
       summary: Create a Dog
@@ -618,6 +617,54 @@ paths:
               $ref: '#/components/schemas/pet-discriminator-on-child'
         description: Create pet
         required: true
+  /many-attributes:
+    post:
+      summary: many attributes
+      security:
+      - public-key: []
+      description: >-
+      tags:
+      - dogs
+      responses:
+        '201':
+          description: pet created
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/pet'
+        'default':
+          description: Bad request
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                fieldNum1:
+                  type: number
+                fieldNum2:
+                  type: number
+                fieldNum3:
+                  type: number
+                fieldStr1:
+                  type: string
+                fieldStr2:
+                  type: string
+                fieldStr3:
+                  type: string
 components:
   parameters:
     public-key:
