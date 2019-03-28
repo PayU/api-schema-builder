@@ -14,16 +14,16 @@ const DEFAULT_SETTINGS = {
     buildResponses: true
 };
 function buildSchema(swaggerPath, options) {
-    let updatedOptions = Object.assign({}, DEFAULT_SETTINGS, options);
     return Promise.all([
         SwaggerParser.dereference(swaggerPath),
         SwaggerParser.parse(swaggerPath)
     ]).then(function ([dereferenced, referenced]) {
-        return buildValidations(referenced, dereferenced, updatedOptions);
+        return buildValidations(referenced, dereferenced, options);
     });
 }
 
-function buildValidations(referenced, dereferenced, options) {
+function buildValidations(referenced, dereferenced, receivedOptions) {
+    const options = Object.assign({}, DEFAULT_SETTINGS, receivedOptions);
     const { buildRequests, buildResponses } = options;
     const schemas = {};
     Object.keys(dereferenced.paths).forEach(function (currentPath) {
