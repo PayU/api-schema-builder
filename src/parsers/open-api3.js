@@ -3,7 +3,7 @@ const Validators = require('../validators/index'),
     cloneDeep = require('clone-deep'),
     ajvUtils = require('../utils/ajv-utils'),
     { Node } = require('../data_structures/tree'),
-    optionUtils = require('../utils/option-utils'),
+    createContentTypeHeaders = require('../utils/createContentTypeHeaders'),
     get = require('lodash.get');
 
 const OAI3_RESPONSE_CONTENT_TYPE = 'application/json';
@@ -106,7 +106,7 @@ function buildHeadersValidation(responses, statusCode, { ajvConfigParams, format
         ajvHeadersSchema.properties[headerName] = headerObj;
     });
 
-    ajvHeadersSchema.content = optionUtils.createContentTypeHeaders(contentTypeValidation, OAI3_RESPONSE_CONTENT_TYPE);
+    ajvHeadersSchema.content = createContentTypeHeaders(contentTypeValidation, OAI3_RESPONSE_CONTENT_TYPE);
 
     return new Validators.SimpleValidator(ajv.compile(ajvHeadersSchema));
 }

@@ -2,7 +2,7 @@
 const Validators = require('../validators'),
     Ajv = require('ajv'),
     ajvUtils = require('../utils/ajv-utils'),
-    optionUtils = require('../utils/option-utils'),
+    createContentTypeHeaders = require('../utils/createContentTypeHeaders'),
     get = require('lodash.get');
 
 module.exports = {
@@ -74,7 +74,7 @@ function buildHeadersValidation(responses, contentTypes, statusCode, options) {
         });
     }
 
-    ajvHeadersSchema.content = optionUtils.createContentTypeHeaders(options.contentTypeValidation, contentTypes);
+    ajvHeadersSchema.content = createContentTypeHeaders(options.contentTypeValidation, contentTypes);
 
     return new Validators.SimpleValidator(ajv.compile(ajvHeadersSchema));
 }

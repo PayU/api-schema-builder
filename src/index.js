@@ -8,7 +8,7 @@ var SwaggerParser = require('swagger-parser'),
     Ajv = require('ajv'),
     sourceResolver = require('./utils/sourceResolver'),
     Validators = require('./validators/index'),
-    optionUtils = require('./utils/option-utils'),
+    createContentTypeHeaders = require('./utils/createContentTypeHeaders'),
     get = require('lodash.get');
 
 const DEFAULT_SETTINGS = {
@@ -194,7 +194,7 @@ function buildParametersValidation(parameters, contentTypes, options) {
         }
     });
 
-    ajvParametersSchema.properties.headers.content = optionUtils.createContentTypeHeaders(options.contentTypeValidation, contentTypes);
+    ajvParametersSchema.properties.headers.content = createContentTypeHeaders(options.contentTypeValidation, contentTypes);
 
     return new Validators.SimpleValidator(ajv.compile(ajvParametersSchema));
 }
