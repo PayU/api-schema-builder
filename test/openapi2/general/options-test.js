@@ -1,9 +1,9 @@
 var chai = require('chai'),
     expect = chai.expect,
     path = require('path'),
-    schemaValidatorGenerator = require('../../src/index');
+    schemaValidatorGenerator = require('../../../src/index');
 
-describe('oas2 - general tests', () => {
+describe('oai2 - general tests', () => {
     describe('BuildRequests and BuildResponses option', function () {
         const swaggerPath = path.join(__dirname, './pet-store-swagger.yaml');
 

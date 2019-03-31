@@ -258,7 +258,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
-  /many-attributes:
+  /many-body-fields:
     post:
       parameters:
       - name: body

@@ -2,12 +2,14 @@
 
 var SwaggerParser = require('swagger-parser'),
     schemaPreprocessor = require('./utils/schema-preprocessor'),
-    oas3 = require('./parsers/open-api3'),
-    oas2 = require('./parsers/open-api2'),
+    oai3 = require('./parsers/open-api3'),
+    oai2 = require('./parsers/open-api2'),
     ajvUtils = require('./utils/ajv-utils'),
     Ajv = require('ajv'),
     sourceResolver = require('./utils/sourceResolver'),
-    Validators = require('./validators/index');
+    Validators = require('./validators/index'),
+    createContentTypeHeaders = require('./utils/createContentTypeHeaders'),
+    get = require('lodash.get');
 
 const DEFAULT_SETTINGS = {
     buildRequests: true,
@@ -43,7 +45,7 @@ function buildValidations(referenced, dereferenced, receivedOptions) {
                 }
 
                 let responseValidator;
-                if (buildResponses){
+                if (buildResponses) {
                     responseValidator = buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options);
                 }
 
@@ -55,11 +57,13 @@ function buildValidations(referenced, dereferenced, receivedOptions) {
 
 function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options){
     let requestSchema = {};
+    let localParameters = [];
     let pathParameters = dereferenced.paths[currentPath].parameters || [];
     const isOpenApi3 = dereferenced.openapi === '3.0.0';
     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
     if (isOpenApi3) {
-        requestSchema.body = oas3.buildRequestBodyValidation(dereferenced, referenced, currentPath, currentMethod, options);
+        requestSchema.body = oai3.buildRequestBodyValidation(dereferenced, referenced, currentPath, currentMethod, options);
+        localParameters = oai3.buildPathParameters(parameters, pathParameters);
     } else {
         let bodySchema = options.expectFormFieldsInBody
             ? parameters.filter(function (parameter) {
@@ -71,15 +75,13 @@ function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath
         options.makeOptionalAttributesNullable && schemaPreprocessor.makeOptionalAttributesNullable(bodySchema);
 
         if (bodySchema.length > 0) {
-            const validatedBodySchema = oas2.getValidatedBodySchema(bodySchema);
-            requestSchema.body = oas2.buildRequestBodyValidation(validatedBodySchema, dereferenced.definitions, referenced,
+            const validatedBodySchema = oai2.getValidatedBodySchema(bodySchema);
+            requestSchema.body = oai2.buildRequestBodyValidation(validatedBodySchema, dereferenced.definitions, referenced,
                 currentPath, currentMethod, options);
         }
-    }
 
-    let localParameters = parameters.filter(function (parameter) {
-        return parameter.in !== 'body';
-    }).concat(pathParameters);
+        localParameters = oai2.buildPathParameters(parameters, pathParameters);
+    }
 
     if (localParameters.length > 0 || options.contentTypeValidation) {
         requestSchema.parameters = buildParametersValidation(localParameters,
@@ -90,21 +92,22 @@ function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath
 }
 
 function buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options){
-    // support now only oas2
-    if (dereferenced.openapi === '3.0.0'){ return }
-    const responsesSchema = {};
-
-    const responses = dereferenced.paths[currentPath][currentMethod].responses;
-
+    let responsesSchema = {};
+    const isOpenApi3 = dereferenced.openapi === '3.0.0';
+    let responses = get(dereferenced, `paths[${currentPath}][${currentMethod}].responses`);
     if (responses) {
         Object.keys(responses).forEach(statusCode => {
-            let responseDereferenceSchema = responses[statusCode].schema;
-            let responseDereferenceHeaders = responses[statusCode].headers;
-            let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
-            let headersValidator = (responseDereferenceHeaders || contentTypes) ? buildHeadersValidation(responseDereferenceHeaders, contentTypes, options) : undefined;
-
-            let bodyValidator = responseDereferenceSchema ? oas2.buildResponseBodyValidation(responseDereferenceSchema,
-                dereferenced.definitions, referenced, currentPath, currentMethod, options, statusCode) : undefined;
+            let headersValidator, bodyValidator;
+            if (isOpenApi3) {
+                headersValidator = oai3.buildHeadersValidation(responses, statusCode, options);
+                bodyValidator = oai3.buildResponseBodyValidation(dereferenced, referenced,
+                    currentPath, currentMethod, statusCode, options);
+            } else {
+                let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
+                headersValidator = oai2.buildHeadersValidation(responses, contentTypes, statusCode, options);
+                bodyValidator = oai2.buildResponseBodyValidation(responses,
+                    dereferenced.definitions, referenced, currentPath, currentMethod, statusCode, options);
+            }
 
             if (headersValidator || bodyValidator) {
                 responsesSchema[statusCode] = new Validators.ResponseValidator({
@@ -116,13 +119,6 @@ function buildResponseValidator(referenced, dereferenced, currentPath, parsedPat
     }
 
     return responsesSchema;
-}
-function createContentTypeHeaders(validate, contentTypes) {
-    if (!validate || !contentTypes) return;
-
-    return {
-        types: contentTypes
-    };
 }
 
 function buildParametersValidation(parameters, contentTypes, options) {
@@ -201,38 +197,6 @@ function buildParametersValidation(parameters, contentTypes, options) {
     ajvParametersSchema.properties.headers.content = createContentTypeHeaders(options.contentTypeValidation, contentTypes);
 
     return new Validators.SimpleValidator(ajv.compile(ajvParametersSchema));
-}
-
-function buildHeadersValidation(headers, contentTypes, options) {
-    const defaultAjvOptions = {
-        allErrors: true,
-        coerceTypes: 'array'
-    };
-    const ajvOptions = Object.assign({}, defaultAjvOptions, options.ajvConfigParams);
-    let ajv = new Ajv(ajvOptions);
-
-    ajvUtils.addCustomKeyword(ajv, options.formats, options.keywords);
-
-    var ajvHeadersSchema = {
-        title: 'HTTP headers',
-        type: 'object',
-        properties: {},
-        additionalProperties: true
-    };
-
-    if (headers) {
-        Object.keys(headers).forEach(key => {
-            let headerObj = Object.assign({}, headers[key]);
-            const headerName = key.toLowerCase();
-            delete headerObj.name;
-            delete headerObj.required;
-            ajvHeadersSchema.properties[headerName] = headerObj;
-        });
-    }
-
-    ajvHeadersSchema.content = createContentTypeHeaders(options.contentTypeValidation, contentTypes);
-
-    return new Validators.SimpleValidator(ajv.compile(ajvHeadersSchema));
 }
 
 module.exports = {

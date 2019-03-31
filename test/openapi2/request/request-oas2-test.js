@@ -5,7 +5,7 @@ var chaiAsPromised = require('chai-as-promised'),
     schemaValidatorGenerator = require('../../../src/index'),
     { validateParams, validateBody } = require('../utils/schemaWrapper');
 
-describe('oas2 tests - request', () => {
+describe('oai2 - request tests', () => {
     describe('init function tests', function () {
         it('should reject the promise in case the file doesn\'t exists', function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger1.yaml');
@@ -326,7 +326,7 @@ describe('oas2 tests - request', () => {
             let bodyValidationErrors = validateBody({
                 schemas: schemas,
                 body: { 'fieldNum1': 1, 'fieldNum2': 2, 'fieldNum3': 3, 'fieldStr1': 'name1', 'fieldStr2': 'name2', 'fieldStr3': 'name3' },
-                path: '/many-attributes',
+                path: '/many-body-fields',
                 method: 'post'
             });
             expect(bodyValidationErrors).to.eql(undefined);
@@ -335,7 +335,7 @@ describe('oas2 tests - request', () => {
             let bodyValidationErrors = validateBody({
                 schemas: schemas,
                 body: { 'fieldNum1': 'name1', 'fieldNum2': 'name2', 'fieldNum3': 'name3', 'fieldStr1': 1, 'fieldStr2': 2, 'fieldStr3': 3 },
-                path: '/many-attributes',
+                path: '/many-body-fields',
                 method: 'post'
             });
             expect(bodyValidationErrors).to.eql([
