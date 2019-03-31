@@ -11,8 +11,7 @@ const OAI3_RESPONSE_CONTENT_TYPE = 'application/json';
 module.exports = {
     buildRequestBodyValidation,
     buildResponseBodyValidation,
-    buildHeadersValidation,
-    buildPathParameters
+    buildHeadersValidation
 };
 
 function buildRequestBodyValidation(dereferenced, referenced, currentPath, currentMethod, options) {
@@ -56,24 +55,6 @@ function handleBodyValidation(dereferenced, referenced, currentPath, currentMeth
     } else {
         return new Validators.SimpleValidator(ajv.compile(dereferencedBodySchema));
     }
-}
-
-function buildPathParameters(parameters, pathParameters) {
-    let allParameters = [].concat(parameters, pathParameters);
-    let localParameters = allParameters.map(handleSchema);
-    return localParameters;
-}
-
-function handleSchema(data) {
-    let clonedData = cloneDeep(data);
-    let schema = data.schema;
-    if (schema) {
-        delete clonedData['schema'];
-        Object.keys(schema).forEach(key => {
-            clonedData[key] = schema[key];
-        });
-    }
-    return clonedData;
 }
 
 function buildHeadersValidation(responses, statusCode, { ajvConfigParams, formats, keywords, contentTypeValidation }) {

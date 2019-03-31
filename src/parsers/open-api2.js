@@ -9,16 +9,8 @@ module.exports = {
     getValidatedBodySchema,
     buildResponseBodyValidation,
     buildRequestBodyValidation,
-    buildHeadersValidation,
-    buildPathParameters
+    buildHeadersValidation
 };
-
-function buildPathParameters(parameters, pathParameters) {
-    let localParameters = parameters.filter(function (parameter) {
-        return parameter.in !== 'body';
-    }).concat(pathParameters);
-    return localParameters;
-}
 
 function getValidatedBodySchema(bodySchema) {
     let validatedBodySchema;
