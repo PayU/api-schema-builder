@@ -46,7 +46,7 @@ function getValidatedBodySchema(bodySchema) {
 }
 
 function buildHeadersValidation(responses, contentTypes, statusCode, options) {
-    let headers = get(responses[statusCode], 'headers');
+    let headers = get(responses, `[${statusCode}].headers`);
     if (!headers && !contentTypes) return;
 
     const defaultAjvOptions = {
@@ -91,7 +91,7 @@ function buildAjvValidator(ajvConfigBody, formats, keywords){
 }
 
 function buildResponseBodyValidation(responses, swaggerDefinitions, originalSwagger, currentPath, currentMethod, statusCode, options) {
-    let schema = get(responses[statusCode], 'schema');
+    let schema = get(responses, `[${statusCode}].schema`);
     if (!schema) return;
 
     let ajv = buildAjvValidator(options.ajvConfigBody, options.formats, options.keywords);
@@ -103,6 +103,7 @@ function buildResponseBodyValidation(responses, swaggerDefinitions, originalSwag
         return new Validators.SimpleValidator(ajv.compile(schema));
     }
 }
+
 function buildRequestBodyValidation(schema, swaggerDefinitions, originalSwagger, currentPath, currentMethod, options) {
     let ajv = buildAjvValidator(options.ajvConfigBody, options.formats, options.keywords);
 

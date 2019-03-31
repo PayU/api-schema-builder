@@ -94,7 +94,7 @@ function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath
 function buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options){
     let responsesSchema = {};
     const isOpenApi3 = dereferenced.openapi === '3.0.0';
-    let responses = get(dereferenced.paths[currentPath][currentMethod], 'responses');
+    let responses = get(dereferenced, `paths[${currentPath}][${currentMethod}].responses`);
     if (responses) {
         Object.keys(responses).forEach(statusCode => {
             let headersValidator, bodyValidator;
