@@ -1,6 +1,6 @@
 
 # api-schema-builder
-[![NPM Version](https://img.shields.io/npm/v/api-schema-builder.svg?style=flat)](https://npmjs.org/package/express-ajv-swagger-validation)
+[![NPM Version](https://img.shields.io/npm/v/api-schema-builder.svg?style=flat)](https://npmjs.org/package/api-schema-builder)
 [![Build Status](https://travis-ci.org/Zooz/api-schema-builder.svg?branch=master)](https://travis-ci.org/Zooz/api-schema-builder)
 [![Coverage Status](https://coveralls.io/repos/github/Zooz/api-schema-builder/badge.svg?branch=master)](https://coveralls.io/github/Zooz/api-schema-builder?branch=master)
 [![Known Vulnerabilities](https://snyk.io/test/npm/api-schema-builder/badge.svg)](https://snyk.io/test/npm/api-schema-builder)
