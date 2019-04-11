@@ -111,6 +111,7 @@ function buildV3Inheritance(referencedSchemas, dereferencedSchemas, currentPath,
         if (!discriminator) {
             // need to stop and just add validator on ancesstor;
             const newSchema = cloneDeep(currentDereferencedSchema);
+            newSchema.required = newSchema.required || [];
             newSchema.required.push(...(propertiesAcc.required || []));
             newSchema.properties = Object.assign(newSchema.properties, propertiesAcc.properties);
             ancestor.getValue().validators[option] = ajv.compile(newSchema); // think about key
