@@ -2,7 +2,7 @@ const Validators = require('../validators/index'),
     Ajv = require('ajv'),
     cloneDeep = require('clone-deep'),
     ajvUtils = require('../utils/ajv-utils'),
-    { Node } = require('../data_structures/tree'),
+    {Node} = require('../data_structures/tree'),
     createContentTypeHeaders = require('../utils/createContentTypeHeaders'),
     get = require('lodash.get');
 
@@ -34,7 +34,7 @@ function buildResponseBodyValidation(dereferenced, referenced, currentPath, curr
 }
 
 function handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
-    dereferencedBodySchema, referencedBodySchema, { ajvConfigBody, formats, keywords }){
+                              dereferencedBodySchema, referencedBodySchema, {ajvConfigBody, formats, keywords}) {
     if (!dereferencedBodySchema || !referencedBodySchema) return;
 
     const defaultAjvOptions = {
@@ -57,7 +57,7 @@ function handleBodyValidation(dereferenced, referenced, currentPath, currentMeth
     }
 }
 
-function buildHeadersValidation(responses, statusCode, { ajvConfigParams, formats, keywords, contentTypeValidation }) {
+function buildHeadersValidation(responses, statusCode, {ajvConfigParams, formats, keywords, contentTypeValidation}) {
     let headers = get(responses, `[${statusCode}].headers`);
     if (!headers) return;
 
@@ -95,11 +95,15 @@ function buildV3Inheritance(referencedSchemas, dereferencedSchemas, currentPath,
     const RECURSIVE__MAX_DEPTH = 20;
     const rootKey = referenceName.split('/components/schemas/')[1];
     const tree = new Node();
+
     function getKeyFromRef(ref) {
         return ref.split('/components/schemas/')[1];
     }
 
-    function recursiveDiscriminatorBuilder(ancestor, option, refValue, propertiesAcc = { required: [], properties: {} }, depth = RECURSIVE__MAX_DEPTH) {
+    function recursiveDiscriminatorBuilder(ancestor, option, refValue, propertiesAcc = {
+        required: [],
+        properties: {}
+    }, depth = RECURSIVE__MAX_DEPTH) {
         // assume first time is discriminator.
         if (depth === 0) {
             throw new Error(`swagger schema exceed maximum supported depth of ${RECURSIVE__MAX_DEPTH} for swagger definitions inheritance`);
@@ -111,6 +115,7 @@ function buildV3Inheritance(referencedSchemas, dereferencedSchemas, currentPath,
         if (!discriminator) {
             // need to stop and just add validator on ancesstor;
             const newSchema = cloneDeep(currentDereferencedSchema);
+            newSchema.required  = newSchema.required || [];
             newSchema.required.push(...(propertiesAcc.required || []));
             newSchema.properties = Object.assign(newSchema.properties, propertiesAcc.properties);
             ancestor.getValue().validators[option] = ajv.compile(newSchema); // think about key
@@ -120,7 +125,7 @@ function buildV3Inheritance(referencedSchemas, dereferencedSchemas, currentPath,
         propertiesAcc.required.push(...(currentDereferencedSchema.required || []));
         propertiesAcc.properties = Object.assign(propertiesAcc.properties, currentDereferencedSchema.properties);
 
-        const discriminatorObject = { validators: {} };
+        const discriminatorObject = {validators: {}};
         discriminatorObject.discriminator = discriminator.propertyName;
 
         const currentDiscriminatorNode = new Node(discriminatorObject);
@@ -137,13 +142,14 @@ function buildV3Inheritance(referencedSchemas, dereferencedSchemas, currentPath,
         const options = currentSchema.oneOf.map((refObject) => {
             let option = findKey(currentSchema.discriminator.mapping, (value) => (value === refObject['$ref']));
             const ref = getKeyFromRef(refObject['$ref']);
-            return { option: option || ref, ref };
+            return {option: option || ref, ref};
         });
         discriminatorObject.allowedValues = options.map((option) => option.option);
         options.forEach(function (optionObject) {
             recursiveDiscriminatorBuilder(currentDiscriminatorNode, optionObject.option, optionObject.ref, propertiesAcc, depth - 1);
         });
     }
+
     recursiveDiscriminatorBuilder(tree, rootKey, rootKey);
     return new Validators.DiscriminatorValidator(tree);
 }
