@@ -3,7 +3,8 @@
 let chai = require('chai'),
     expect = chai.expect,
     schemaValidatorGenerator = require('../../../src/index'),
-    path = require('path');
+    path = require('path'),
+    uuid = require('uuid');
 
 describe('oai3 - request tests', function () {
     let schema;
@@ -63,6 +64,38 @@ describe('oai3 - request tests', function () {
             }]);
             expect(isParametersMatch).to.be.false;
         });
+
+        it('invalid format for headers', function () {
+            // parameters match
+            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
+                headers: { 'public-key': '1.0',
+                    'header_uuid': '321' },
+                path: {},
+                files: undefined });
+            expect(schemaEndpoint.parameters.errors).to.be.eql([
+                {
+                    'dataPath': '.headers.header_uuid',
+                    'keyword': 'format',
+                    'message': 'should match format "uuid"',
+                    'params': {
+                        'format': 'uuid'
+                    },
+                    'schemaPath': '#/properties/headers/properties/header_uuid/format'
+                }
+            ]);
+            expect(isParametersMatch).to.be.false;
+        });
+
+        it('valid format for headers', function () {
+            // parameters match
+            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
+                headers: { 'public-key': '1.0',
+                    'header_uuid': uuid() },
+                path: {},
+                files: undefined });
+            expect(schemaEndpoint.parameters.errors).to.be.eql(null);
+            expect(isParametersMatch).to.be.true;
+        });
     });
 
     describe('check queries', function () {
@@ -88,21 +121,51 @@ describe('oai3 - request tests', function () {
             expect(schemaEndpoint.parameters.errors).to.be.eql([
                 {
                     'dataPath': '.query',
-                    'keyword': 'required',
-                    'message': "should have required property 'page'",
-                    'params': {
-                        'missingProperty': 'page'
-                    },
-                    'schemaPath': '#/properties/query/required'
-                },
-                {
-                    'dataPath': '.query',
                     'keyword': 'additionalProperties',
                     'message': 'should NOT have additional properties',
                     'params': {
                         'additionalProperty': 'wrong_query'
                     },
                     'schemaPath': '#/properties/query/additionalProperties'
+                },
+                {
+                    'dataPath': '.query',
+                    'keyword': 'required',
+                    'message': "should have required property 'page'",
+                    'params': {
+                        'missingProperty': 'page'
+                    },
+                    'schemaPath': '#/properties/query/required'
+                }
+            ]);
+            expect(isParametersMatch).to.be.false;
+        });
+
+        it('valid format query', function () {
+            let isParametersMatch = schemaEndpoint.parameters.validate({
+                query: { page: '1', 'query_uuid': uuid() },
+                headers: {},
+                path: {},
+                files: undefined });
+            expect(schemaEndpoint.parameters.errors).to.be.equal(null);
+            expect(isParametersMatch).to.be.true;
+        });
+
+        it('invalid format query', function () {
+            let isParametersMatch = schemaEndpoint.parameters.validate({
+                query: { page: '1', 'query_uuid': 321 },
+                headers: {},
+                path: {},
+                files: undefined });
+            expect(schemaEndpoint.parameters.errors).to.be.eql([
+                {
+                    'dataPath': '.query.query_uuid',
+                    'keyword': 'format',
+                    'message': 'should match format "uuid"',
+                    'params': {
+                        'format': 'uuid'
+                    },
+                    'schemaPath': '#/properties/query/properties/query_uuid/format'
                 }
             ]);
             expect(isParametersMatch).to.be.false;
@@ -110,7 +173,7 @@ describe('oai3 - request tests', function () {
     });
 
     describe('check path', function () {
-        it('valid headers', function () {
+        it('valid path param', function () {
             let schemaEndpoint = schema['/pets-path/:name']['get'];
             // parameters match
             let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
@@ -132,21 +195,53 @@ describe('oai3 - request tests', function () {
             expect(schemaEndpoint.parameters.errors).to.be.eql([
                 {
                     'dataPath': '.path',
-                    'keyword': 'required',
-                    'message': "should have required property 'name'",
-                    'params': {
-                        'missingProperty': 'name'
-                    },
-                    'schemaPath': '#/properties/path/required'
-                },
-                {
-                    'dataPath': '.path',
                     'keyword': 'additionalProperties',
                     'message': 'should NOT have additional properties',
                     'params': {
                         'additionalProperty': 'namee'
                     },
                     'schemaPath': '#/properties/path/additionalProperties'
+                },
+                {
+                    'dataPath': '.path',
+                    'keyword': 'required',
+                    'message': "should have required property 'name'",
+                    'params': {
+                        'missingProperty': 'name'
+                    },
+                    'schemaPath': '#/properties/path/required'
+                }
+            ]);
+            expect(isParametersMatch).to.be.false;
+        });
+
+        it('valid path param format', function () {
+            let schemaEndpoint = schema['/pets/:pet_id']['get'];
+            // parameters match
+            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
+                headers: { },
+                path: { pet_id: uuid() },
+                files: undefined });
+            expect(schemaEndpoint.parameters.errors).to.be.equal(null);
+            expect(isParametersMatch).to.be.true;
+        });
+
+        it('invalid path param format', function () {
+            let schemaEndpoint = schema['/pets/:pet_id']['get'];
+            // parameters match
+            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
+                headers: { },
+                path: { pet_id: 321 },
+                files: undefined });
+            expect(schemaEndpoint.parameters.errors).to.be.eql([
+                {
+                    'dataPath': '.path.pet_id',
+                    'keyword': 'format',
+                    'message': 'should match format "uuid"',
+                    'params': {
+                        'format': 'uuid'
+                    },
+                    'schemaPath': '#/properties/path/properties/pet_id/format'
                 }
             ]);
             expect(isParametersMatch).to.be.false;
