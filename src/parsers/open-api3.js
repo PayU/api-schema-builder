@@ -69,9 +69,7 @@ function handleSchema(data) {
     let schema = data.schema;
     if (schema) {
         delete clonedData['schema'];
-        Object.keys(schema).forEach(key => {
-            clonedData[key] = schema[key];
-        });
+        Object.assign(clonedData, schema);
     }
     return clonedData;
 }
