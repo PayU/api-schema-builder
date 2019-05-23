@@ -9,8 +9,8 @@ describe('oai2 - request tests', () => {
     describe('init function tests', function () {
         it('should reject the promise in case the file doesn\'t exists', function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger1.yaml');
-            return expect(schemaValidatorGenerator.buildSchema(swaggerPath, { ajvConfigBody: true }))
-                .to.be.rejected;
+            return expect(() => { schemaValidatorGenerator.buildSchema(swaggerPath, { ajvConfigBody: true }) })
+                .to.throw;
         });
         it('should resolve without formats', function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger.yaml');
@@ -405,9 +405,7 @@ describe('oai2 - request tests', () => {
         };
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger.yaml');
-            return schemaValidatorGenerator.buildSchema(swaggerPath, options).then(receivedSchema => {
-                schemas = receivedSchema;
-            });
+            schemas = schemaValidatorGenerator.buildSchema(swaggerPath, options);
         });
         it('request with wrong parameter type - should pass validation due to coercion', function () {
             let bodyValidationErrors = validateBody({
@@ -496,9 +494,7 @@ describe('oai2 - request tests', () => {
         let options = { contentTypeValidation: true };
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger-with-base-path.yaml');
-            return schemaValidatorGenerator.buildSchema(swaggerPath, options).then(receivedSchema => {
-                schemas = receivedSchema;
-            });
+            schemas = schemaValidatorGenerator.buildSchema(swaggerPath, options);
         });
         it('valid request - should pass validation', function () {
             let paramsValidationErrors = validateParams({
@@ -828,9 +824,7 @@ describe('oai2 - request tests', () => {
         let options = {};
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger.yaml');
-            return schemaValidatorGenerator.buildSchema(swaggerPath, options).then(receivedSchema => {
-                schemas = receivedSchema;
-            });
+            schemas = schemaValidatorGenerator.buildSchema(swaggerPath, options);
         });
 
         it('valid request - should pass validation', function () {
@@ -1138,9 +1132,7 @@ describe('oai2 - request tests', () => {
         };
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger.yaml');
-            return schemaValidatorGenerator.buildSchema(swaggerPath, options).then(receivedSchema => {
-                schemas = receivedSchema;
-            });
+            schemas = schemaValidatorGenerator.buildSchema(swaggerPath, options);
         });
 
         it('valid request - should pass validation', function () {
@@ -1502,9 +1494,7 @@ describe('oai2 - request tests', () => {
         };
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger-formats.yaml');
-            return schemaValidatorGenerator.buildSchema(swaggerPath, options).then(receivedSchema => {
-                schemas = receivedSchema;
-            });
+            schemas = schemaValidatorGenerator.buildSchema(swaggerPath, options);
         });
         it('bad body - wrong format body (should be an abcName format)', function () {
             let paramsValidationErrors = validateBody({
@@ -1722,7 +1712,7 @@ describe('oai2 - request tests', () => {
         };
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/form-data-swagger.yaml');
-            schemas =  schemaValidatorGenerator.buildSchema(swaggerPath, options);
+            schemas = schemaValidatorGenerator.buildSchema(swaggerPath, options);
         });
         it('only required files exists should pass', function () {
             let paramsValidationErrors = validateParams({

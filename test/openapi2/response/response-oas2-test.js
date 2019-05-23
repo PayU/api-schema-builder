@@ -10,9 +10,7 @@ describe('oai2 - response tests', function () {
         let schema;
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
-            return schemaValidatorGenerator.buildSchema(swaggerPath, {}).then((receivedSchema) => {
-                schema = receivedSchema;
-            });
+            schema = schemaValidatorGenerator.buildSchema(swaggerPath, {});
         });
         it('valid empty response - should not have validator', function () {
             let schemaEndpoint = schema['/pet-with-empty-body']['delete'].responses['204'];
@@ -112,10 +110,7 @@ describe('oai2 - response tests', function () {
             let schema;
             before(() => {
                 const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
-                return schemaValidatorGenerator.buildSchema(swaggerPath)
-                    .then((receivedSchema) => {
-                        schema = receivedSchema;
-                    });
+                schema = schemaValidatorGenerator.buildSchema(swaggerPath);
             });
 
             it('valid response - should pass validation', function () {
@@ -454,10 +449,7 @@ describe('oai2 - response tests', function () {
             let schema;
             before(() => {
                 const swaggerPath = path.join(__dirname, './yaml/pets-response-with-base-path.yaml');
-                return schemaValidatorGenerator.buildSchema(swaggerPath)
-                    .then((receivedSchema) => {
-                        schema = receivedSchema;
-                    });
+                schema = schemaValidatorGenerator.buildSchema(swaggerPath);
             });
             it('valid body with base path', function () {
                 let schemaEndpoint = schema['/v1/pets']['get'].responses['200'];
@@ -494,10 +486,7 @@ describe('oai2 - response tests', function () {
             let schema;
             before(() => {
                 const swaggerPath = path.join(__dirname, './yaml/pets-response-inheritance.yaml');
-                return schemaValidatorGenerator.buildSchema(swaggerPath)
-                    .then((receivedSchema) => {
-                        schema = receivedSchema;
-                    });
+                schema = schemaValidatorGenerator.buildSchema(swaggerPath);
             });
 
             it('should pass', function () {
@@ -616,12 +605,9 @@ describe('oai2 - response tests', function () {
             let schemaEndpoint, schema;
             before(() => {
                 const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
-                return schemaValidatorGenerator.buildSchema(swaggerPath, {
+                schema = schemaValidatorGenerator.buildSchema(swaggerPath, {
                     ajvConfigBody: true
-                })
-                    .then((receivedSchema) => {
-                        schema = receivedSchema;
-                    });
+                });
             });
 
             it('bad header - wrong type', function () {
@@ -740,10 +726,7 @@ describe('oai2 - response tests', function () {
             let schema;
             before(() => {
                 const swaggerPath = path.join(__dirname, './yaml/pets-response-with-base-path.yaml');
-                return schemaValidatorGenerator.buildSchema(swaggerPath)
-                    .then((receivedSchema) => {
-                        schema = receivedSchema;
-                    });
+                schema = schemaValidatorGenerator.buildSchema(swaggerPath);
             });
             it('valid headers with base path', function () {
                 let schemaEndpoint = schema['/v1/pets']['get'].responses['200'];
@@ -788,12 +771,9 @@ describe('oai2 - response tests', function () {
                 let schemaEndpoint, schema;
                 before(() => {
                     const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
-                    return schemaValidatorGenerator.buildSchema(swaggerPath, {
+                    schema = schemaValidatorGenerator.buildSchema(swaggerPath, {
                         contentTypeValidation: true
-                    })
-                        .then((receivedSchema) => {
-                            schema = receivedSchema;
-                        });
+                    });
                 });
                 it('more detailed content-type - should pass validation', function () {
                     schemaEndpoint = schema['/pet-with-header']['get'].responses['200'];
@@ -841,12 +821,9 @@ describe('oai2 - response tests', function () {
                 let schemaEndpoint, schema;
                 before(() => {
                     const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
-                    return schemaValidatorGenerator.buildSchema(swaggerPath, {
+                    schema = schemaValidatorGenerator.buildSchema(swaggerPath, {
                         contentTypeValidation: false
-                    })
-                        .then((receivedSchema) => {
-                            schema = receivedSchema;
-                        });
+                    });
                 });
                 it('valid response - wrong content-type when contentTypeValidation=false', function () {
                     schemaEndpoint = schema['/text']['put'].responses['200'];
@@ -872,9 +849,7 @@ describe('oai2 - response tests', function () {
                 };
                 before(function () {
                     const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
-                    return schemaValidatorGenerator.buildSchema(swaggerPath, options).then(receivedSchema => {
-                        schema = receivedSchema;
-                    });
+                    schema = schemaValidatorGenerator.buildSchema(swaggerPath, options);
                 });
                 it('request with wrong parameter type - should pass validation due to coercion', function () {
                     let schemaEndpoint = schema['/pets']['put'].responses['200'];
@@ -903,9 +878,7 @@ describe('oai2 - response tests', function () {
 
                 before(function () {
                     const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
-                    return schemaValidatorGenerator.buildSchema(swaggerPath, options).then(receivedSchema => {
-                        schema = receivedSchema;
-                    });
+                    schema = schemaValidatorGenerator.buildSchema(swaggerPath, options);
                 });
                 it('request with wrong parameter type - should pass validation due to coercion', function () {
                     let schemaEndpoint = schema['/pets']['put'].responses['200'];
@@ -963,9 +936,7 @@ describe('oai2 - response tests', function () {
 
             before(function () {
                 const swaggerPath = path.join(__dirname, './yaml/custom-keywords-response.yaml');
-                return schemaValidatorGenerator.buildSchema(swaggerPath, options).then(receivedSchema => {
-                    schema = receivedSchema;
-                });
+                schema = schemaValidatorGenerator.buildSchema(swaggerPath, options);
             });
 
             it('should pass the validation by the range keyword', function () {
@@ -1055,9 +1026,7 @@ describe('oai2 - response tests', function () {
 
             before(function () {
                 const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger-formats.yaml');
-                return schemaValidatorGenerator.buildSchema(swaggerPath, options).then(receivedSchema => {
-                    schema = receivedSchema;
-                });
+                schema = schemaValidatorGenerator.buildSchema(swaggerPath, options);
             });
 
             it('bad body - wrong format body (should be an abcName format)', function () {

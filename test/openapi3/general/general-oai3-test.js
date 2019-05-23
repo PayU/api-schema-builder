@@ -9,7 +9,9 @@ describe('oai3 - general tests', function () {
     describe('loading yaml with discriminator with allOf', function () {
         it('fail to load with relevant error', function () {
             const swaggerPath = path.join(__dirname, 'pets-discriminator-allOf.yaml');
-            return expect(schemaValidatorGenerator.buildSchema(swaggerPath, {})).to.be.rejectedWith('oneOf must be part of discriminator');
+            return expect(() => {
+                schemaValidatorGenerator.buildSchema(swaggerPath, {})
+            }).to.throw('oneOf must be part of discriminator');
         });
     });
 

@@ -10,6 +10,7 @@ const schemaPreprocessor = require('./utils/schema-preprocessor'),
     createContentTypeHeaders = require('./utils/createContentTypeHeaders'),
     get = require('lodash.get'),
     deref = require('json-schema-deref-sync'),
+    fs = require('fs'),
     yaml = require('js-yaml');
 
 const DEFAULT_SETTINGS = {
