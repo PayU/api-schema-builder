@@ -1,7 +1,6 @@
 'use strict';
 
-var SwaggerParser = require('swagger-parser'),
-    schemaPreprocessor = require('./utils/schema-preprocessor'),
+const schemaPreprocessor = require('./utils/schema-preprocessor'),
     oai3 = require('./parsers/open-api3'),
     oai2 = require('./parsers/open-api2'),
     ajvUtils = require('./utils/ajv-utils'),
@@ -9,19 +8,19 @@ var SwaggerParser = require('swagger-parser'),
     sourceResolver = require('./utils/sourceResolver'),
     Validators = require('./validators/index'),
     createContentTypeHeaders = require('./utils/createContentTypeHeaders'),
-    get = require('lodash.get');
+    get = require('lodash.get'),
+    deref = require('json-schema-deref-sync'),
+    yaml = require('js-yaml');
 
 const DEFAULT_SETTINGS = {
     buildRequests: true,
     buildResponses: true
 };
 function buildSchema(swaggerPath, options) {
-    return Promise.all([
-        SwaggerParser.dereference(swaggerPath),
-        SwaggerParser.parse(swaggerPath)
-    ]).then(function ([dereferenced, referenced]) {
-        return buildValidations(referenced, dereferenced, options);
-    });
+    const parsed = yaml.load(fs.readFileSync(swaggerPath), 'utf8');
+    const dereferenced = deref(parsed);
+
+    return buildValidations(parsed, dereferenced, options);
 }
 
 function buildValidations(referenced, dereferenced, receivedOptions) {

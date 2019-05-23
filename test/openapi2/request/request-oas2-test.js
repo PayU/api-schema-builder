@@ -14,7 +14,7 @@ describe('oai2 - request tests', () => {
         });
         it('should resolve without formats', function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger.yaml');
-            return schemaValidatorGenerator.buildSchema(swaggerPath);
+            schemaValidatorGenerator.buildSchema(swaggerPath);
         });
     });
     describe('Simple server - no options', function () {
@@ -22,9 +22,7 @@ describe('oai2 - request tests', () => {
         let options = {};
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger.yaml');
-            return schemaValidatorGenerator.buildSchema(swaggerPath, options).then(receivedSchema => {
-                schemas = receivedSchema;
-            });
+            schemas = schemaValidatorGenerator.buildSchema(swaggerPath, options);
         });
         it('valid request - should pass validation', function () {
             let paramsValidationErrors = validateParams({
@@ -1545,9 +1543,7 @@ describe('oai2 - request tests', () => {
         };
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger-inheritance.yaml');
-            return schemaValidatorGenerator.buildSchema(swaggerPath, options).then(receivedSchema => {
-                schemas = receivedSchema;
-            });
+            schemas = schemaValidatorGenerator.buildSchema(swaggerPath, options);
         });
         it('should pass', function () {
             let bodyValidationErrors = validateBody({
@@ -1726,9 +1722,7 @@ describe('oai2 - request tests', () => {
         };
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/form-data-swagger.yaml');
-            return schemaValidatorGenerator.buildSchema(swaggerPath, options).then(receivedSchema => {
-                schemas = receivedSchema;
-            });
+            schemas =  schemaValidatorGenerator.buildSchema(swaggerPath, options);
         });
         it('only required files exists should pass', function () {
             let paramsValidationErrors = validateParams({
@@ -1837,9 +1831,7 @@ describe('oai2 - request tests', () => {
         };
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/custom-keywords-swagger.yaml');
-            return schemaValidatorGenerator.buildSchema(swaggerPath, options).then(receivedSchema => {
-                schemas = receivedSchema;
-            });
+            schemas = schemaValidatorGenerator.buildSchema(swaggerPath, options);
         });
         it('should pass the validation by the range keyword', function () {
             let bodyValidationErrors = validateBody({
