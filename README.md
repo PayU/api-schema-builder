@@ -21,6 +21,7 @@ This package is used to build schema for input validation base on openapi doc [S
     - [Arguments](#arguments)
       - [Options](#options)
     - [Response](#response)
+  - [api-schema-builder.buildSchemaAsync(PathToSwaggerFile, options)](#express-ajv-swagger-validationgetSchemaAsyncpathtoswaggerfile-options)
 - [Usage Example](#usage-example)
 - [Important Notes](#important-notes)
 - [Open api 3 - known issues](#open-api-3---known-issues)
@@ -89,6 +90,15 @@ formats: [
     { name: 'int32', pattern: /^\d{1,10}$/ }
 ]
 ```
+
+
+### api-schema-builder.buildSchemaAsync(PathToSwaggerFile, options)
+
+Build schema that contains ajv validators for each endpoint, it base on swagger definition.
+
+The function return Promise that resolves with a schema object.
+s
+Arguments, options and response are the same as for the `buildSchema` method.
 
 ## Usage Example
 

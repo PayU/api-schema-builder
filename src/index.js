@@ -11,12 +11,23 @@ const schemaPreprocessor = require('./utils/schema-preprocessor'),
     get = require('lodash.get'),
     deref = require('json-schema-deref-sync'),
     fs = require('fs'),
-    yaml = require('js-yaml');
+    yaml = require('js-yaml'),
+    SwaggerParser = require('swagger-parser');
 
 const DEFAULT_SETTINGS = {
     buildRequests: true,
     buildResponses: true
 };
+
+function buildSchemaAsync(swaggerPath, options) {
+    return Promise.all([
+        SwaggerParser.dereference(swaggerPath),
+        SwaggerParser.parse(swaggerPath)
+    ]).then(function ([dereferenced, referenced]) {
+        return buildValidations(referenced, dereferenced, options);
+    });
+}
+
 function buildSchema(swaggerPath, options) {
     const parsed = yaml.load(fs.readFileSync(swaggerPath), 'utf8');
     const dereferenced = deref(parsed);
@@ -201,5 +212,6 @@ function buildParametersValidation(parameters, contentTypes, options) {
 
 module.exports = {
     buildSchema,
+    buildSchemaAsync,
     buildValidations
 };
