@@ -10,7 +10,7 @@ describe('oai2 - response tests', function () {
         let schema;
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
-            schema = schemaValidatorGenerator.buildSchema(swaggerPath, {});
+            schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
         });
         it('valid empty response - should not have validator', function () {
             let schemaEndpoint = schema['/pet-with-empty-body']['delete'].responses['204'];
@@ -110,7 +110,7 @@ describe('oai2 - response tests', function () {
             let schema;
             before(() => {
                 const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
-                schema = schemaValidatorGenerator.buildSchema(swaggerPath);
+                schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath);
             });
 
             it('valid response - should pass validation', function () {
@@ -449,7 +449,7 @@ describe('oai2 - response tests', function () {
             let schema;
             before(() => {
                 const swaggerPath = path.join(__dirname, './yaml/pets-response-with-base-path.yaml');
-                schema = schemaValidatorGenerator.buildSchema(swaggerPath);
+                schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath);
             });
             it('valid body with base path', function () {
                 let schemaEndpoint = schema['/v1/pets']['get'].responses['200'];
@@ -486,7 +486,7 @@ describe('oai2 - response tests', function () {
             let schema;
             before(() => {
                 const swaggerPath = path.join(__dirname, './yaml/pets-response-inheritance.yaml');
-                schema = schemaValidatorGenerator.buildSchema(swaggerPath);
+                schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath);
             });
 
             it('should pass', function () {
@@ -605,7 +605,7 @@ describe('oai2 - response tests', function () {
             let schemaEndpoint, schema;
             before(() => {
                 const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
-                schema = schemaValidatorGenerator.buildSchema(swaggerPath, {
+                schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {
                     ajvConfigBody: true
                 });
             });
@@ -726,7 +726,7 @@ describe('oai2 - response tests', function () {
             let schema;
             before(() => {
                 const swaggerPath = path.join(__dirname, './yaml/pets-response-with-base-path.yaml');
-                schema = schemaValidatorGenerator.buildSchema(swaggerPath);
+                schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath);
             });
             it('valid headers with base path', function () {
                 let schemaEndpoint = schema['/v1/pets']['get'].responses['200'];
@@ -771,7 +771,7 @@ describe('oai2 - response tests', function () {
                 let schemaEndpoint, schema;
                 before(() => {
                     const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
-                    schema = schemaValidatorGenerator.buildSchema(swaggerPath, {
+                    schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {
                         contentTypeValidation: true
                     });
                 });
@@ -821,7 +821,7 @@ describe('oai2 - response tests', function () {
                 let schemaEndpoint, schema;
                 before(() => {
                     const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
-                    schema = schemaValidatorGenerator.buildSchema(swaggerPath, {
+                    schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {
                         contentTypeValidation: false
                     });
                 });
@@ -849,7 +849,7 @@ describe('oai2 - response tests', function () {
                 };
                 before(function () {
                     const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
-                    schema = schemaValidatorGenerator.buildSchema(swaggerPath, options);
+                    schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
                 });
                 it('request with wrong parameter type - should pass validation due to coercion', function () {
                     let schemaEndpoint = schema['/pets']['put'].responses['200'];
@@ -878,7 +878,7 @@ describe('oai2 - response tests', function () {
 
                 before(function () {
                     const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
-                    schema = schemaValidatorGenerator.buildSchema(swaggerPath, options);
+                    schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
                 });
                 it('request with wrong parameter type - should pass validation due to coercion', function () {
                     let schemaEndpoint = schema['/pets']['put'].responses['200'];
@@ -936,7 +936,7 @@ describe('oai2 - response tests', function () {
 
             before(function () {
                 const swaggerPath = path.join(__dirname, './yaml/custom-keywords-response.yaml');
-                schema = schemaValidatorGenerator.buildSchema(swaggerPath, options);
+                schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
             });
 
             it('should pass the validation by the range keyword', function () {
@@ -1026,7 +1026,7 @@ describe('oai2 - response tests', function () {
 
             before(function () {
                 const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger-formats.yaml');
-                schema = schemaValidatorGenerator.buildSchema(swaggerPath, options);
+                schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
             });
 
             it('bad body - wrong format body (should be an abcName format)', function () {

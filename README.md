@@ -17,11 +17,11 @@ This package is used to build schema for input validation base on openapi doc [S
 - [Install](#install)
 - [API](#api)
   - [How to use](#how-to-use)
-  - [api-schema-builder.buildSchema(PathToSwaggerFile, options)](#express-ajv-swagger-validationgetSchemapathtoswaggerfile-options)
+  - [api-schema-builder.buildSchemaSync(PathToSwaggerFile, options)](#express-ajv-swagger-validationgetSchemapathtoswaggerfile-options)
     - [Arguments](#arguments)
       - [Options](#options)
     - [Response](#response)
-  - [api-schema-builder.buildSchemaAsync(PathToSwaggerFile, options)](#express-ajv-swagger-validationgetSchemaAsyncpathtoswaggerfile-options)
+  - [api-schema-builder.buildSchema(PathToSwaggerFile, options)](#express-ajv-swagger-validationgetSchemaAsyncpathtoswaggerfile-options)
 - [Usage Example](#usage-example)
 - [Important Notes](#important-notes)
 - [Open api 3 - known issues](#open-api-3---known-issues)
@@ -42,11 +42,11 @@ npm install --save api-schema-builder
 const apiSchemaBuilder = require('api-schema-builder');
 ```
 
-### api-schema-builder.buildSchema(PathToSwaggerFile, options)
+### api-schema-builder.buildSchemaSync(PathToSwaggerFile, options)
 
-Build schema that contains ajv validators for each endpoint, it base on swagger definition.
+Synchronously build schema that would contain ajv validators for each endpoint, based on swagger definition.
 
-The function return schema object.
+The function returns schema object.
 
 #### Arguments
 
@@ -92,19 +92,19 @@ formats: [
 ```
 
 
-### api-schema-builder.buildSchemaAsync(PathToSwaggerFile, options)
+### api-schema-builder.buildSchema(PathToSwaggerFile, options)
 
-Build schema that contains ajv validators for each endpoint, it base on swagger definition.
+Asynchronously build schema that would contain ajv validators for each endpoint, based on swagger definition.
 
-The function return Promise that resolves with a schema object.
+The function returns Promise that resolves with a schema object.
 s
-Arguments, options and response are the same as for the `buildSchema` method.
+Arguments, options and response are the same as for the `buildSchemaSync` method.
 
 ## Usage Example
 
 ### Validate request
 ```js
-  const schema = apiSchemaBuilder.buildSchema('test/unit-tests/input-validation/pet-store-swagger.yaml')
+  const schema = apiSchemaBuilder.buildSchemaSync('test/unit-tests/input-validation/pet-store-swagger.yaml');
   let schemaEndpoint = schema['/pet']['post'];
 
   //validate request's parameters
@@ -128,7 +128,7 @@ Arguments, options and response are the same as for the `buildSchema` method.
 ```
 ### Validate response
 ```js
-  const schema = apiSchemaBuilder.buildSchema('test/unit-tests/input-validation/pet-store-swagger.yaml')
+  const schema = apiSchemaBuilder.buildSchemaSync('test/unit-tests/input-validation/pet-store-swagger.yaml');
   let schemaEndpoint = schema['/pet']['post'].responses['201'];
   //validate response's body and headers
   let isValid = schemaEndpoint.validate({

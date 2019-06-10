@@ -9,12 +9,12 @@ describe('oai2 - request tests', () => {
     describe('init function tests', function () {
         it('should reject the promise in case the file doesn\'t exists', function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger1.yaml');
-            return expect(() => { schemaValidatorGenerator.buildSchema(swaggerPath, { ajvConfigBody: true }) })
+            return expect(() => { schemaValidatorGenerator.buildSchemaSync(swaggerPath, { ajvConfigBody: true }) })
                 .to.throw;
         });
         it('should resolve without formats', function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger.yaml');
-            schemaValidatorGenerator.buildSchema(swaggerPath);
+            schemaValidatorGenerator.buildSchemaSync(swaggerPath);
         });
     });
     describe('Simple server - no options', function () {
@@ -22,7 +22,7 @@ describe('oai2 - request tests', () => {
         let options = {};
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger.yaml');
-            schemas = schemaValidatorGenerator.buildSchema(swaggerPath, options);
+            schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
         });
         it('valid request - should pass validation', function () {
             let paramsValidationErrors = validateParams({
@@ -405,7 +405,7 @@ describe('oai2 - request tests', () => {
         };
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger.yaml');
-            schemas = schemaValidatorGenerator.buildSchema(swaggerPath, options);
+            schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
         });
         it('request with wrong parameter type - should pass validation due to coercion', function () {
             let bodyValidationErrors = validateBody({
@@ -494,7 +494,7 @@ describe('oai2 - request tests', () => {
         let options = { contentTypeValidation: true };
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger-with-base-path.yaml');
-            schemas = schemaValidatorGenerator.buildSchema(swaggerPath, options);
+            schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
         });
         it('valid request - should pass validation', function () {
             let paramsValidationErrors = validateParams({
@@ -824,7 +824,7 @@ describe('oai2 - request tests', () => {
         let options = {};
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger.yaml');
-            schemas = schemaValidatorGenerator.buildSchema(swaggerPath, options);
+            schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
         });
 
         it('valid request - should pass validation', function () {
@@ -1132,7 +1132,7 @@ describe('oai2 - request tests', () => {
         };
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger.yaml');
-            schemas = schemaValidatorGenerator.buildSchema(swaggerPath, options);
+            schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
         });
 
         it('valid request - should pass validation', function () {
@@ -1494,7 +1494,7 @@ describe('oai2 - request tests', () => {
         };
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger-formats.yaml');
-            schemas = schemaValidatorGenerator.buildSchema(swaggerPath, options);
+            schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
         });
         it('bad body - wrong format body (should be an abcName format)', function () {
             let paramsValidationErrors = validateBody({
@@ -1533,7 +1533,7 @@ describe('oai2 - request tests', () => {
         };
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger-inheritance.yaml');
-            schemas = schemaValidatorGenerator.buildSchema(swaggerPath, options);
+            schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
         });
         it('should pass', function () {
             let bodyValidationErrors = validateBody({
@@ -1712,7 +1712,7 @@ describe('oai2 - request tests', () => {
         };
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/form-data-swagger.yaml');
-            schemas = schemaValidatorGenerator.buildSchema(swaggerPath, options);
+            schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
         });
         it('only required files exists should pass', function () {
             let paramsValidationErrors = validateParams({
@@ -1821,7 +1821,7 @@ describe('oai2 - request tests', () => {
         };
         before(function () {
             const swaggerPath = path.join(__dirname, './yaml/custom-keywords-swagger.yaml');
-            schemas = schemaValidatorGenerator.buildSchema(swaggerPath, options);
+            schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
         });
         it('should pass the validation by the range keyword', function () {
             let bodyValidationErrors = validateBody({

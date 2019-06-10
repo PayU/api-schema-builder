@@ -9,7 +9,7 @@ describe('oai2 - general tests', () => {
             const swaggerPath = path.join(__dirname, './pet-store-swagger.yaml');
 
             it('buildRequests=true and buildResponse=true', () => {
-                const receivedSchema = schemaValidatorGenerator.buildSchema(swaggerPath, {
+                const receivedSchema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {
                     buildRequests: true,
                     buildResponses: true
                 });
@@ -18,7 +18,7 @@ describe('oai2 - general tests', () => {
                 expect(typeof receivedSchema['/pets']['post'].responses['201'].validate).to.eql('function');
             });
             it('buildRequests=false and buildResponse=true', () => {
-                const receivedSchema = schemaValidatorGenerator.buildSchema(swaggerPath, {
+                const receivedSchema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {
                     buildRequests: false,
                     buildResponses: true
                 });
@@ -27,7 +27,7 @@ describe('oai2 - general tests', () => {
                 expect(typeof receivedSchema['/pets']['post'].responses['201'].validate).to.eql('function');
             });
             it('buildRequests=true and buildResponse=false', () => {
-                const receivedSchema = schemaValidatorGenerator.buildSchema(swaggerPath, {
+                const receivedSchema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {
                     buildRequests: true,
                     buildResponses: false
                 });
@@ -36,7 +36,7 @@ describe('oai2 - general tests', () => {
                 expect(receivedSchema['/pets']['post'].responses).to.eql(undefined);
             });
             it('buildRequests=false and buildResponse=false', () => {
-                const receivedSchema = schemaValidatorGenerator.buildSchema(swaggerPath, {
+                const receivedSchema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {
                     buildRequests: false,
                     buildResponses: false
                 });
@@ -45,7 +45,7 @@ describe('oai2 - general tests', () => {
                 expect(receivedSchema['/pets']['post'].responses).to.eql(undefined);
             });
             it('buildRequests and buildResponse defaults (both true)', () => {
-                const receivedSchema = schemaValidatorGenerator.buildSchema(swaggerPath, {});
+                const receivedSchema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
                 expect(typeof receivedSchema['/pets']['post'].body.validate).to.eql('function');
                 expect(typeof receivedSchema['/pets']['post'].parameters.validate).to.eql('function');
                 expect(typeof receivedSchema['/pets']['post'].responses['201'].validate).to.eql('function');
@@ -54,7 +54,7 @@ describe('oai2 - general tests', () => {
         describe('No options are sent', () => {
             it('Should load schema', () => {
                 const swaggerPath = path.join(__dirname, './pet-store-swagger.yaml');
-                const receivedSchema = schemaValidatorGenerator.buildSchema(swaggerPath);
+                const receivedSchema = schemaValidatorGenerator.buildSchemaSync(swaggerPath);
                 expect(typeof receivedSchema['/pets']['post'].body).to.exist;
                 expect(typeof receivedSchema['/pets']['post'].parameters).to.exist;
             });
@@ -66,7 +66,7 @@ describe('oai2 - general tests', () => {
             const swaggerPath = path.join(__dirname, './pet-store-swagger.yaml');
 
             it('buildRequests=true and buildResponse=true', () => {
-                return schemaValidatorGenerator.buildSchemaAsync(swaggerPath, {
+                return schemaValidatorGenerator.buildSchema(swaggerPath, {
                     buildRequests: true,
                     buildResponses: true
                 }).then((receivedSchema) => {
@@ -76,7 +76,7 @@ describe('oai2 - general tests', () => {
                 });
             });
             it('buildRequests=false and buildResponse=true', () => {
-                return schemaValidatorGenerator.buildSchemaAsync(swaggerPath, {
+                return schemaValidatorGenerator.buildSchema(swaggerPath, {
                     buildRequests: false,
                     buildResponses: true
                 }).then((receivedSchema) => {
@@ -86,7 +86,7 @@ describe('oai2 - general tests', () => {
                 });
             });
             it('buildRequests=true and buildResponse=false', () => {
-                return schemaValidatorGenerator.buildSchemaAsync(swaggerPath, {
+                return schemaValidatorGenerator.buildSchema(swaggerPath, {
                     buildRequests: true,
                     buildResponses: false
                 }).then((receivedSchema) => {
@@ -96,7 +96,7 @@ describe('oai2 - general tests', () => {
                 });
             });
             it('buildRequests=false and buildResponse=false', () => {
-                return schemaValidatorGenerator.buildSchemaAsync(swaggerPath, {
+                return schemaValidatorGenerator.buildSchema(swaggerPath, {
                     buildRequests: false,
                     buildResponses: false
                 }).then((receivedSchema) => {
@@ -106,7 +106,7 @@ describe('oai2 - general tests', () => {
                 });
             });
             it('buildRequests and buildResponse defaults (both true)', () => {
-                return schemaValidatorGenerator.buildSchemaAsync(swaggerPath, {})
+                return schemaValidatorGenerator.buildSchema(swaggerPath, {})
                     .then((receivedSchema) => {
                         expect(typeof receivedSchema['/pets']['post'].body.validate).to.eql('function');
                         expect(typeof receivedSchema['/pets']['post'].parameters.validate).to.eql('function');
@@ -117,7 +117,7 @@ describe('oai2 - general tests', () => {
         describe('No options are sent', () => {
             it('Should load schema', () => {
                 const swaggerPath = path.join(__dirname, './pet-store-swagger.yaml');
-                return schemaValidatorGenerator.buildSchemaAsync(swaggerPath, {})
+                return schemaValidatorGenerator.buildSchema(swaggerPath, {})
                     .then((receivedSchema) => {
                         expect(typeof receivedSchema['/pets']['post'].body).to.exist;
                         expect(typeof receivedSchema['/pets']['post'].parameters).to.exist;

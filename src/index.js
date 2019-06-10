@@ -19,7 +19,7 @@ const DEFAULT_SETTINGS = {
     buildResponses: true
 };
 
-function buildSchemaAsync(swaggerPath, options) {
+function buildSchema(swaggerPath, options) {
     return Promise.all([
         SwaggerParser.dereference(swaggerPath),
         SwaggerParser.parse(swaggerPath)
@@ -28,7 +28,7 @@ function buildSchemaAsync(swaggerPath, options) {
     });
 }
 
-function buildSchema(swaggerPath, options) {
+function buildSchemaSync(swaggerPath, options) {
     const parsed = yaml.load(fs.readFileSync(swaggerPath), 'utf8');
     const dereferenced = deref(parsed);
 
@@ -211,7 +211,7 @@ function buildParametersValidation(parameters, contentTypes, options) {
 }
 
 module.exports = {
+    buildSchemaSync,
     buildSchema,
-    buildSchemaAsync,
     buildValidations
 };
