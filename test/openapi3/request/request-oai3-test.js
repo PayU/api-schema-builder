@@ -10,9 +10,7 @@ describe('oai3 - request tests', function () {
     let schema;
     before(function () {
         const swaggerPath = path.join(__dirname, 'pets-request.yaml');
-        return schemaValidatorGenerator.buildSchema(swaggerPath, {}).then(receivedSchema => {
-            schema = receivedSchema;
-        });
+        schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
     });
     describe('check headers', function () {
         let schemaEndpoint;

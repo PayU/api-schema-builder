@@ -10,9 +10,7 @@ describe('oai3 - response tests', function () {
     let schema;
     before(function () {
         const swaggerPath = path.join(__dirname, 'pets-response.yaml');
-        return schemaValidatorGenerator.buildSchema(swaggerPath, {}).then(receivedSchema => {
-            schema = receivedSchema;
-        });
+        schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {})
     });
 
     describe('check headers', function () {
@@ -649,9 +647,7 @@ describe('oai3 - response tests', function () {
         let schema;
         before(function () {
             const swaggerPath = path.join(__dirname, './pets-response.yaml');
-            return schemaValidatorGenerator.buildSchema(swaggerPath, {}).then((receivedSchema) => {
-                schema = receivedSchema;
-            });
+            schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
         });
         it('valid body and bad headers validation', function () {
             let schemaEndpoint = schema['/pet']['post'].responses['201'];

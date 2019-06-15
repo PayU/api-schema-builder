@@ -46,6 +46,8 @@
   "dependencies": {
     "ajv": "^6.10.0",
     "clone-deep": "^4.0.1",
+    "js-yaml": "^3.13.1",
+    "json-schema-deref-sync": "^0.10.0",
     "swagger-parser": "^6.0.5"
   },
   "devDependencies": {

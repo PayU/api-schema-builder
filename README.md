@@ -17,10 +17,11 @@ This package is used to build schema for input validation base on openapi doc [S
 - [Install](#install)
 - [API](#api)
   - [How to use](#how-to-use)
-  - [api-schema-builder.buildSchema(PathToSwaggerFile, options)](#express-ajv-swagger-validationgetSchemapathtoswaggerfile-options)
+  - [api-schema-builder.buildSchemaSync(PathToSwaggerFile, options)](#express-ajv-swagger-validationgetSchemapathtoswaggerfile-options)
     - [Arguments](#arguments)
       - [Options](#options)
     - [Response](#response)
+  - [api-schema-builder.buildSchema(PathToSwaggerFile, options)](#express-ajv-swagger-validationgetSchemaAsyncpathtoswaggerfile-options)
 - [Usage Example](#usage-example)
 - [Important Notes](#important-notes)
 - [Open api 3 - known issues](#open-api-3---known-issues)
@@ -38,14 +39,14 @@ npm install --save api-schema-builder
 ### How to use
 
 ```js
-var apiSchemaBuilder = require('api-schema-builder');
+const apiSchemaBuilder = require('api-schema-builder');
 ```
 
-### api-schema-builder.buildSchema(PathToSwaggerFile, options)
+### api-schema-builder.buildSchemaSync(PathToSwaggerFile, options)
 
-Build schema that contains ajv validators for each endpoint, it base on swagger definition.
+Synchronously build schema that would contain ajv validators for each endpoint, based on swagger definition.
 
-The function return Promise.
+The function returns schema object.
 
 #### Arguments
 
@@ -90,57 +91,61 @@ formats: [
 ]
 ```
 
+
+### api-schema-builder.buildSchema(PathToSwaggerFile, options)
+
+Asynchronously build schema that would contain ajv validators for each endpoint, based on swagger definition.
+
+The function returns Promise that resolves with a schema object.
+s
+Arguments, options and response are the same as for the `buildSchemaSync` method.
+
 ## Usage Example
 
 ### Validate request
 ```js
-apiSchemaBuilder.buildSchema('test/unit-tests/input-validation/pet-store-swagger.yaml')
-.then(function (schema) {
-    let schemaEndpoint = schema['/pet']['post'];
+  const schema = apiSchemaBuilder.buildSchemaSync('test/unit-tests/input-validation/pet-store-swagger.yaml');
+  let schemaEndpoint = schema['/pet']['post'];
+
+  //validate request's parameters
+  let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
+  headers: { 'public-key': '1.0'},path: {},files: undefined });
+  expect(schemaEndpoint.parameters.errors).to.be.equal(null);
+  expect(isParametersMatch).to.be.true;
     
-    //validate request's parameters
-    let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
-    headers: { 'public-key': '1.0'},path: {},files: undefined });
-    expect(schemaEndpoint.parameters.errors).to.be.equal(null);
-    expect(isParametersMatch).to.be.true;
-    
-    //validate request's body
-    let isBodysMatch =schemaEndpoint.body.validate({'bark': 111});
-    expect(schemaEndpoint.body.errors).to.be.eql([{
-            'dataPath': '.bark',
-            'keyword': 'type',
-            'message': 'should be string',
-            'params': {
-                'type': 'string'
-            },
-            'schemaPath': '#/properties/bark/type'}
-    ])
-    expect(isBodysMatch).to.be.false;
-});
+  //validate request's body
+  let isBodysMatch =schemaEndpoint.body.validate({'bark': 111});
+  expect(schemaEndpoint.body.errors).to.be.eql([{
+      'dataPath': '.bark',
+      'keyword': 'type',
+      'message': 'should be string',
+      'params': {
+         'type': 'string'
+       },
+       'schemaPath': '#/properties/bark/type'}
+  ])
+  expect(isBodysMatch).to.be.false;
 ```
 ### Validate response
 ```js
-apiSchemaBuilder.buildSchema('test/unit-tests/input-validation/pet-store-swagger.yaml')
-.then(function (schema) {
-    let schemaEndpoint = schema['/pet']['post'].responses['201'];
-    //validate response's body and headers
-    let isValid = schemaEndpoint.validate({
-            body :{ id:11, 'name': 111},
-            headers:{'x-next': '321'}
-        })
-    expect(schemaEndpoint.errors).to.be.eql([
+  const schema = apiSchemaBuilder.buildSchemaSync('test/unit-tests/input-validation/pet-store-swagger.yaml');
+  let schemaEndpoint = schema['/pet']['post'].responses['201'];
+  //validate response's body and headers
+  let isValid = schemaEndpoint.validate({
+          body :{ id:11, 'name': 111},
+          headers:{'x-next': '321'}
+  })
+  expect(schemaEndpoint.errors).to.be.eql([
     {
-        'dataPath': '.body.name',
-        'keyword': 'type',
-        'message': 'should be string',
-        'params': {
-            'type': 'string'
-        },
-        'schemaPath': '#/body/properties/name/type'
-    }])
-    expect(isValid).to.be.false;
-
-});
+      'dataPath': '.body.name',
+      'keyword': 'type',
+      'message': 'should be string',
+      'params': {
+          'type': 'string'
+      },
+      'schemaPath': '#/body/properties/name/type'
+  }])
+  expect(isValid).to.be.false;
 ```
 
 ## Important Notes
