@@ -6,8 +6,6 @@ const Validators = require('../validators/index'),
     createContentTypeHeaders = require('../utils/createContentTypeHeaders'),
     get = require('lodash.get');
 
-const OAI3_RESPONSE_CONTENT_TYPE = 'application/json';
-
 module.exports = {
     buildRequestBodyValidation,
     buildResponseBodyValidation,
@@ -16,7 +14,7 @@ module.exports = {
 };
 
 function buildRequestBodyValidation(dereferenced, referenced, currentPath, currentMethod, options) {
-    const requestPath = `paths[${currentPath}][${currentMethod}].requestBody.content[${OAI3_RESPONSE_CONTENT_TYPE}].schema`;
+    const requestPath = `paths[${currentPath}][${currentMethod}].requestBody.content[${options.requestContentType}].schema`;
     let dereferencedBodySchema = get(dereferenced, requestPath);
     let referencedBodySchema = get(referenced, requestPath);
 
@@ -25,7 +23,7 @@ function buildRequestBodyValidation(dereferenced, referenced, currentPath, curre
 }
 
 function buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, statusCode, options) {
-    const responsePath = `paths[${currentPath}][${currentMethod}].responses[${statusCode}].content[${OAI3_RESPONSE_CONTENT_TYPE}].schema`;
+    const responsePath = `paths[${currentPath}][${currentMethod}].responses[${statusCode}].content[${options.responseContentType}].schema`;
 
     let dereferencedBodySchema = get(dereferenced, responsePath);
     let referencedBodySchema = get(referenced, responsePath);
@@ -74,7 +72,7 @@ function handleSchema(data) {
     return clonedData;
 }
 
-function buildHeadersValidation(responses, statusCode, { ajvConfigParams, formats, keywords, contentTypeValidation }) {
+function buildHeadersValidation(responses, statusCode, { ajvConfigParams, formats, keywords, contentTypeValidation, responseContentType }) {
     let headers = get(responses, `[${statusCode}].headers`);
     if (!headers) return;
 
@@ -103,7 +101,7 @@ function buildHeadersValidation(responses, statusCode, { ajvConfigParams, format
         ajvHeadersSchema.properties[headerName] = headerObj;
     });
 
-    ajvHeadersSchema.content = createContentTypeHeaders(contentTypeValidation, OAI3_RESPONSE_CONTENT_TYPE);
+    ajvHeadersSchema.content = createContentTypeHeaders(contentTypeValidation, responseContentType);
 
     return new Validators.SimpleValidator(ajv.compile(ajvHeadersSchema));
 }

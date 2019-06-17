@@ -26,6 +26,15 @@ describe('oai3 - general tests', () => {
             });
         });
 
+        describe('requestContentType and responseContentType options', () => {
+            const swaggerPath = path.join(__dirname, './pets-custom-content-type.yaml');
+            it('supports passing custom requestContentType', () => {
+                const schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, { requestContentType: 'application/apiV2+json', responseContentType: 'application/hal+json' });
+                expect(schema['/haljson']['put'].body).to.be.ok;
+                expect(schema['/haljson']['put'].responses['200']).to.be.ok;
+            });
+        });
+
         describe('BuildRequests and BuildResponses option', () => {
             const swaggerPath = path.join(__dirname, './pets-general.yaml');
 
