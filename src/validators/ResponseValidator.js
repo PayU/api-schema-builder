@@ -1,5 +1,6 @@
 
 const Validator = require('./Validator');
+const DEFAULT_CONTENT_TYPE = 'application/json';
 
 class ResponseValidator extends Validator {
     constructor(schema) {
@@ -12,8 +13,10 @@ function responseValidator(response, data) {
     let bodyValidationResult = true, bodyValidationErrors = [],
         headersValidationResult = true, headersValidationErrors = [];
     if (bodySchema) {
-        bodyValidationResult = bodySchema.validate(data.body);
-        bodyValidationErrors = bodySchema.errors ? addErrorPrefix(bodySchema.errors, 'body') : [];
+        const validator = bodySchema.validate ? bodySchema
+            : bodySchema[data.headers['Content-Type'] || DEFAULT_CONTENT_TYPE];
+        bodyValidationResult = validator.validate(data.body);
+        bodyValidationErrors = validator.errors ? addErrorPrefix(validator.errors, 'body') : [];
     }
     if (headersSchema) {
         headersValidationResult = headersSchema.validate(data.headers);

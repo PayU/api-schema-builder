@@ -82,8 +82,6 @@ If the element is an object, it must include `name` and `definition`. If the ele
 - `expectFormFieldsInBody` - Boolean that indicates whether form fields of non-file type that are specified in the schema should be validated against request body (e. g. Multer is copying text form fields to body)
 - `buildRequests` - Boolean that indicates whether if create validators for requests, default is true.
 - `buildResponses` - Boolean that indicates whether if create validators for responses, default is false.
-- `requestContentType` - String that will be used to determine schema entries of which content type will be used to build request body validators. Default is `application/json`. Only applicable to OpenAPI 3.0.
-- `responseContentType` - String that will be used to determine schema entries of which content type will be used to build response validators. Default is `application/json`. Only applicable to OpenAPI 3.0.
 
 ```js
 formats: [

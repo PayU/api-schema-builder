@@ -14,22 +14,39 @@ module.exports = {
 };
 
 function buildRequestBodyValidation(dereferenced, referenced, currentPath, currentMethod, options) {
-    const requestPath = `paths[${currentPath}][${currentMethod}].requestBody.content[${options.requestContentType}].schema`;
-    let dereferencedBodySchema = get(dereferenced, requestPath);
-    let referencedBodySchema = get(referenced, requestPath);
+    const contentTypes = get(dereferenced, `paths[${currentPath}][${currentMethod}].requestBody.content`);
+    if (!contentTypes) {
+        return;
+    }
 
-    return handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
-        dereferencedBodySchema, referencedBodySchema, options);
+    return Object.keys(contentTypes).reduce((result, contentType) => {
+        const requestPath = `paths[${currentPath}][${currentMethod}].requestBody.content[${contentType}].schema`;
+
+        const dereferencedBodySchema = get(dereferenced, requestPath);
+        const referencedBodySchema = get(referenced, requestPath);
+
+        result[contentType] = handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
+            dereferencedBodySchema, referencedBodySchema, options);
+        return result;
+    }, {});
 }
 
 function buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, statusCode, options) {
-    const responsePath = `paths[${currentPath}][${currentMethod}].responses[${statusCode}].content[${options.responseContentType}].schema`;
+    const contentTypes = get(dereferenced, `paths[${currentPath}][${currentMethod}].responses[${statusCode}].content`);
+    if (!contentTypes) {
+        return;
+    }
 
-    let dereferencedBodySchema = get(dereferenced, responsePath);
-    let referencedBodySchema = get(referenced, responsePath);
+    return Object.keys(contentTypes).reduce((result, contentType) => {
+        const responsePath = `paths[${currentPath}][${currentMethod}].responses[${statusCode}].content[${contentType}].schema`;
 
-    return handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
-        dereferencedBodySchema, referencedBodySchema, options);
+        const dereferencedBodySchema = get(dereferenced, responsePath);
+        const referencedBodySchema = get(referenced, responsePath);
+
+        result[contentType] = handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
+            dereferencedBodySchema, referencedBodySchema, options);
+        return result;
+    }, {});
 }
 
 function handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
