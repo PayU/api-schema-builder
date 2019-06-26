@@ -4,6 +4,7 @@ const Validators = require('../validators/index'),
     ajvUtils = require('../utils/ajv-utils'),
     { Node } = require('../data_structures/tree'),
     createContentTypeHeaders = require('../utils/createContentTypeHeaders'),
+    schemaUtils = require('../utils/schemaUtils'),
     get = require('lodash.get');
 
 module.exports = {
@@ -89,7 +90,7 @@ function handleSchema(data) {
     return clonedData;
 }
 
-function buildHeadersValidation(responses, statusCode, { ajvConfigParams, formats, keywords, contentTypeValidation, responseContentType }) {
+function buildHeadersValidation(responses, statusCode, { ajvConfigParams, formats, keywords, contentTypeValidation }) {
     let headers = get(responses, `[${statusCode}].headers`);
     if (!headers) return;
 
@@ -102,7 +103,7 @@ function buildHeadersValidation(responses, statusCode, { ajvConfigParams, format
 
     ajvUtils.addCustomKeyword(ajv, formats, keywords);
 
-    var ajvHeadersSchema = {
+    const ajvHeadersSchema = {
         title: 'HTTP headers',
         type: 'object',
         properties: {},
@@ -118,7 +119,8 @@ function buildHeadersValidation(responses, statusCode, { ajvConfigParams, format
         ajvHeadersSchema.properties[headerName] = headerObj;
     });
 
-    ajvHeadersSchema.content = createContentTypeHeaders(contentTypeValidation, responseContentType);
+    const contentTypes = schemaUtils.getAllResponseContentTypes(responses);
+    ajvHeadersSchema.content = createContentTypeHeaders(contentTypeValidation, contentTypes);
 
     return new Validators.SimpleValidator(ajv.compile(ajvHeadersSchema));
 }

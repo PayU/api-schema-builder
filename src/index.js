@@ -16,9 +16,7 @@ const schemaPreprocessor = require('./utils/schema-preprocessor'),
 
 const DEFAULT_SETTINGS = {
     buildRequests: true,
-    buildResponses: true,
-    requestContentType: 'application/json',
-    responseContentType: 'application/json'
+    buildResponses: true
 };
 
 function buildSchema(swaggerPath, options) {
