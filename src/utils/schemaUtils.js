@@ -1,3 +1,8 @@
+const values = require('object.values');
+if (!Object.values) {
+    values.shim();
+}
+
 const DEFAULT_RESPONSE_CONTENT_TYPE = 'application/json';
 
 function getAllResponseContentTypes(responses) {
