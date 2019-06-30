@@ -47,6 +47,15 @@ describe('oai3 - general tests', () => {
                 expect(typeof receivedSchema['/json']['put'].parameters.validate).to.eql('function');
                 expect(typeof receivedSchema['/json']['put'].responses['200'].validate).to.eql('function');
             });
+
+            it('buildRequests=true and buildResponse=true fills non-content-type-specific validator as well', () => {
+                const receivedSchema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {
+                    buildRequests: true,
+                    buildResponses: true
+                });
+                expect(typeof receivedSchema['/json']['put'].body.validate).to.eql('function');
+            });
+
             it('buildRequests=false and buildResponse=true', () => {
                 const receivedSchema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {
                     buildRequests: false,

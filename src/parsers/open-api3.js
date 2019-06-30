@@ -20,6 +20,16 @@ function buildRequestBodyValidation(dereferenced, referenced, currentPath, curre
         return;
     }
 
+    // Add default validator for default content type for compatibility sake
+    const requestPath = `paths[${currentPath}][${currentMethod}].requestBody.content[${schemaUtils.DEFAULT_REQUEST_CONTENT_TYPE}].schema`;
+
+    const dereferencedBodySchema = get(dereferenced, requestPath);
+    const referencedBodySchema = get(referenced, requestPath);
+
+    const result = handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
+        dereferencedBodySchema, referencedBodySchema, options) || {};
+
+    // Add validators for all content types
     return Object.keys(contentTypes).reduce((result, contentType) => {
         const requestPath = `paths[${currentPath}][${currentMethod}].requestBody.content[${contentType}].schema`;
 
@@ -29,7 +39,7 @@ function buildRequestBodyValidation(dereferenced, referenced, currentPath, curre
         result[contentType] = handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
             dereferencedBodySchema, referencedBodySchema, options);
         return result;
-    }, {});
+    }, result);
 }
 
 function buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, statusCode, options) {

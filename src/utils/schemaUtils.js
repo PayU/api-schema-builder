@@ -3,6 +3,7 @@ if (!Object.values) {
     values.shim();
 }
 
+const DEFAULT_REQUEST_CONTENT_TYPE = 'application/json';
 const DEFAULT_RESPONSE_CONTENT_TYPE = 'application/json';
 
 function getAllResponseContentTypes(responses) {
@@ -26,5 +27,6 @@ function getAllResponseContentTypes(responses) {
 
 module.exports = {
     DEFAULT_RESPONSE_CONTENT_TYPE,
+    DEFAULT_REQUEST_CONTENT_TYPE,
     getAllResponseContentTypes
 };
