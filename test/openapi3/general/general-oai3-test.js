@@ -16,13 +16,22 @@ describe('oai3 - general tests', () => {
             });
         });
 
-        // support only application/json in request and response (no file)
+        // loads all content-types in request and response
         describe('loading yaml with content type diff from application/json', () => {
             it('loading yaml without response and request validators', () => {
                 const swaggerPath = path.join(__dirname, 'pets-general.yaml');
                 const schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
-                expect(schema['/text']['put'].body).to.be.undefined;
+                expect(Object.keys(schema['/text']['put'].body)).to.eql(['plain/text']);
                 expect(schema['/text']['put'].responses['201']).to.be.undefined;
+            });
+        });
+
+        describe('supports custom content types', () => {
+            const swaggerPath = path.join(__dirname, './pets-custom-content-type.yaml');
+            it('supports using custom content type in request and response schemas', () => {
+                const schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath);
+                expect(schema['/haljson']['put'].body).to.be.ok;
+                expect(schema['/haljson']['put'].responses['200'].validate).to.be.ok;
             });
         });
 
@@ -34,10 +43,19 @@ describe('oai3 - general tests', () => {
                     buildRequests: true,
                     buildResponses: true
                 });
-                expect(typeof receivedSchema['/json']['put'].body.validate).to.eql('function');
+                expect(typeof receivedSchema['/json']['put'].body['application/json'].validate).to.eql('function');
                 expect(typeof receivedSchema['/json']['put'].parameters.validate).to.eql('function');
                 expect(typeof receivedSchema['/json']['put'].responses['200'].validate).to.eql('function');
             });
+
+            it('buildRequests=true and buildResponse=true fills non-content-type-specific validator as well', () => {
+                const receivedSchema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {
+                    buildRequests: true,
+                    buildResponses: true
+                });
+                expect(typeof receivedSchema['/json']['put'].body.validate).to.eql('function');
+            });
+
             it('buildRequests=false and buildResponse=true', () => {
                 const receivedSchema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {
                     buildRequests: false,
@@ -52,7 +70,7 @@ describe('oai3 - general tests', () => {
                     buildRequests: true,
                     buildResponses: false
                 });
-                expect(typeof receivedSchema['/json']['put'].body.validate).to.eql('function');
+                expect(typeof receivedSchema['/json']['put'].body['application/json'].validate).to.eql('function');
                 expect(typeof receivedSchema['/json']['put'].parameters.validate).to.eql('function');
                 expect(receivedSchema['/json']['put'].responses).to.eql(undefined);
             });
@@ -67,7 +85,7 @@ describe('oai3 - general tests', () => {
             });
             it('buildRequests and buildResponse defaults (both true)', () => {
                 const receivedSchema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
-                expect(typeof receivedSchema['/json']['put'].body.validate).to.eql('function');
+                expect(typeof receivedSchema['/json']['put'].body['application/json'].validate).to.eql('function');
                 expect(typeof receivedSchema['/json']['put'].parameters.validate).to.eql('function');
                 expect(typeof receivedSchema['/json']['put'].responses['200'].validate).to.eql('function');
             });
@@ -76,7 +94,7 @@ describe('oai3 - general tests', () => {
             it('Should load schema', () => {
                 const swaggerPath = path.join(__dirname, './pets-general.yaml');
                 const receivedSchema = schemaValidatorGenerator.buildSchemaSync(swaggerPath);
-                expect(typeof receivedSchema['/json']['put'].body.validate).to.eql('function');
+                expect(typeof receivedSchema['/json']['put'].body['application/json'].validate).to.eql('function');
                 expect(typeof receivedSchema['/json']['put'].parameters.validate).to.eql('function');
                 expect(typeof receivedSchema['/json']['put'].responses['200'].validate).to.eql('function');
             });
@@ -100,7 +118,7 @@ describe('oai3 - general tests', () => {
             it('loading yaml without response and request validators', () => {
                 const swaggerPath = path.join(__dirname, 'pets-general.yaml');
                 return schemaValidatorGenerator.buildSchema(swaggerPath, {}).then((schema) => {
-                    expect(schema['/text']['put'].body).to.be.undefined;
+                    expect(schema['/text']['put'].body['application/json']).to.be.undefined;
                     expect(schema['/text']['put'].responses['201']).to.be.undefined;
                 });
             });
@@ -114,7 +132,7 @@ describe('oai3 - general tests', () => {
                     buildRequests: true,
                     buildResponses: true
                 }).then((receivedSchema) => {
-                    expect(typeof receivedSchema['/json']['put'].body.validate).to.eql('function');
+                    expect(typeof receivedSchema['/json']['put'].body['application/json'].validate).to.eql('function');
                     expect(typeof receivedSchema['/json']['put'].parameters.validate).to.eql('function');
                     expect(typeof receivedSchema['/json']['put'].responses['200'].validate).to.eql('function');
                 });
@@ -134,7 +152,7 @@ describe('oai3 - general tests', () => {
                     buildRequests: true,
                     buildResponses: false
                 }).then((receivedSchema) => {
-                    expect(typeof receivedSchema['/json']['put'].body.validate).to.eql('function');
+                    expect(typeof receivedSchema['/json']['put'].body['application/json'].validate).to.eql('function');
                     expect(typeof receivedSchema['/json']['put'].parameters.validate).to.eql('function');
                     expect(receivedSchema['/json']['put'].responses).to.eql(undefined);
                 });
@@ -151,7 +169,7 @@ describe('oai3 - general tests', () => {
             });
             it('buildRequests and buildResponse defaults (both true)', () => {
                 return schemaValidatorGenerator.buildSchema(swaggerPath, {}).then((receivedSchema) => {
-                    expect(typeof receivedSchema['/json']['put'].body.validate).to.eql('function');
+                    expect(typeof receivedSchema['/json']['put'].body['application/json'].validate).to.eql('function');
                     expect(typeof receivedSchema['/json']['put'].parameters.validate).to.eql('function');
                     expect(typeof receivedSchema['/json']['put'].responses['200'].validate).to.eql('function');
                 });
@@ -160,7 +178,7 @@ describe('oai3 - general tests', () => {
                 it('Should load schema', () => {
                     const swaggerPath = path.join(__dirname, './pets-general.yaml');
                     return schemaValidatorGenerator.buildSchema(swaggerPath).then((receivedSchema) => {
-                        expect(typeof receivedSchema['/json']['put'].body.validate).to.eql('function');
+                        expect(typeof receivedSchema['/json']['put'].body['application/json'].validate).to.eql('function');
                         expect(typeof receivedSchema['/json']['put'].parameters.validate).to.eql('function');
                         expect(typeof receivedSchema['/json']['put'].responses['200'].validate).to.eql('function');
                     });

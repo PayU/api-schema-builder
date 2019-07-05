@@ -6,6 +6,10 @@ let chai = require('chai'),
     path = require('path'),
     uuid = require('uuid/v4');
 
+const DEFAULT_HEADERS = {
+    'Content-Type': 'application/json'
+};
+
 describe('oai3 - response tests', function () {
     let schema;
     before(function () {
@@ -46,7 +50,7 @@ describe('oai3 - response tests', function () {
                         {
                             'bark': 'hav hav'
                         },
-                headers: {} });
+                headers: DEFAULT_HEADERS });
                 expect(schemaEndpoint.errors).to.be.equal(null);
                 expect(isMatch).to.be.true;
             });
@@ -56,7 +60,7 @@ describe('oai3 - response tests', function () {
                         {
                             'bark1': 'hav hav'
                         },
-                headers: {} });
+                headers: DEFAULT_HEADERS });
                 expect(schemaEndpoint.errors).to.be.eql([
                     {
                         'dataPath': '.body',
@@ -76,7 +80,7 @@ describe('oai3 - response tests', function () {
                         {
                             'bark': 123
                         },
-                headers: {} });
+                headers: DEFAULT_HEADERS });
                 expect(schemaEndpoint.errors).to.be.eql([
                     {
                         'dataPath': '.body.bark',
@@ -99,7 +103,7 @@ describe('oai3 - response tests', function () {
                             'fieldStr1': 'name1',
                             'fieldStr2': 'name2',
                             'fieldStr3': 'name3' },
-                headers: {} });
+                headers: DEFAULT_HEADERS });
                 expect(schemaEndpoint.errors).to.be.eql(null);
                 expect(isMatch).to.be.true;
             });
@@ -107,7 +111,7 @@ describe('oai3 - response tests', function () {
                 let schemaEndpoint = schema['/many-body-fields']['post'].responses['201'];
                 let isMatch = schemaEndpoint.validate({ body:
                         { 'fieldNum1': 'name1', 'fieldNum2': 'name2', 'fieldNum3': 'name3', 'fieldStr1': 1, 'fieldStr2': 2, 'fieldStr3': 3 },
-                headers: {} });
+                headers: DEFAULT_HEADERS });
                 expect(schemaEndpoint.errors).to.be.eql([
                     {
                         'keyword': 'type',
@@ -172,7 +176,7 @@ describe('oai3 - response tests', function () {
                     category: 'bad request',
                     description: 'invalid body field'
                 },
-                headers: {} });
+                headers: DEFAULT_HEADERS });
 
                 expect(schemaEndpoint.errors).to.be.eql(null);
                 expect(validatorMatch).to.be.true;
@@ -182,7 +186,7 @@ describe('oai3 - response tests', function () {
                 let validatorMatch = schemaEndpoint.validate({ body: {
                     category: 'bad request'
                 },
-                headers: {} });
+                headers: DEFAULT_HEADERS });
 
                 expect(schemaEndpoint.errors).to.be.eql([
                     {
@@ -203,7 +207,7 @@ describe('oai3 - response tests', function () {
                     category: 'bad request',
                     description: 111
                 },
-                headers: {} });
+                headers: DEFAULT_HEADERS });
 
                 expect(schemaEndpoint.errors).to.be.eql([
                     {
@@ -230,7 +234,7 @@ describe('oai3 - response tests', function () {
                             'bark': 'hav hav',
                             'fur': 1
                         },
-                headers: {} });
+                headers: DEFAULT_HEADERS });
                 expect(schemaEndpoint.errors).to.be.equal(null);
                 expect(isMatch).to.be.true;
             });
@@ -238,7 +242,7 @@ describe('oai3 - response tests', function () {
             it('missing required field in body', function () {
                 let isMatch = schemaEndpoint.validate({ body:
                         {},
-                headers: {} });
+                headers: DEFAULT_HEADERS });
                 expect(schemaEndpoint.errors).to.be.eql([
                     {
                         'dataPath': '.body',
@@ -274,7 +278,7 @@ describe('oai3 - response tests', function () {
                             'bark': 111,
                             'fur': 'wrong'
                         },
-                headers: {} });
+                headers: DEFAULT_HEADERS });
                 expect(schemaEndpoint.errors).to.be.eql([
                     {
                         'dataPath': '.body.bark',
@@ -317,7 +321,7 @@ describe('oai3 - response tests', function () {
                             'bark': 'hav hav',
                             'fur': '11'
                         },
-                headers: {} });
+                headers: DEFAULT_HEADERS });
                 expect(schemaEndpoint.errors).to.be.equal(null);
                 expect(isMatch).to.be.true;
             });
@@ -326,7 +330,7 @@ describe('oai3 - response tests', function () {
                         {
                             'bark': 'hav hav'
                         },
-                headers: {} });
+                headers: DEFAULT_HEADERS });
                 expect(schemaEndpoint.errors).to.be.eql([
                     {
                         'dataPath': '.body',
@@ -346,7 +350,7 @@ describe('oai3 - response tests', function () {
                             'bark': 111,
                             'fur': 'wrong'
                         },
-                headers: {} });
+                headers: DEFAULT_HEADERS });
                 expect(schemaEndpoint.errors).to.be.eql([
                     {
                         'dataPath': '.body.bark',
@@ -381,7 +385,7 @@ describe('oai3 - response tests', function () {
                         {
                             'bark': 'hav hav'
                         },
-                headers: {} });
+                headers: DEFAULT_HEADERS });
                 expect(schemaEndpoint.errors).to.be.equal(null);
                 expect(isMatch).to.be.true;
             });
@@ -390,7 +394,7 @@ describe('oai3 - response tests', function () {
                         {
                             'bark1': 'hav hav'
                         },
-                headers: {} });
+                headers: DEFAULT_HEADERS });
                 expect(schemaEndpoint.errors).to.be.eql([
                     {
                         'dataPath': '.body',
@@ -409,7 +413,7 @@ describe('oai3 - response tests', function () {
                         {
                             'bark': 123
                         },
-                headers: {} });
+                headers: DEFAULT_HEADERS });
                 expect(schemaEndpoint.errors).to.be.eql([
                     {
                         'dataPath': '.body.bark',
@@ -435,7 +439,7 @@ describe('oai3 - response tests', function () {
                         {
                             'fur': '1'
                         },
-                headers: {} });
+                headers: DEFAULT_HEADERS });
                 expect(schemaEndpoint.errors).to.be.equal(null);
                 expect(isMatch).to.be.true;
             });
@@ -445,7 +449,7 @@ describe('oai3 - response tests', function () {
                         {
                             'fur': 'hav hav'
                         },
-                headers: {} });
+                headers: DEFAULT_HEADERS });
 
                 expect(schemaEndpoint.errors[0].message).to.be.equal("should have required property 'bark'");
                 expect(schemaEndpoint.errors[1].message).to.be.equal('should match pattern "^\\d+$"');
@@ -468,7 +472,7 @@ describe('oai3 - response tests', function () {
                     let isMatch = schemaEndpoint.validate({ body: {
                         'bark': 'hav hav'
                     },
-                    headers: {} });
+                    headers: DEFAULT_HEADERS });
 
                     expect(schemaEndpoint.errors.length).to.be.equal(1);
                     expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
@@ -485,7 +489,7 @@ describe('oai3 - response tests', function () {
                         body: {
                             'type': 'dog_object'
                         },
-                        headers: {}
+                        headers: DEFAULT_HEADERS
                     });
                     expect(schemaEndpoint.errors).to.be.eql([
                         {
@@ -505,7 +509,7 @@ describe('oai3 - response tests', function () {
                                 bark: 'hav hav',
                                 type: 'dog_object'
                             },
-                    headers: {} });
+                    headers: DEFAULT_HEADERS });
                     expect(schemaEndpoint.errors).to.be.equal(null);
                     expect(isMatch).to.be.true;
                 });
@@ -519,7 +523,7 @@ describe('oai3 - response tests', function () {
                         body: {
                             'fur': 'hav hav'
                         },
-                        headers: {} });
+                        headers: DEFAULT_HEADERS });
 
                     expect(schemaEndpoint.errors.length).to.be.equal(1);
                     expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
@@ -538,7 +542,7 @@ describe('oai3 - response tests', function () {
                             bark: 'hav hav',
                             type: 'dog_multiple'
                         },
-                        headers: {} });
+                        headers: DEFAULT_HEADERS });
 
                     expect(schemaEndpoint.errors.length).to.be.equal(1);
                     expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
@@ -556,7 +560,7 @@ describe('oai3 - response tests', function () {
                             type: 'dog_multiple',
                             model: 'small_dog'
                         },
-                        headers: {}
+                        headers: DEFAULT_HEADERS
                     });
 
                     expect(schemaEndpoint.errors.length).to.be.equal(3);
@@ -574,7 +578,7 @@ describe('oai3 - response tests', function () {
                             type: 'dog_multiple',
                             model: 'small_dog'
                         },
-                        headers: {}
+                        headers: DEFAULT_HEADERS
                     });
                     expect(schemaEndpoint.errors).to.be.equal(null);
                     expect(isMatch).to.be.true;
@@ -589,7 +593,7 @@ describe('oai3 - response tests', function () {
                         body: {
                             fur: '6'
                         },
-                        headers: {}
+                        headers: DEFAULT_HEADERS
                     });
 
                     expect(schemaEndpoint.errors.length).to.be.equal(1);
@@ -608,7 +612,7 @@ describe('oai3 - response tests', function () {
                             type: 'mapped_dog',
                             model: 'small_dog'
                         },
-                        headers: {}
+                        headers: DEFAULT_HEADERS
                     });
 
                     expect(schemaEndpoint.errors.length).to.be.equal(3);
@@ -634,7 +638,7 @@ describe('oai3 - response tests', function () {
                             type: 'mapped_dog',
                             model: 'small_dog'
                         },
-                        headers: {} });
+                        headers: DEFAULT_HEADERS });
 
                     expect(schemaEndpoint.errors).to.be.equal(null);
                     expect(isMatch).to.be.true;

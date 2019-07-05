@@ -253,20 +253,20 @@ describe('oai3 - request tests', function () {
         describe('simple body', function () {
             it('valid simple body', function () {
                 let schemaEndpoint = schema['/dog']['post'];
-                let isBodysMatch = schemaEndpoint.body.validate({
+                let isBodysMatch = schemaEndpoint.body['application/json'].validate({
                     'bark': 'hav hav'
                 });
-                expect(schemaEndpoint.body.errors).to.be.equal(null);
+                expect(schemaEndpoint.body['application/json'].errors).to.be.equal(null);
                 expect(isBodysMatch).to.be.true;
             });
             it('missing required field in simple body', function () {
                 let schemaEndpoint = schema['/dog']['post'];
 
-                let isBodysMatch = schemaEndpoint.body.validate({
+                let isBodysMatch = schemaEndpoint.body['application/json'].validate({
                     'fur': 'hav hav'
                 });
 
-                expect(schemaEndpoint.body.errors).to.be.eql([
+                expect(schemaEndpoint.body['application/json'].errors).to.be.eql([
                     {
                         'dataPath': '',
                         'keyword': 'required',
@@ -282,11 +282,11 @@ describe('oai3 - request tests', function () {
             it('invalid field type in simple body', function () {
                 let schemaEndpoint = schema['/dog']['post'];
 
-                let isBodysMatch = schemaEndpoint.body.validate({
+                let isBodysMatch = schemaEndpoint.body['application/json'].validate({
                     'bark': 111
                 });
 
-                expect(schemaEndpoint.body.errors).to.be.eql([
+                expect(schemaEndpoint.body['application/json'].errors).to.be.eql([
                     {
                         'dataPath': '.bark',
                         'keyword': 'type',
@@ -302,22 +302,22 @@ describe('oai3 - request tests', function () {
             it('valid body - quantitive test', function () {
                 let schemaEndpoint = schema['/many-body-fields']['post'];
 
-                let isBodysMatch = schemaEndpoint.body.validate({ 'fieldNum1': 1,
+                let isBodysMatch = schemaEndpoint.body['application/json'].validate({ 'fieldNum1': 1,
                     'fieldNum2': 2,
                     'fieldNum3': 3,
                     'fieldStr1': 'name1',
                     'fieldStr2': 'name2',
                     'fieldStr3': 'name3' });
 
-                expect(schemaEndpoint.body.errors).to.be.eql(null);
+                expect(schemaEndpoint.body['application/json'].errors).to.be.eql(null);
                 expect(isBodysMatch).to.be.true;
             });
             it('invalid body - quantitive test', function () {
                 let schemaEndpoint = schema['/many-body-fields']['post'];
 
-                let isBodysMatch = schemaEndpoint.body.validate({ 'fieldNum1': 'name1', 'fieldNum2': 'name2', 'fieldNum3': 'name3', 'fieldStr1': 1, 'fieldStr2': 2, 'fieldStr3': 3 });
+                let isBodysMatch = schemaEndpoint.body['application/json'].validate({ 'fieldNum1': 'name1', 'fieldNum2': 'name2', 'fieldNum3': 'name3', 'fieldStr1': 1, 'fieldStr2': 2, 'fieldStr3': 3 });
 
-                expect(schemaEndpoint.body.errors).to.be.eql([
+                expect(schemaEndpoint.body['application/json'].errors).to.be.eql([
                     {
                         'keyword': 'type',
                         'dataPath': '.fieldNum1',
@@ -379,7 +379,7 @@ describe('oai3 - request tests', function () {
         describe('anyOf body', function () {
             let schemaEndpoint;
             before(function () {
-                schemaEndpoint = schema['/pet-any-of']['post'].body;
+                schemaEndpoint = schema['/pet-any-of']['post'].body['application/json'];
             });
             it('valid full body', function () {
                 let isMatch = schemaEndpoint.validate(
@@ -461,7 +461,7 @@ describe('oai3 - request tests', function () {
             let schemaEndpoint;
 
             before(function () {
-                schemaEndpoint = schema['/pet-all-of']['post'].body;
+                schemaEndpoint = schema['/pet-all-of']['post'].body['application/json'];
             });
             it('valid full body', function () {
                 let isMatch = schemaEndpoint.validate({
@@ -520,18 +520,18 @@ describe('oai3 - request tests', function () {
             describe('discriminator-pet', function () {
                 let schemaEndpoint;
                 before(function () {
-                    schemaEndpoint = schema['/pet-discriminator']['post'];
+                    schemaEndpoint = schema['/pet-discriminator']['post'].body['application/json'];
                 });
                 it('missing discriminator field', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.body.validate({
+                    let isBodysMatch = schemaEndpoint.validate({
                         'bark': 'hav hav'
                     });
 
-                    expect(schemaEndpoint.body.errors[0].message).to.equal('should be equal to one of the allowed values');
-                    expect(schemaEndpoint.body.errors[0].dataPath).to.equal('.type');
-                    expect(schemaEndpoint.body.errors[0].keyword).to.equal('enum');
-                    expect(schemaEndpoint.body.errors[0].params.allowedValues).to.eql([
+                    expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
+                    expect(schemaEndpoint.errors[0].dataPath).to.equal('.type');
+                    expect(schemaEndpoint.errors[0].keyword).to.equal('enum');
+                    expect(schemaEndpoint.errors[0].params.allowedValues).to.eql([
                         'dog_object',
                         'cat_object'
                     ]);
@@ -539,10 +539,10 @@ describe('oai3 - request tests', function () {
                 });
                 it('when discriminator type is dog and missing field', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.body.validate({
+                    let isBodysMatch = schemaEndpoint.validate({
                         'type': 'dog_object'
                     });
-                    expect(schemaEndpoint.body.errors).to.be.eql([
+                    expect(schemaEndpoint.errors).to.be.eql([
                         {
                             'dataPath': '',
                             'keyword': 'required',
@@ -557,29 +557,29 @@ describe('oai3 - request tests', function () {
                 });
                 it('valid complex body', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.body.validate({
+                    let isBodysMatch = schemaEndpoint.validate({
                         bark: 'hav hav',
                         type: 'dog_object'
                     });
-                    expect(schemaEndpoint.body.errors).to.be.equal(null);
+                    expect(schemaEndpoint.errors).to.be.equal(null);
                     expect(isBodysMatch).to.be.true;
                 });
             });
             describe('discriminator-multiple pet', function () {
                 let schemaEndpoint;
                 before(function () {
-                    schemaEndpoint = schema['/pet-discriminator-multiple']['post'];
+                    schemaEndpoint = schema['/pet-discriminator-multiple']['post'].body['application/json'];
                 });
                 it('missing discriminator field', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.body.validate({
+                    let isBodysMatch = schemaEndpoint.validate({
                         'fur': 'hav hav'
                     });
 
-                    expect(schemaEndpoint.body.errors[0].message).to.equal('should be equal to one of the allowed values');
-                    expect(schemaEndpoint.body.errors[0].dataPath).to.equal('.type');
-                    expect(schemaEndpoint.body.errors[0].keyword).to.equal('enum');
-                    expect(schemaEndpoint.body.errors[0].params.allowedValues).to.eql([
+                    expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
+                    expect(schemaEndpoint.errors[0].dataPath).to.equal('.type');
+                    expect(schemaEndpoint.errors[0].keyword).to.equal('enum');
+                    expect(schemaEndpoint.errors[0].params.allowedValues).to.eql([
                         'dog_multiple',
                         'cat_object'
                     ]);
@@ -588,15 +588,15 @@ describe('oai3 - request tests', function () {
                 });
                 it('missing discriminator field on the on inside discriminator', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.body.validate({
+                    let isBodysMatch = schemaEndpoint.validate({
                         bark: 'hav hav',
                         type: 'dog_multiple'
                     });
 
-                    expect(schemaEndpoint.body.errors[0].message).to.equal('should be equal to one of the allowed values');
-                    expect(schemaEndpoint.body.errors[0].dataPath).to.equal('.model');
-                    expect(schemaEndpoint.body.errors[0].keyword).to.equal('enum');
-                    expect(schemaEndpoint.body.errors[0].params.allowedValues).to.eql([
+                    expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
+                    expect(schemaEndpoint.errors[0].dataPath).to.equal('.model');
+                    expect(schemaEndpoint.errors[0].keyword).to.equal('enum');
+                    expect(schemaEndpoint.errors[0].params.allowedValues).to.eql([
                         'small_dog', 'big_dog'
                     ]);
                     expect(isBodysMatch).to.be.false;
@@ -604,44 +604,44 @@ describe('oai3 - request tests', function () {
                 });
                 it('when discriminator type is dog_multiple and model small_dog and missing root field name and specific plane field', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.body.validate({
+                    let isBodysMatch = schemaEndpoint.validate({
                         type: 'dog_multiple',
                         model: 'small_dog'
                     });
 
-                    expect(schemaEndpoint.body.errors[0].message).to.equal('should have required property \'max_length\'');
-                    expect(schemaEndpoint.body.errors[1].message).to.equal('should have required property \'name\'');
-                    expect(schemaEndpoint.body.errors[2].message).to.equal('should have required property \'dog_age\'');
+                    expect(schemaEndpoint.errors[0].message).to.equal('should have required property \'max_length\'');
+                    expect(schemaEndpoint.errors[1].message).to.equal('should have required property \'name\'');
+                    expect(schemaEndpoint.errors[2].message).to.equal('should have required property \'dog_age\'');
                     expect(isBodysMatch).to.be.false;
                 });
                 it('when valid discriminator type is dog_multiple and model small_dog', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.body.validate({
+                    let isBodysMatch = schemaEndpoint.validate({
                         name: 'sesna',
                         max_length: 'max_length',
                         dog_age: '3',
                         type: 'dog_multiple',
                         model: 'small_dog'
                     });
-                    expect(schemaEndpoint.body.errors).to.be.equal(null);
+                    expect(schemaEndpoint.errors).to.be.equal(null);
                     expect(isBodysMatch).to.be.true;
                 });
             });
             describe('discriminator-mapping pet', function () {
                 let schemaEndpoint;
                 before(function () {
-                    schemaEndpoint = schema['/pet-discriminator-mapping']['post'];
+                    schemaEndpoint = schema['/pet-discriminator-mapping']['post'].body['application/json'];
                 });
                 it('missing discriminator field on the root', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.body.validate({
+                    let isBodysMatch = schemaEndpoint.validate({
                         fur: '6'
                     });
 
-                    expect(schemaEndpoint.body.errors[0].message).to.equal('should be equal to one of the allowed values');
-                    expect(schemaEndpoint.body.errors[0].dataPath).to.equal('.type');
-                    expect(schemaEndpoint.body.errors[0].keyword).to.equal('enum');
-                    expect(schemaEndpoint.body.errors[0].params.allowedValues).to.eql([
+                    expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
+                    expect(schemaEndpoint.errors[0].dataPath).to.equal('.type');
+                    expect(schemaEndpoint.errors[0].keyword).to.equal('enum');
+                    expect(schemaEndpoint.errors[0].params.allowedValues).to.eql([
                         'mapped_dog',
                         'mapped_cat'
                     ]);
@@ -649,19 +649,19 @@ describe('oai3 - request tests', function () {
                 });
                 it('when discriminator type is mapped_dog and model small_dog and missing root field name and specific dog field', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.body.validate({
+                    let isBodysMatch = schemaEndpoint.validate({
                         type: 'mapped_dog',
                         model: 'small_dog'
                     });
 
-                    expect(schemaEndpoint.body.errors[0].message).to.equal('should have required property \'max_length\'');
-                    expect(schemaEndpoint.body.errors[0].dataPath).to.equal('');
-                    expect(schemaEndpoint.body.errors[0].keyword).to.equal('required');
+                    expect(schemaEndpoint.errors[0].message).to.equal('should have required property \'max_length\'');
+                    expect(schemaEndpoint.errors[0].dataPath).to.equal('');
+                    expect(schemaEndpoint.errors[0].keyword).to.equal('required');
                     expect(isBodysMatch).to.be.false;
                 });
                 it('when valid discriminator type is mapped_dog and model small_dog', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.body.validate({
+                    let isBodysMatch = schemaEndpoint.validate({
                         name: 'sesna',
                         max_length: 'max_length',
                         dog_age: '200',
@@ -669,7 +669,7 @@ describe('oai3 - request tests', function () {
                         model: 'small_dog'
                     });
 
-                    expect(schemaEndpoint.body.errors).to.be.equal(null);
+                    expect(schemaEndpoint.errors).to.be.equal(null);
                     expect(isBodysMatch).to.be.true;
                 });
             });

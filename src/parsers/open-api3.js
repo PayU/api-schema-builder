@@ -4,9 +4,8 @@ const Validators = require('../validators/index'),
     ajvUtils = require('../utils/ajv-utils'),
     { Node } = require('../data_structures/tree'),
     createContentTypeHeaders = require('../utils/createContentTypeHeaders'),
+    schemaUtils = require('../utils/schemaUtils'),
     get = require('lodash.get');
-
-const OAI3_RESPONSE_CONTENT_TYPE = 'application/json';
 
 module.exports = {
     buildRequestBodyValidation,
@@ -16,22 +15,49 @@ module.exports = {
 };
 
 function buildRequestBodyValidation(dereferenced, referenced, currentPath, currentMethod, options) {
-    const requestPath = `paths[${currentPath}][${currentMethod}].requestBody.content[${OAI3_RESPONSE_CONTENT_TYPE}].schema`;
-    let dereferencedBodySchema = get(dereferenced, requestPath);
-    let referencedBodySchema = get(referenced, requestPath);
+    const contentTypes = get(dereferenced, `paths[${currentPath}][${currentMethod}].requestBody.content`);
+    if (!contentTypes) {
+        return;
+    }
 
-    return handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
-        dereferencedBodySchema, referencedBodySchema, options);
+    // Add default validator for default content type for compatibility sake
+    const requestPath = `paths[${currentPath}][${currentMethod}].requestBody.content[${schemaUtils.DEFAULT_REQUEST_CONTENT_TYPE}].schema`;
+
+    const dereferencedBodySchema = get(dereferenced, requestPath);
+    const referencedBodySchema = get(referenced, requestPath);
+
+    const result = handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
+        dereferencedBodySchema, referencedBodySchema, options) || {};
+
+    // Add validators for all content types
+    return Object.keys(contentTypes).reduce((result, contentType) => {
+        const requestPath = `paths[${currentPath}][${currentMethod}].requestBody.content[${contentType}].schema`;
+
+        const dereferencedBodySchema = get(dereferenced, requestPath);
+        const referencedBodySchema = get(referenced, requestPath);
+
+        result[contentType] = handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
+            dereferencedBodySchema, referencedBodySchema, options);
+        return result;
+    }, result);
 }
 
 function buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, statusCode, options) {
-    const responsePath = `paths[${currentPath}][${currentMethod}].responses[${statusCode}].content[${OAI3_RESPONSE_CONTENT_TYPE}].schema`;
+    const contentTypes = get(dereferenced, `paths[${currentPath}][${currentMethod}].responses[${statusCode}].content`);
+    if (!contentTypes) {
+        return;
+    }
 
-    let dereferencedBodySchema = get(dereferenced, responsePath);
-    let referencedBodySchema = get(referenced, responsePath);
+    return Object.keys(contentTypes).reduce((result, contentType) => {
+        const responsePath = `paths[${currentPath}][${currentMethod}].responses[${statusCode}].content[${contentType}].schema`;
 
-    return handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
-        dereferencedBodySchema, referencedBodySchema, options);
+        const dereferencedBodySchema = get(dereferenced, responsePath);
+        const referencedBodySchema = get(referenced, responsePath);
+
+        result[contentType] = handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
+            dereferencedBodySchema, referencedBodySchema, options);
+        return result;
+    }, {});
 }
 
 function handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
@@ -87,7 +113,7 @@ function buildHeadersValidation(responses, statusCode, { ajvConfigParams, format
 
     ajvUtils.addCustomKeyword(ajv, formats, keywords);
 
-    var ajvHeadersSchema = {
+    const ajvHeadersSchema = {
         title: 'HTTP headers',
         type: 'object',
         properties: {},
@@ -103,7 +129,8 @@ function buildHeadersValidation(responses, statusCode, { ajvConfigParams, format
         ajvHeadersSchema.properties[headerName] = headerObj;
     });
 
-    ajvHeadersSchema.content = createContentTypeHeaders(contentTypeValidation, OAI3_RESPONSE_CONTENT_TYPE);
+    const contentTypes = schemaUtils.getAllResponseContentTypes(responses);
+    ajvHeadersSchema.content = createContentTypeHeaders(contentTypeValidation, contentTypes);
 
     return new Validators.SimpleValidator(ajv.compile(ajvHeadersSchema));
 }
