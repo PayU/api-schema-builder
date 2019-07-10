@@ -13,17 +13,21 @@ function responseValidator(response, data) {
     let bodyValidationResult = true, bodyValidationErrors = [],
         headersValidationResult = true, headersValidationErrors = [];
     if (bodySchema) {
-        const validator = bodySchema.validate ? bodySchema
-            : bodySchema[data.headers['Content-Type'] || data.headers['content-type'] || DEFAULT_CONTENT_TYPE];
-
-        if (!validator) {
-            this.errors = [{
-                message: `No schema defined for response content-type "${
-                    data.headers['Content-Type'] || data.headers['content-type'] || DEFAULT_CONTENT_TYPE
-                }"`
+        let validator;
+        if (bodySchema.validate) {
+            validator = bodySchema;
+        } else {
+            const responseContentType = data.headers['Content-Type'] || data.headers['content-type'] || DEFAULT_CONTENT_TYPE;
+            validator = bodySchema[responseContentType];
+            if (!validator) {
+                this.errors = [{
+                    message: `No schema defined for response content-type "${
+                        data.headers['Content-Type'] || data.headers['content-type'] || DEFAULT_CONTENT_TYPE
+                    }"`
+                }
+                ];
+                return false;
             }
-            ];
-            return false;
         }
 
         bodyValidationResult = validator.validate(data.body);
