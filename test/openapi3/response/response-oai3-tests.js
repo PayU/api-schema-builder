@@ -14,7 +14,7 @@ describe('oai3 - response tests', function () {
     let schema;
     before(function () {
         const swaggerPath = path.join(__dirname, 'pets-response.yaml');
-        schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {})
+        schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
     });
 
     describe('check headers', function () {
@@ -54,6 +54,35 @@ describe('oai3 - response tests', function () {
                 expect(schemaEndpoint.errors).to.be.equal(null);
                 expect(isMatch).to.be.true;
             });
+            it('resolves content type from lower-case header correctly', function () {
+                let schemaEndpoint = schema['/dog']['post'].responses['201'];
+                let isMatch = schemaEndpoint.validate({ body:
+                        {
+                            'bark': 'hav hav'
+                        },
+                headers: {
+                    'content-type': 'application/json'
+                } });
+                expect(schemaEndpoint.errors).to.be.equal(null);
+                expect(isMatch).to.be.true;
+            });
+            it('throws an error for undefined content type correctly', function () {
+                let schemaEndpoint = schema['/dog']['post'].responses['201'];
+                let isMatch = schemaEndpoint.validate({ body:
+                        {
+                            'bark': 'hav hav'
+                        },
+                headers: {
+                    'content-type': 'wrong type'
+                } });
+                expect(schemaEndpoint.errors).to.be.eql([
+                    {
+                        'message': 'No schema defined for response content-type "wrong type"'
+                    }
+                ]);
+                expect(isMatch).to.be.false;
+            });
+
             it('missing required field in simple body', function () {
                 let schemaEndpoint = schema['/dog']['post'].responses['201'];
                 let isMatch = schemaEndpoint.validate({ body:

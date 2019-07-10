@@ -14,7 +14,18 @@ function responseValidator(response, data) {
         headersValidationResult = true, headersValidationErrors = [];
     if (bodySchema) {
         const validator = bodySchema.validate ? bodySchema
-            : bodySchema[data.headers['Content-Type'] || DEFAULT_CONTENT_TYPE];
+            : bodySchema[data.headers['Content-Type'] || data.headers['content-type'] || DEFAULT_CONTENT_TYPE];
+
+        if (!validator) {
+            this.errors = [{
+                message: `No schema defined for response content-type "${
+                    data.headers['Content-Type'] || data.headers['content-type'] || DEFAULT_CONTENT_TYPE
+                }"`
+            }
+            ];
+            return false;
+        }
+
         bodyValidationResult = validator.validate(data.body);
         bodyValidationErrors = validator.errors ? addErrorPrefix(validator.errors, 'body') : [];
     }
