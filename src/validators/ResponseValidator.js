@@ -20,11 +20,7 @@ function responseValidator(response, data) {
             const responseContentType = data.headers['Content-Type'] || data.headers['content-type'] || DEFAULT_CONTENT_TYPE;
             validator = bodySchema[responseContentType];
             if (!validator) {
-                this.errors = [{
-                    message: `No schema defined for response content-type "${
-                        data.headers['Content-Type'] || data.headers['content-type'] || DEFAULT_CONTENT_TYPE
-                    }"`
-                }
+                this.errors = [{ message: `No schema defined for response content-type "${responseContentType}"` }
                 ];
                 return false;
             }
