@@ -34,9 +34,9 @@ function getAllResponseContentTypes(responses) {
  */
 function omitPropsFromSchema(dereferencedSchema, omitByPropName, omitByValue) {
     if (dereferencedSchema.type === 'object') {
-        const newSchema = { ...dereferencedSchema };
+        const newSchema = Object.assign({}, dereferencedSchema);
         const schemaProperties = dereferencedSchema.properties;
-        const newSchemaProperties = { ...schemaProperties };
+        const newSchemaProperties = Object.assign({}, schemaProperties);
         for (const propName of Object.keys(newSchemaProperties)) {
             if (newSchemaProperties[propName][omitByPropName] === omitByValue) {
                 // delete the prop from properties object so it would be accepted in case of additionalProperties: true
@@ -56,7 +56,7 @@ function omitPropsFromSchema(dereferencedSchema, omitByPropName, omitByValue) {
         newSchema.properties = newSchemaProperties;
         return newSchema;
     } else if (dereferencedSchema.type === 'array' && dereferencedSchema.items.type === 'object') {
-        const newSchema = { ...dereferencedSchema };
+        const newSchema = Object.assign({}, dereferencedSchema);
         newSchema.items = omitPropsFromSchema(dereferencedSchema.items, omitByPropName, omitByValue);
         return newSchema;
     } else {
