@@ -1,0 +1,66 @@
+openapi: 3.0.1
+info:
+  version: 1.0.0
+  title: Users
+paths:
+  /users:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /users2:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User2'
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User2'
+
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - password
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          readOnly: true
+        email:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+    User2:
+      type: object
+      required:
+        - email
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          readOnly: true
+        email:
+          type: string
+        password:
+          type: string
+          writeOnly: true
