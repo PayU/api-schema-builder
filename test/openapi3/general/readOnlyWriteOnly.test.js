@@ -13,9 +13,9 @@ describe('oai3 - readOnly/writeOnly', function () {
     });
     describe('validate readOnly in request', function () {
         it('Should return error when request body has readOnly and required prop', function () {
-            let validator = schema['/users/required']['post'].body['application/json'];
+            const validator = schema['/users/required']['post'].body['application/json'];
 
-            let isBodysMatch = validator.validate({
+            const isBodysMatch = validator.validate({
                 'id': 'hav hav',
                 'hav': 'jav'
             });
@@ -53,9 +53,9 @@ describe('oai3 - readOnly/writeOnly', function () {
             expect(isBodysMatch).to.be.false;
         });
         it('Should return error when request body has readOnly and not-required prop', function () {
-            let validator = schema['/users/optional']['post'].body['application/json'];
+            const validator = schema['/users/optional']['post'].body['application/json'];
 
-            let isBodysMatch = validator.validate({
+            const isBodysMatch = validator.validate({
                 'id': 'hav hav',
                 'hav': 'jav'
             });
@@ -81,9 +81,9 @@ describe('oai3 - readOnly/writeOnly', function () {
     });
     describe('validate writeOnly in response', function () {
         it('Should return error when response body has writeOnly and required prop', function () {
-            let validator = schema['/users/required']['post'].responses[200];
+            const validator = schema['/users/required']['post'].responses[200];
 
-            let isBodysMatch = validator.validate({
+            const isBodysMatch = validator.validate({
                 headers: {
                     'content-type': 'application/json'
                 },
@@ -118,9 +118,9 @@ describe('oai3 - readOnly/writeOnly', function () {
             expect(isBodysMatch).to.be.false;
         });
         it('Should return error when response body has writeOnly and not-required prop', function () {
-            let validator = schema['/users/optional']['post'].responses[200];
+            const validator = schema['/users/optional']['post'].responses[200];
 
-            let isBodysMatch = validator.validate({
+            const isBodysMatch = validator.validate({
                 headers: {
                     'content-type': 'application/json'
                 },
@@ -143,9 +143,9 @@ describe('oai3 - readOnly/writeOnly', function () {
     });
     describe('Validate for non-json content-type', function () {
         it('Should return error when request body has readOnly', function () {
-            let validator = schema['/users/utf8']['post'].body['application/json;utf8'];
+            const validator = schema['/users/utf8']['post'].body['application/json;utf8'];
 
-            let isBodysMatch = validator.validate({
+            const isBodysMatch = validator.validate({
                 'id': 'hav hav',
                 'hav': 'jav'
             });
@@ -183,9 +183,9 @@ describe('oai3 - readOnly/writeOnly', function () {
             expect(isBodysMatch).to.be.false;
         });
         it('Should return error when response body has writeOnly', function () {
-            let validator = schema['/users/utf8']['post'].responses[200];
+            const validator = schema['/users/utf8']['post'].responses[200];
 
-            let isBodysMatch = validator.validate({
+            const isBodysMatch = validator.validate({
                 headers: {
                     'content-type': 'application/json;utf8'
                 },
@@ -222,9 +222,9 @@ describe('oai3 - readOnly/writeOnly', function () {
     });
     describe('Validate nested objects', function () {
         it('Should return error when request body has readOnly', function () {
-            let validator = schema['/users/nested']['post'].body['application/json'];
+            const validator = schema['/users/nested']['post'].body['application/json'];
 
-            let isBodysMatch = validator.validate({
+            const isBodysMatch = validator.validate({
                 user: {
                     'id': 'hav hav',
                     'email': 'user@doamin.com',
@@ -265,9 +265,9 @@ describe('oai3 - readOnly/writeOnly', function () {
             expect(isBodysMatch).to.be.false;
         });
         it('Should return error when response body has writeOnly', function () {
-            let validator = schema['/users/nested']['post'].responses[200];
+            const validator = schema['/users/nested']['post'].responses[200];
 
-            let isBodysMatch = validator.validate({
+            const isBodysMatch = validator.validate({
                 headers: {
                     'content-type': 'application/json'
                 },
@@ -313,9 +313,9 @@ describe('oai3 - readOnly/writeOnly', function () {
     });
     describe('Validate nested object in array', function () {
         it('Should return error when request body has readOnly', function () {
-            let validator = schema['/users/usersArray']['post'].body['application/json'];
+            const validator = schema['/users/usersArray']['post'].body['application/json'];
 
-            let isBodysMatch = validator.validate([
+            const isBodysMatch = validator.validate([
                 {
                     'id': 'hav hav',
                     'email': 'user@doamin.com',
@@ -349,9 +349,9 @@ describe('oai3 - readOnly/writeOnly', function () {
             expect(isBodysMatch).to.be.false;
         });
         it('Should return error when response body has writeOnly', function () {
-            let validator = schema['/users/usersArray']['post'].responses[200];
+            const validator = schema['/users/usersArray']['post'].responses[200];
 
-            let isBodysMatch = validator.validate({
+            const isBodysMatch = validator.validate({
                 headers: {
                     'content-type': 'application/json'
                 },
