@@ -65,7 +65,7 @@ function omitPropsFromSchema(dereferencedSchema, omitByPropName, omitByValue) {
 }
 
 function isOpenApi3(dereferenced) {
-    return dereferenced.openapi ? dereferenced.openapi.startsWith('3.0') : false;
+    return dereferenced.openapi ? dereferenced.openapi.startsWith('3.') : false;
 }
 
 module.exports = {
