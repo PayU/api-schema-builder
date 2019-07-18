@@ -5,7 +5,7 @@ const expect = chai.expect;
 const schemaValidatorGenerator = require('../../../src/index');
 const path = require('path');
 
-describe.only('oai3 - readOnly/writeOnly', function () {
+describe('oai3 - readOnly/writeOnly', function () {
     let schema;
     before(function () {
         const swaggerPath = path.join(__dirname, 'readOnlyWriteOnly.yaml');
