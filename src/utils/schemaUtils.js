@@ -35,12 +35,11 @@ function getAllResponseContentTypes(responses) {
 function omitPropsFromSchema(dereferencedSchema, omitByPropName, omitByValue) {
     if (dereferencedSchema.type === 'object') {
         const newSchema = Object.assign({}, dereferencedSchema);
-        const schemaProperties = dereferencedSchema.properties;
-        const newSchemaProperties = Object.assign({}, schemaProperties);
-        for (const propName of Object.keys(newSchemaProperties)) {
-            if (newSchemaProperties[propName][omitByPropName] === omitByValue) {
+        const schemaProperties = Object.assign({}, dereferencedSchema.properties);
+        for (const propName of Object.keys(schemaProperties)) {
+            if (schemaProperties[propName][omitByPropName] === omitByValue) {
                 // delete the prop from properties object so it would be accepted in case of additionalProperties: true
-                delete newSchemaProperties[propName];
+                delete schemaProperties[propName];
 
                 // delete the prop from the required props
                 const index = newSchema.required ? newSchema.required.indexOf(propName) : -1;
@@ -48,12 +47,12 @@ function omitPropsFromSchema(dereferencedSchema, omitByPropName, omitByValue) {
                     newSchema.required = newSchema.required.slice(0, index)
                         .concat(newSchema.required.slice(index + 1));
                 }
-            } else if (newSchemaProperties[propName].type === 'object') {
+            } else if (schemaProperties[propName].type === 'object') {
                 // if the current prop is an object we need to recursively look for omitByPropName occurrences
-                newSchemaProperties[propName] = omitPropsFromSchema(newSchemaProperties[propName], omitByPropName, omitByValue);
+                schemaProperties[propName] = omitPropsFromSchema(schemaProperties[propName], omitByPropName, omitByValue);
             }
         }
-        newSchema.properties = newSchemaProperties;
+        newSchema.properties = schemaProperties;
         return newSchema;
     } else if (dereferencedSchema.type === 'array' && dereferencedSchema.items.type === 'object') {
         const newSchema = Object.assign({}, dereferencedSchema);
