@@ -108,7 +108,7 @@ function handleBodyValidation(
 
         return buildV3Inheritance(referencedSchemas, dereferencedSchemas, ajv, referenceName);
     } else {
-        // currently readOnly/writeOnly won't be supported in objects with discirmitators
+        // currently readOnly/writeOnly won't be supported in objects with discriminators
         const omitByKey = validationType === 'request' ? 'readOnly' : 'writeOnly';
         const newDereferencedBodySchema = schemaUtils.omitPropsFromSchema(dereferencedBodySchema, omitByKey, true);
 
