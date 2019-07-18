@@ -7,6 +7,7 @@ const ajvUtils = require('../utils/ajv-utils');
 const { Node } = require('../data_structures/tree');
 const createContentTypeHeaders = require('../utils/createContentTypeHeaders');
 const schemaUtils = require('../utils/schemaUtils');
+const definitionKeywords = require('../utils/keywords');
 
 module.exports = {
     buildRequestBodyValidation,
@@ -109,7 +110,9 @@ function handleBodyValidation(
         return buildV3Inheritance(referencedSchemas, dereferencedSchemas, ajv, referenceName);
     } else {
         // currently readOnly/writeOnly won't be supported in objects with discriminators
-        const omitByKey = validationType === 'request' ? 'readOnly' : 'writeOnly';
+        const omitByKey = validationType === validationTypes.request
+            ? definitionKeywords.readOnly
+            : definitionKeywords.writeOnly;
         const newDereferencedBodySchema = schemaUtils.omitPropsFromSchema(dereferencedBodySchema, omitByKey, true);
 
         return new Validators.SimpleValidator(ajv.compile(newDereferencedBodySchema));
