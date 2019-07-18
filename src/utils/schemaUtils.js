@@ -42,10 +42,10 @@ function omitPropsFromSchema(dereferencedSchema, omitByPropName, omitByValue) {
                 delete schemaProperties[propName];
 
                 // delete the prop from the required props
-                const index = newSchema.required ? newSchema.required.indexOf(propName) : -1;
-                if (index >= 0) {
-                    newSchema.required = newSchema.required.slice(0, index)
-                        .concat(newSchema.required.slice(index + 1));
+                const propIndex = newSchema.required ? newSchema.required.indexOf(propName) : -1;
+                if (propIndex >= 0) {
+                    newSchema.required = newSchema.required.slice(0, propIndex)
+                        .concat(newSchema.required.slice(propIndex + 1));
                 }
             } else if (schemaProperties[propName].type === 'object') {
                 // if the current prop is an object we need to recursively look for omitByPropName occurrences
