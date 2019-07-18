@@ -35,7 +35,7 @@ function getAllResponseContentTypes(responses) {
 function omitPropsFromSchema(dereferencedSchema, omitByPropName, omitByValue) {
     if (dereferencedSchema.type === 'object') {
         const newSchema = { ...dereferencedSchema };
-        const schemaProperties = dereferencedSchema.properties || dereferencedSchema.schema.properties;
+        const schemaProperties = dereferencedSchema.properties;
         const newSchemaProperties = { ...schemaProperties };
         for (const propName of Object.keys(newSchemaProperties)) {
             if (newSchemaProperties[propName][omitByPropName] === omitByValue) {
@@ -54,6 +54,10 @@ function omitPropsFromSchema(dereferencedSchema, omitByPropName, omitByValue) {
             }
         }
         newSchema.properties = newSchemaProperties;
+        return newSchema;
+    } else if (dereferencedSchema.type === 'array' && dereferencedSchema.items.type === 'object') {
+        const newSchema = { ...dereferencedSchema };
+        newSchema.items = omitPropsFromSchema(dereferencedSchema.items, omitByPropName, omitByValue);
         return newSchema;
     } else {
         return dereferencedSchema;

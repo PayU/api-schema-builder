@@ -40,7 +40,7 @@ function buildRequestBodyValidation(dereferenced, referenced, currentPath, curre
     ) || {};
 
     // Add validators for all content types
-    return Object.keys(contentTypes).reduce((result, contentType) => {
+    const schema = Object.keys(contentTypes).reduce((result, contentType) => {
         const requestPath = `paths[${currentPath}][${currentMethod}].requestBody.content[${contentType}].schema`;
 
         const dereferencedBodySchema = get(dereferenced, requestPath);
@@ -54,6 +54,8 @@ function buildRequestBodyValidation(dereferenced, referenced, currentPath, curre
         );
         return result;
     }, result);
+
+    return schema;
 }
 
 function buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, statusCode, options) {

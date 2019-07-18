@@ -3,38 +3,86 @@ info:
   version: 1.0.0
   title: Users
 paths:
-  /users:
+  /users/required:
     post:
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserRequired'
       responses:
         200:
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-  /users2:
+                $ref: '#/components/schemas/UserRequired'
+  /users/optional:
     post:
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User2'
+              $ref: '#/components/schemas/UserOptional'
       responses:
         200:
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User2'
-
+                $ref: '#/components/schemas/UserOptional'
+  /users/utf8:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json;utf8:
+            schema:
+              $ref: '#/components/schemas/UserRequired'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json;utf8:
+              schema:
+                $ref: '#/components/schemas/UserRequired'
+  /users/nested:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Nested'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Nested'
+ 
+  /users/usersArray:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsersArray'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Nested'
+ 
 components:
   schemas:
-    User:
+    UserRequired:
       type: object
       required:
         - id
@@ -50,10 +98,8 @@ components:
         password:
           type: string
           writeOnly: true
-    User2:
+    UserOptional:
       type: object
-      required:
-        - email
       additionalProperties: false
       properties:
         id:
@@ -64,3 +110,18 @@ components:
         password:
           type: string
           writeOnly: true
+    Nested:
+      type: object
+      required:
+        - user
+        - count
+      properties:
+        user:
+          $ref: '#/components/schemas/UserRequired'
+        count:
+          type: number
+    UsersArray:
+      type: array
+      items:
+        type: object
+        $ref: '#/components/schemas/UserRequired'
