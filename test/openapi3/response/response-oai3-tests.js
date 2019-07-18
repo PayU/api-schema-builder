@@ -66,6 +66,18 @@ describe('oai3 - response tests', function () {
                 expect(schemaEndpoint.errors).to.be.equal(null);
                 expect(isMatch).to.be.true;
             });
+            it('resolves content type for content-type with charset', function () {
+                let schemaEndpoint = schema['/dog']['post'].responses['201'];
+                let isMatch = schemaEndpoint.validate({ body:
+                        {
+                            'bark': 'hav hav'
+                        },
+                headers: {
+                    'content-type': 'application/json; charset=utf-8'
+                } });
+                expect(schemaEndpoint.errors).to.be.equal(null);
+                expect(isMatch).to.be.true;
+            });
             it('throws an error for undefined content type correctly', function () {
                 let schemaEndpoint = schema['/dog']['post'].responses['201'];
                 let isMatch = schemaEndpoint.validate({ body:
