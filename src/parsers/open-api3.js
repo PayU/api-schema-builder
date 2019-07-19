@@ -1,17 +1,24 @@
-const Validators = require('../validators/index'),
-    Ajv = require('ajv'),
-    cloneDeep = require('clone-deep'),
-    ajvUtils = require('../utils/ajv-utils'),
-    { Node } = require('../data_structures/tree'),
-    createContentTypeHeaders = require('../utils/createContentTypeHeaders'),
-    schemaUtils = require('../utils/schemaUtils'),
-    get = require('lodash.get');
+const cloneDeep = require('clone-deep');
+const get = require('lodash.get');
+const Ajv = require('ajv');
+
+const Validators = require('../validators/index');
+const ajvUtils = require('../utils/ajv-utils');
+const { Node } = require('../data_structures/tree');
+const createContentTypeHeaders = require('../utils/createContentTypeHeaders');
+const schemaUtils = require('../utils/schemaUtils');
+const definitionKeywords = require('../utils/keywords');
 
 module.exports = {
     buildRequestBodyValidation,
     buildResponseBodyValidation,
     buildHeadersValidation,
     buildPathParameters
+};
+
+const validationTypes = {
+    request: 'request',
+    response: 'response'
 };
 
 function buildRequestBodyValidation(dereferenced, referenced, currentPath, currentMethod, options) {
@@ -26,20 +33,30 @@ function buildRequestBodyValidation(dereferenced, referenced, currentPath, curre
     const dereferencedBodySchema = get(dereferenced, requestPath);
     const referencedBodySchema = get(referenced, requestPath);
 
-    const result = handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
-        dereferencedBodySchema, referencedBodySchema, options) || {};
+    const result = handleBodyValidation(
+        dereferenced, referenced,
+        dereferencedBodySchema, referencedBodySchema,
+        validationTypes.request,
+        options
+    ) || {};
 
     // Add validators for all content types
-    return Object.keys(contentTypes).reduce((result, contentType) => {
+    const schema = Object.keys(contentTypes).reduce((result, contentType) => {
         const requestPath = `paths[${currentPath}][${currentMethod}].requestBody.content[${contentType}].schema`;
 
         const dereferencedBodySchema = get(dereferenced, requestPath);
         const referencedBodySchema = get(referenced, requestPath);
 
-        result[contentType] = handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
-            dereferencedBodySchema, referencedBodySchema, options);
+        result[contentType] = handleBodyValidation(
+            dereferenced, referenced,
+            dereferencedBodySchema, referencedBodySchema,
+            validationTypes.request,
+            options
+        );
         return result;
     }, result);
+
+    return schema;
 }
 
 function buildResponseBodyValidation(dereferenced, referenced, currentPath, currentMethod, statusCode, options) {
@@ -48,20 +65,32 @@ function buildResponseBodyValidation(dereferenced, referenced, currentPath, curr
         return;
     }
 
-    return Object.keys(contentTypes).reduce((result, contentType) => {
-        const responsePath = `paths[${currentPath}][${currentMethod}].responses[${statusCode}].content[${contentType}].schema`;
+    const schema = Object
+        .keys(contentTypes)
+        .reduce((result, contentType) => {
+            const responsePath = `paths[${currentPath}][${currentMethod}].responses[${statusCode}].content[${contentType}].schema`;
 
-        const dereferencedBodySchema = get(dereferenced, responsePath);
-        const referencedBodySchema = get(referenced, responsePath);
+            const dereferencedBodySchema = get(dereferenced, responsePath);
+            const referencedBodySchema = get(referenced, responsePath);
 
-        result[contentType] = handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
-            dereferencedBodySchema, referencedBodySchema, options);
-        return result;
-    }, {});
+            result[contentType] = handleBodyValidation(
+                dereferenced, referenced,
+                dereferencedBodySchema, referencedBodySchema,
+                validationTypes.response,
+                options
+            );
+            return result;
+        }, {});
+
+    return schema;
 }
 
-function handleBodyValidation(dereferenced, referenced, currentPath, currentMethod,
-    dereferencedBodySchema, referencedBodySchema, { ajvConfigBody, formats, keywords }){
+function handleBodyValidation(
+    dereferenced, referenced,
+    dereferencedBodySchema, referencedBodySchema,
+    validationType,
+    { ajvConfigBody, formats, keywords }
+) {
     if (!dereferencedBodySchema || !referencedBodySchema) return;
 
     const defaultAjvOptions = {
@@ -78,9 +107,15 @@ function handleBodyValidation(dereferenced, referenced, currentPath, currentMeth
         let dereferencedSchemas = dereferenced.components.schemas;
         let referenceName = referencedBodySchema['$ref'];
 
-        return buildV3Inheritance(referencedSchemas, dereferencedSchemas, currentPath, currentMethod, ajv, referenceName);
+        return buildV3Inheritance(referencedSchemas, dereferencedSchemas, ajv, referenceName);
     } else {
-        return new Validators.SimpleValidator(ajv.compile(dereferencedBodySchema));
+        // currently readOnly/writeOnly won't be supported in objects with discriminators
+        const omitByKey = validationType === validationTypes.request
+            ? definitionKeywords.readOnly
+            : definitionKeywords.writeOnly;
+        const newDereferencedBodySchema = schemaUtils.omitPropsFromSchema(dereferencedBodySchema, omitByKey, true);
+
+        return new Validators.SimpleValidator(ajv.compile(newDereferencedBodySchema));
     }
 }
 
@@ -135,7 +170,7 @@ function buildHeadersValidation(responses, statusCode, { ajvConfigParams, format
     return new Validators.SimpleValidator(ajv.compile(ajvHeadersSchema));
 }
 
-function buildV3Inheritance(referencedSchemas, dereferencedSchemas, currentPath, currentMethod, ajv, referenceName) {
+function buildV3Inheritance(referencedSchemas, dereferencedSchemas, ajv, referenceName) {
     const RECURSIVE__MAX_DEPTH = 20;
     const rootKey = referenceName.split('/components/schemas/')[1];
     const tree = new Node();
