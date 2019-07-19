@@ -21,8 +21,8 @@
   },
   "license": "Apache-2.0",
   "scripts": {
-    "test": "mocha --recursive",
-    "test:coverage": "nyc npm test ",
+    "test": "mocha",
+    "test:coverage": "nyc npm test",
     "coveralls": "cat ./coverage/lcov.info |./node_modules/.bin/coveralls",
     "lint": "./node_modules/.bin/eslint src"
   },

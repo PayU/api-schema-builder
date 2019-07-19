@@ -1,0 +1,127 @@
+openapi: 3.0.1
+info:
+  version: 1.0.0
+  title: Users
+paths:
+  /users/required:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequired'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRequired'
+  /users/optional:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserOptional'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOptional'
+  /users/utf8:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json;utf8:
+            schema:
+              $ref: '#/components/schemas/UserRequired'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json;utf8:
+              schema:
+                $ref: '#/components/schemas/UserRequired'
+  /users/nested:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Nested'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Nested'
+ 
+  /users/usersArray:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsersArray'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Nested'
+ 
+components:
+  schemas:
+    UserRequired:
+      type: object
+      required:
+        - id
+        - email
+        - password
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          readOnly: true
+        email:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+    UserOptional:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          readOnly: true
+        email:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+    Nested:
+      type: object
+      required:
+        - user
+        - count
+      properties:
+        user:
+          $ref: '#/components/schemas/UserRequired'
+        count:
+          type: number
+    UsersArray:
+      type: array
+      items:
+        type: object
+        $ref: '#/components/schemas/UserRequired'
