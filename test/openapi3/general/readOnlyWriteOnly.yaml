@@ -33,19 +33,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserOptional'
-  /users/utf8:
+  /users/hal:
     post:
       requestBody:
         required: true
         content:
-          application/json;utf8:
+          application/hal+json:
             schema:
               $ref: '#/components/schemas/UserRequired'
       responses:
         200:
           description: OK
           content:
-            application/json;utf8:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/UserRequired'
   /users/nested:
@@ -78,7 +78,52 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Nested'
+                $ref: '#/components/schemas/UsersArray'
+  /users/OneOf:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OneOf'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OneOf'
+  /users/AnyOf:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnyOf'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyOf'
+  /users/AllOf:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllOf'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllOf'
  
 components:
   schemas:
@@ -125,3 +170,30 @@ components:
       items:
         type: object
         $ref: '#/components/schemas/UserRequired'
+    OneOf:
+      oneOf:
+        - $ref: '#/components/schemas/UserRequired'
+        - type: object
+          required:
+            - additionalOneOfField
+          properties:
+            additionalOneOfField:
+              type: string
+    AnyOf:
+      anyOf:
+        - $ref: '#/components/schemas/UserRequired'
+        - type: object
+          required:
+            - additionalOneOfField
+          properties:
+            additionalOneOfField:
+              type: string
+    AllOf:
+      allOf:
+        - $ref: '#/components/schemas/UserRequired'
+        - type: object
+          required:
+            - additionalOneOfField
+          properties:
+            additionalOneOfField:
+              type: string
