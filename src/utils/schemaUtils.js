@@ -33,7 +33,14 @@ function getAllResponseContentTypes(responses) {
  * @param {string} omitByValue omit if the prop value equals to this value
  */
 function omitPropsFromSchema(dereferencedSchema, omitByPropName, omitByValue) {
-    if (dereferencedSchema.type === 'object') {
+    const schemaType = getSchemaType(dereferencedSchema);
+
+    if (schemaType) {
+        const newSchema = Object.assign({}, dereferencedSchema);
+        newSchema[schemaType] = dereferencedSchema[schemaType]
+            .map((dereferencedSchema) => omitPropsFromSchema(dereferencedSchema, omitByPropName, omitByValue));
+        return newSchema;
+    } else if (dereferencedSchema.type === 'object') {
         const newSchema = Object.assign({}, dereferencedSchema);
         const schemaProperties = Object.assign({}, dereferencedSchema.properties);
         for (const propName of Object.keys(schemaProperties)) {
@@ -63,8 +70,30 @@ function omitPropsFromSchema(dereferencedSchema, omitByPropName, omitByValue) {
     }
 }
 
-function isOpenApi3(dereferenced) {
-    return dereferenced.openapi ? dereferenced.openapi.startsWith('3.') : false;
+/**
+ * returns true if given dereferenced schema object is an openapi version 3.x.x
+ *
+ * @param {object} dereferencedSchema
+ */
+function isOpenApi3(dereferencedSchema) {
+    return dereferencedSchema.openapi ? dereferencedSchema.openapi.startsWith('3.') : false;
+}
+
+/**
+ * returns the type of the given dereferenced schema object (anyOf, oneOf, allOf)
+ *
+ * @param {object} dereferencedSchema
+ */
+function getSchemaType(dereferencedSchema) {
+    if (dereferencedSchema.anyOf) {
+        return 'anyOf';
+    }
+    if (dereferencedSchema.allOf) {
+        return 'allOf';
+    }
+    if (dereferencedSchema.oneOf) {
+        return 'oneOf';
+    }
 }
 
 module.exports = {
@@ -72,5 +101,6 @@ module.exports = {
     DEFAULT_REQUEST_CONTENT_TYPE,
     getAllResponseContentTypes,
     omitPropsFromSchema,
+    getSchemaType,
     isOpenApi3
 };
