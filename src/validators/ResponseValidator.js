@@ -18,7 +18,7 @@ function responseValidator(response, data) {
             validator = bodySchema;
         } else {
             const responseContentTypeHeader = data.headers['Content-Type'] || data.headers['content-type'] || DEFAULT_CONTENT_TYPE;
-            const responseContentType = responseContentTypeHeader.split(';')[0]; // This is to filter out things like charset
+            const responseContentType = responseContentTypeHeader.split(';')[0].trim(); // This is to filter out things like charset
             validator = bodySchema[responseContentType];
             if (!validator) {
                 this.errors = [{ message: `No schema defined for response content-type "${responseContentType}"` }
