@@ -32,41 +32,72 @@ function getAllResponseContentTypes(responses) {
  * @param {string} omitByPropName the prop name to omit
  * @param {string} omitByValue omit if the prop value equals to this value
  */
-function omitPropsFromSchema(dereferencedSchema, omitByPropName, omitByValue) {
+function addOAI3Support(dereferencedSchema, omitByPropName, omitByValue) {
     const schemaType = getSchemaType(dereferencedSchema);
 
+    addNullableSupport(dereferencedSchema);
+
     if (schemaType) {
+        // anyOf/oneOf/allOf handling
         const newSchema = Object.assign({}, dereferencedSchema);
         newSchema[schemaType] = dereferencedSchema[schemaType]
-            .map((dereferencedSchema) => omitPropsFromSchema(dereferencedSchema, omitByPropName, omitByValue));
+            .map((dereferencedSchema) => addOAI3Support(dereferencedSchema, omitByPropName, omitByValue));
         return newSchema;
-    } else if (dereferencedSchema.type === 'object') {
+    } else if (dereferencedSchema.properties) {
+        // object handling
         const newSchema = Object.assign({}, dereferencedSchema);
         const schemaProperties = Object.assign({}, dereferencedSchema.properties);
         for (const propName of Object.keys(schemaProperties)) {
-            if (schemaProperties[propName][omitByPropName] === omitByValue) {
-                // delete the prop from properties object so it would be accepted in case of additionalProperties: true
-                delete schemaProperties[propName];
-
-                // delete the prop from the required props
-                const propIndex = newSchema.required ? newSchema.required.indexOf(propName) : -1;
-                if (propIndex >= 0) {
-                    newSchema.required = newSchema.required.slice(0, propIndex)
-                        .concat(newSchema.required.slice(propIndex + 1));
-                }
-            } else if (schemaProperties[propName].type === 'object') {
-                // if the current prop is an object we need to recursively look for omitByPropName occurrences
-                schemaProperties[propName] = omitPropsFromSchema(schemaProperties[propName], omitByPropName, omitByValue);
-            }
+            addRWOnlySupport(schemaProperties, propName, omitByPropName, omitByValue);
+            addNullableSupport(schemaProperties[propName]);
         }
         newSchema.properties = schemaProperties;
         return newSchema;
-    } else if (dereferencedSchema.type === 'array' && dereferencedSchema.items.type === 'object') {
+    } else if (dereferencedSchema.items && dereferencedSchema.items.properties) {
+        // array handling
         const newSchema = Object.assign({}, dereferencedSchema);
-        newSchema.items = omitPropsFromSchema(dereferencedSchema.items, omitByPropName, omitByValue);
+        const newItems = Object.assign({}, dereferencedSchema.items);
+
+        newSchema.items = addOAI3Support(newItems, omitByPropName, omitByValue);
         return newSchema;
     } else {
+        // other datatypes handling
         return dereferencedSchema;
+    }
+}
+
+/**
+ * add missing readOnly/writeOnly support to AJV
+ *
+ * @param {object} dereferencedSchema dereferenced schema
+ * @param {string} omitByPropName the prop name to omit
+ * @param {string} omitByValue omit if the prop value equals to this value
+ */
+function addRWOnlySupport(dereferencedSchema, propName, omitByPropName, omitByValue) {
+    if (dereferencedSchema[propName][omitByPropName] === omitByValue) {
+        // delete the prop from properties object so it would be accepted in case of additionalProperties: true
+        delete dereferencedSchema[propName];
+
+        // delete the prop from the required props
+        const propIndex = dereferencedSchema.required ? dereferencedSchema.required.indexOf(propName) : -1;
+        if (propIndex >= 0) {
+            dereferencedSchema.required = dereferencedSchema.required.slice(0, propIndex)
+                .concat(dereferencedSchema.required.slice(propIndex + 1));
+        }
+    } else if (dereferencedSchema[propName].properties) {
+        // if the current prop is an object we need to recursively look for omitByPropName occurrences
+        dereferencedSchema[propName] = addOAI3Support(dereferencedSchema[propName], omitByPropName, omitByValue);
+    }
+}
+
+/**
+ * add missing nullable support to AJV
+ *
+ * @param {object} dereferencedSchema dereferenced schema
+ */
+function addNullableSupport(dereferencedSchema) {
+    if (dereferencedSchema && dereferencedSchema.nullable === true && !dereferencedSchema.type.includes('null')) {
+        dereferencedSchema.type = ['null'].concat(dereferencedSchema.type);
     }
 }
 
@@ -100,7 +131,7 @@ module.exports = {
     DEFAULT_RESPONSE_CONTENT_TYPE,
     DEFAULT_REQUEST_CONTENT_TYPE,
     getAllResponseContentTypes,
-    omitPropsFromSchema,
+    addOAI3Support,
     getSchemaType,
     isOpenApi3
 };

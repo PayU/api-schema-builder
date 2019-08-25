@@ -113,7 +113,7 @@ function handleBodyValidation(
         const omitByKey = validationType === validationTypes.request
             ? definitionKeywords.readOnly
             : definitionKeywords.writeOnly;
-        const newDereferencedBodySchema = schemaUtils.omitPropsFromSchema(dereferencedBodySchema, omitByKey, true);
+        let newDereferencedBodySchema = schemaUtils.addOAI3Support(dereferencedBodySchema, omitByKey, true);
 
         return new Validators.SimpleValidator(ajv.compile(newDereferencedBodySchema));
     }

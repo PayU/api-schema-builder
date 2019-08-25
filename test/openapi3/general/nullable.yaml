@@ -1,0 +1,158 @@
+openapi: 3.0.1
+info:
+  version: 1.0.0
+  title: Users
+paths:
+  /users:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /users/nested:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Nested"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Nested"
+
+  /users/usersArray:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UsersArray"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersArray"
+  /users/OneOf:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OneOf"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OneOf"
+  /users/AnyOf:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnyOf"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnyOf"
+  /users/AllOf:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AllOf"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AllOf"
+
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - password
+        - name
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        name:
+          type: string
+          nullable: true
+    Nested:
+      type: object
+      required:
+        - user
+        - count
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        count:
+          type: number
+    UsersArray:
+      type: array
+      items:
+        type: object
+        $ref: "#/components/schemas/User"
+    OneOf:
+      oneOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          required:
+            - additionalOneOfField
+          properties:
+            additionalOneOfField:
+              type: string
+    AnyOf:
+      anyOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          required:
+            - additionalOneOfField
+          properties:
+            additionalOneOfField:
+              type: string
+    AllOf:
+      allOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          required:
+            - additionalOneOfField
+          properties:
+            additionalOneOfField:
+              type: string
