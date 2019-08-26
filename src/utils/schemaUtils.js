@@ -46,12 +46,12 @@ function addOAI3Support(dereferencedSchema, omitByPropName, omitByValue) {
     } else if (dereferencedSchema.properties) {
         // object handling
         const newSchema = Object.assign({}, dereferencedSchema);
-        const schemaProperties = Object.assign({}, dereferencedSchema.properties);
-        for (const propName of Object.keys(schemaProperties)) {
-            addRWOnlySupport(schemaProperties, propName, omitByPropName, omitByValue);
-            addNullableSupport(schemaProperties[propName]);
+        newSchema.properties = Object.assign({}, dereferencedSchema.properties);
+
+        for (const propName of Object.keys(newSchema.properties)) {
+            addRWOnlySupport(newSchema, propName, omitByPropName, omitByValue);
+            addNullableSupport(newSchema, propName);
         }
-        newSchema.properties = schemaProperties;
         return newSchema;
     } else if (dereferencedSchema.items && dereferencedSchema.items.properties) {
         // array handling
@@ -74,9 +74,12 @@ function addOAI3Support(dereferencedSchema, omitByPropName, omitByValue) {
  * @param {string} omitByValue omit if the prop value equals to this value
  */
 function addRWOnlySupport(dereferencedSchema, propName, omitByPropName, omitByValue) {
-    if (dereferencedSchema[propName][omitByPropName] === omitByValue) {
-        // delete the prop from properties object so it would be accepted in case of additionalProperties: true
-        delete dereferencedSchema[propName];
+    // console.info(propName,  dereferencedSchema);
+    const { properties } = dereferencedSchema;
+
+    if (properties[propName][omitByPropName] === omitByValue) {
+        // delete the prop from properties object so it wouldn't be accepted in case of additionalProperties: true
+        delete properties[propName];
 
         // delete the prop from the required props
         const propIndex = dereferencedSchema.required ? dereferencedSchema.required.indexOf(propName) : -1;
@@ -84,9 +87,9 @@ function addRWOnlySupport(dereferencedSchema, propName, omitByPropName, omitByVa
             dereferencedSchema.required = dereferencedSchema.required.slice(0, propIndex)
                 .concat(dereferencedSchema.required.slice(propIndex + 1));
         }
-    } else if (dereferencedSchema[propName].properties) {
+    } else if (properties[propName].properties) {
         // if the current prop is an object we need to recursively look for omitByPropName occurrences
-        dereferencedSchema[propName] = addOAI3Support(dereferencedSchema[propName], omitByPropName, omitByValue);
+        properties[propName] = addOAI3Support(properties[propName], omitByPropName, omitByValue);
     }
 }
 
@@ -95,9 +98,13 @@ function addRWOnlySupport(dereferencedSchema, propName, omitByPropName, omitByVa
  *
  * @param {object} dereferencedSchema dereferenced schema
  */
-function addNullableSupport(dereferencedSchema) {
-    if (dereferencedSchema && dereferencedSchema.nullable === true && !dereferencedSchema.type.includes('null')) {
-        dereferencedSchema.type = ['null'].concat(dereferencedSchema.type);
+function addNullableSupport(dereferencedSchema, propName) {
+    if (dereferencedSchema.properties) {
+        const property = dereferencedSchema.properties[propName];
+
+        if (property && property.nullable === true && !property.type.includes('null')) {
+            dereferencedSchema.properties[propName].type = ['null'].concat(property.type);
+        }
     }
 }
 
