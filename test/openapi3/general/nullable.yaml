@@ -18,6 +18,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+  /usersWithoutType:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserWithoutType"
   /users/nested:
     post:
       requestBody:
@@ -33,7 +48,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Nested"
-
   /users/usersArray:
     post:
       requestBody:
@@ -110,6 +124,19 @@ components:
           type: string
         name:
           type: string
+          nullable: true
+    UserWithoutType:
+      type: object
+      required:
+        - email
+        - password
+        - name
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        name:
           nullable: true
     Nested:
       type: object

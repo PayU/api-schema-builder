@@ -1,6 +1,6 @@
 const values = require('object.values');
 
-const { readOnly, writeOnly, validationTypes } = require('./common');
+const { readOnly, writeOnly, validationTypes, allDataTypes } = require('./common');
 
 if (!Object.values) {
     values.shim();
@@ -108,7 +108,15 @@ function addNullableSupport(dereferencedSchema, propName) {
     if (dereferencedSchema.properties) {
         const property = dereferencedSchema.properties[propName];
 
-        if (property && property.nullable === true && !property.type.includes('null')) {
+        if (!property || property.nullable !== true) {
+            return;
+        }
+
+        if (!property.type) {
+            dereferencedSchema.properties[propName].type = allDataTypes;
+        }
+
+        if (!property.type.includes('null')) {
             dereferencedSchema.properties[propName].type = ['null'].concat(property.type);
         }
     }

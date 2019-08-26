@@ -29,6 +29,19 @@ describe('oai3 - nullable', function () {
             expect(validator.errors).to.be.eql(null);
             expect(isBodysMatch).to.be.true;
         });
+        it('Should return error when request body has nullable and required prop without type', function () {
+            const validator = schema['/usersWithoutType']['post'].body['application/json'];
+
+            const isBodysMatch = validator.validate({
+                id,
+                email,
+                password,
+                name: null
+            });
+
+            expect(validator.errors).to.be.eql(null);
+            expect(isBodysMatch).to.be.true;
+        });
     });
     describe('validate nullable in response', function () {
         it('Should return error when response body has nullable and required prop', function () {
