@@ -100,13 +100,10 @@ components:
     User:
       type: object
       required:
-        - id
         - email
         - password
         - name
       properties:
-        id:
-          type: string
         email:
           type: string
         password:
@@ -118,12 +115,13 @@ components:
       type: object
       required:
         - user
-        - count
+        - lastLogin
       properties:
         user:
           $ref: "#/components/schemas/User"
-        count:
+        lastLogin:
           type: number
+          format: date-time
     UsersArray:
       type: array
       items:

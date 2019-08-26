@@ -5,6 +5,10 @@ const expect = chai.expect;
 const schemaValidatorGenerator = require('../../../src/index');
 const path = require('path');
 
+const password = 'qwerty';
+const email = 'email@domain.com';
+const id = '1';
+
 describe('oai3 - nullable', function () {
     let schema;
     before(function () {
@@ -16,28 +20,14 @@ describe('oai3 - nullable', function () {
             const validator = schema['/users']['post'].body['application/json'];
 
             const isBodysMatch = validator.validate({
-                'id': 'hav hav',
-                'hav': 'jav',
-                'name': null
+                id,
+                email,
+                password,
+                name: null
             });
 
-            expect(validator.errors).to.be.eql([
-                {
-                    keyword: 'required',
-                    dataPath: '',
-                    schemaPath: '#/required',
-                    params: { missingProperty: 'email' },
-                    message: 'should have required property \'email\''
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '',
-                    schemaPath: '#/required',
-                    params: { missingProperty: 'password' },
-                    message: 'should have required property \'password\''
-                }
-            ]);
-            expect(isBodysMatch).to.be.false;
+            expect(validator.errors).to.be.eql(null);
+            expect(isBodysMatch).to.be.true;
         });
     });
     describe('validate nullable in response', function () {
@@ -49,28 +39,14 @@ describe('oai3 - nullable', function () {
                     'content-type': 'application/json'
                 },
                 body: {
-                    password: 'dsadas',
+                    email,
+                    password,
                     name: null
                 }
             });
 
-            expect(validator.errors).to.be.eql([
-                {
-                    keyword: 'required',
-                    dataPath: '.body',
-                    schemaPath: '#/body/required',
-                    params: { missingProperty: 'id' },
-                    message: 'should have required property \'id\''
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '.body',
-                    schemaPath: '#/body/required',
-                    params: { missingProperty: 'email' },
-                    message: 'should have required property \'email\''
-                }
-            ]);
-            expect(isBodysMatch).to.be.false;
+            expect(validator.errors).to.be.eql(null);
+            expect(isBodysMatch).to.be.true;
         });
     });
     describe('Validate nested objects', function () {
@@ -79,30 +55,16 @@ describe('oai3 - nullable', function () {
 
             const isBodysMatch = validator.validate({
                 user: {
-                    'id': 'hav hav',
-                    'email': 'user@doamin.com',
-                    'hav': 'jav',
-                    'name': null
-                }
+                    id,
+                    email,
+                    password,
+                    name: null
+                },
+                lastLogin: new Date().getTime()
             });
 
-            expect(validator.errors).to.be.eql([
-                {
-                    keyword: 'required',
-                    dataPath: '.user',
-                    schemaPath: '#/properties/user/required',
-                    params: { missingProperty: 'password' },
-                    message: 'should have required property \'password\''
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '',
-                    schemaPath: '#/required',
-                    params: { missingProperty: 'count' },
-                    message: 'should have required property \'count\''
-                }
-            ]);
-            expect(isBodysMatch).to.be.false;
+            expect(validator.errors).to.be.eql(null);
+            expect(isBodysMatch).to.be.true;
         });
     });
     describe('Validate nested object in array', function () {
@@ -111,23 +73,14 @@ describe('oai3 - nullable', function () {
 
             const isBodysMatch = validator.validate([
                 {
-                    'id': 'hav hav',
-                    'email': 'user@doamin.com',
-                    'hav': 'jav',
-                    'name': null
+                    email,
+                    password,
+                    name: null
                 }
             ]);
 
-            expect(validator.errors).to.be.eql([
-                {
-                    keyword: 'required',
-                    dataPath: '[0]',
-                    schemaPath: '#/items/required',
-                    params: { missingProperty: 'password' },
-                    message: 'should have required property \'password\''
-                }
-            ]);
-            expect(isBodysMatch).to.be.false;
+            expect(validator.errors).to.be.eql(null);
+            expect(isBodysMatch).to.be.true;
         });
     });
     describe('Validate oneOf', function () {
@@ -135,36 +88,14 @@ describe('oai3 - nullable', function () {
             const validator = schema['/users/OneOf']['post'].body['application/json'];
 
             const isBodysMatch = validator.validate({
-                'id': 'hav hav',
-                'email': 'user@doamin.com',
-                'hav': 'jav',
-                'name': null
+                id,
+                email,
+                password,
+                name: null
             });
 
-            expect(validator.errors).to.be.eql([
-                {
-                    keyword: 'required',
-                    dataPath: '',
-                    schemaPath: '#/oneOf/0/required',
-                    params: { missingProperty: 'password' },
-                    message: 'should have required property \'password\''
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '',
-                    schemaPath: '#/oneOf/1/required',
-                    params: { missingProperty: 'additionalOneOfField' },
-                    message: 'should have required property \'additionalOneOfField\''
-                },
-                {
-                    keyword: 'oneOf',
-                    dataPath: '',
-                    schemaPath: '#/oneOf',
-                    params: { passingSchemas: null },
-                    message: 'should match exactly one schema in oneOf'
-                }
-            ]);
-            expect(isBodysMatch).to.be.false;
+            expect(validator.errors).to.be.eql(null);
+            expect(isBodysMatch).to.be.true;
         });
     });
 });
