@@ -10,14 +10,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRequired'
+              $ref: "#/components/schemas/UserRequired"
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserRequired'
+                $ref: "#/components/schemas/UserRequired"
   /users/optional:
     post:
       requestBody:
@@ -25,14 +25,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserOptional'
+              $ref: "#/components/schemas/UserOptional"
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserOptional'
+                $ref: "#/components/schemas/UserOptional"
   /users/hal:
     post:
       requestBody:
@@ -40,14 +40,14 @@ paths:
         content:
           application/hal+json:
             schema:
-              $ref: '#/components/schemas/UserRequired'
+              $ref: "#/components/schemas/UserRequired"
       responses:
         200:
           description: OK
           content:
             application/hal+json:
               schema:
-                $ref: '#/components/schemas/UserRequired'
+                $ref: "#/components/schemas/UserRequired"
   /users/nested:
     post:
       requestBody:
@@ -55,15 +55,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Nested'
+              $ref: "#/components/schemas/Nested"
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Nested'
- 
+                $ref: "#/components/schemas/Nested"
+
   /users/usersArray:
     post:
       requestBody:
@@ -71,14 +71,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UsersArray'
+              $ref: "#/components/schemas/UsersArray"
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UsersArray'
+                $ref: "#/components/schemas/UsersArray"
   /users/OneOf:
     post:
       requestBody:
@@ -86,14 +86,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OneOf'
+              $ref: "#/components/schemas/OneOf"
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OneOf'
+                $ref: "#/components/schemas/OneOf"
   /users/AnyOf:
     post:
       requestBody:
@@ -101,14 +101,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AnyOf'
+              $ref: "#/components/schemas/AnyOf"
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AnyOf'
+                $ref: "#/components/schemas/AnyOf"
   /users/AllOf:
     post:
       requestBody:
@@ -116,15 +116,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AllOf'
+              $ref: "#/components/schemas/AllOf"
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AllOf'
- 
+                $ref: "#/components/schemas/AllOf"
+
 components:
   schemas:
     UserRequired:
@@ -159,20 +159,22 @@ components:
       type: object
       required:
         - user
-        - count
+        - lastLogin
       properties:
         user:
-          $ref: '#/components/schemas/UserRequired'
-        count:
+          $ref: "#/components/schemas/UserRequired"
+        lastLogin:
           type: number
+          format: date-time
+          readOnly: true
     UsersArray:
       type: array
       items:
         type: object
-        $ref: '#/components/schemas/UserRequired'
+        $ref: "#/components/schemas/UserRequired"
     OneOf:
       oneOf:
-        - $ref: '#/components/schemas/UserRequired'
+        - $ref: "#/components/schemas/UserRequired"
         - type: object
           required:
             - additionalOneOfField
@@ -181,7 +183,7 @@ components:
               type: string
     AnyOf:
       anyOf:
-        - $ref: '#/components/schemas/UserRequired'
+        - $ref: "#/components/schemas/UserRequired"
         - type: object
           required:
             - additionalOneOfField
@@ -190,7 +192,7 @@ components:
               type: string
     AllOf:
       allOf:
-        - $ref: '#/components/schemas/UserRequired'
+        - $ref: "#/components/schemas/UserRequired"
         - type: object
           required:
             - additionalOneOfField

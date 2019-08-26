@@ -5,149 +5,174 @@ const expect = chai.expect;
 const schemaValidatorGenerator = require('../../../src/index');
 const path = require('path');
 
+const password = 'qwerty';
+const email = 'email@domain.com';
+const id = '1';
 describe('oai3 - readOnly/writeOnly', function () {
     let schema;
     before(function () {
         const swaggerPath = path.join(__dirname, 'readOnlyWriteOnly.yaml');
         schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
     });
-    describe('validate readOnly in request', function () {
-        it('Should return error when request body has readOnly and required prop', function () {
-            const validator = schema['/users/required']['post'].body['application/json'];
+    describe('readOnly', function () {
+        describe('request', function () {
+            it('Should not return error on missing property', function () {
+                const validator = schema['/users/required']['post'].body['application/json'];
 
-            const isBodysMatch = validator.validate({
-                'id': 'hav hav',
-                'hav': 'jav'
+                const isBodysMatch = validator.validate({
+                    email,
+                    password
+                });
+
+                expect(validator.errors).to.be.eql(null);
+                expect(isBodysMatch).to.be.true;
             });
+            it('Should return error when sending readOnly property', function () {
+                const validator = schema['/users/required']['post'].body['application/json'];
 
-            expect(validator.errors).to.be.eql([
-                {
-                    keyword: 'additionalProperties',
-                    dataPath: '',
-                    schemaPath: '#/additionalProperties',
-                    params: { additionalProperty: 'id' },
-                    message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'additionalProperties',
-                    dataPath: '',
-                    schemaPath: '#/additionalProperties',
-                    params: { additionalProperty: 'hav' },
-                    message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '',
-                    schemaPath: '#/required',
-                    params: { missingProperty: 'email' },
-                    message: 'should have required property \'email\''
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '',
-                    schemaPath: '#/required',
-                    params: { missingProperty: 'password' },
-                    message: 'should have required property \'password\''
-                }
-            ]);
-            expect(isBodysMatch).to.be.false;
+                const isBodysMatch = validator.validate({
+                    id,
+                    email,
+                    password
+                });
+
+                expect(validator.errors).to.be.eql([
+                    {
+                        keyword: 'additionalProperties',
+                        dataPath: '',
+                        schemaPath: '#/additionalProperties',
+                        params: { additionalProperty: 'id' },
+                        message: 'should NOT have additional properties'
+                    }
+                ]);
+                expect(isBodysMatch).to.be.false;
+            });
         });
-        it('Should return error when request body has readOnly and not-required prop', function () {
-            const validator = schema['/users/optional']['post'].body['application/json'];
+        describe('response', function () {
+            it('Should return error on missing required property', function () {
+                const validator = schema['/users/required']['post'].responses[200];
 
-            const isBodysMatch = validator.validate({
-                'id': 'hav hav',
-                'hav': 'jav'
+                const isBodysMatch = validator.validate({
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: {
+                        email
+                    }
+                });
+
+                expect(validator.errors).to.be.eql([
+                    {
+                        keyword: 'required',
+                        dataPath: '.body',
+                        schemaPath: '#/body/required',
+                        params: { missingProperty: 'id' },
+                        message: 'should have required property \'id\''
+                    }
+                ]);
+                expect(isBodysMatch).to.be.false;
             });
+            it('Should not return error on missing optional property', function () {
+                const validator = schema['/users/optional']['post'].responses[200];
 
-            expect(validator.errors).to.be.eql([
-                {
-                    keyword: 'additionalProperties',
-                    dataPath: '',
-                    schemaPath: '#/additionalProperties',
-                    params: { additionalProperty: 'id' },
-                    message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'additionalProperties',
-                    dataPath: '',
-                    schemaPath: '#/additionalProperties',
-                    params: { additionalProperty: 'hav' },
-                    message: 'should NOT have additional properties'
-                }
-            ]);
-            expect(isBodysMatch).to.be.false;
-        });
-    });
-    describe('validate writeOnly in response', function () {
-        it('Should return error when response body has writeOnly and required prop', function () {
-            const validator = schema['/users/required']['post'].responses[200];
+                const isBodysMatch = validator.validate({
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: {
+                        email
+                    }
+                });
 
-            const isBodysMatch = validator.validate({
-                headers: {
-                    'content-type': 'application/json'
-                },
-                body: {
-                    password: 'dsadas'
-                }
+                expect(validator.errors).to.be.eql(null);
+                expect(isBodysMatch).to.be.true;
             });
-
-            expect(validator.errors).to.be.eql([
-                {
-                    keyword: 'additionalProperties',
-                    dataPath: '.body',
-                    schemaPath: '#/body/additionalProperties',
-                    params: { additionalProperty: 'password' },
-                    message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '.body',
-                    schemaPath: '#/body/required',
-                    params: { missingProperty: 'id' },
-                    message: 'should have required property \'id\''
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '.body',
-                    schemaPath: '#/body/required',
-                    params: { missingProperty: 'email' },
-                    message: 'should have required property \'email\''
-                }
-            ]);
-            expect(isBodysMatch).to.be.false;
-        });
-        it('Should return error when response body has writeOnly and not-required prop', function () {
-            const validator = schema['/users/optional']['post'].responses[200];
-
-            const isBodysMatch = validator.validate({
-                headers: {
-                    'content-type': 'application/json'
-                },
-                body: {
-                    password: 'dsadas'
-                }
-            });
-
-            expect(validator.errors).to.be.eql([
-                {
-                    keyword: 'additionalProperties',
-                    dataPath: '.body',
-                    schemaPath: '#/body/additionalProperties',
-                    params: { additionalProperty: 'password' },
-                    message: 'should NOT have additional properties'
-                }
-            ]);
-            expect(isBodysMatch).to.be.false;
         });
     });
+    describe('writeOnly', function () {
+        describe('request', function () {
+            it('Should return error on missing required property', function () {
+                const validator = schema['/users/required']['post'].body['application/json'];
+
+                const isBodysMatch = validator.validate({
+                    email
+                });
+
+                expect(validator.errors).to.be.eql([
+                    {
+                        keyword: 'required',
+                        dataPath: '',
+                        schemaPath: '#/required',
+                        params: { missingProperty: 'password' },
+                        message: 'should have required property \'password\''
+                    }
+                ]);
+                expect(isBodysMatch).to.be.false;
+            });
+            it('Should not return error on missing optional property', function () {
+                const validator = schema['/users/optional']['post'].body['application/json'];
+
+                const isBodysMatch = validator.validate({
+                    email
+                });
+
+                expect(validator.errors).to.be.eql(null);
+                expect(isBodysMatch).to.be.true;
+            });
+        });
+
+        describe('response', function () {
+            it('Should not return error on missing required property ', function () {
+                const validator = schema['/users/required']['post'].responses[200];
+
+                const isBodysMatch = validator.validate({
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: {
+                        id,
+                        email
+                    }
+                });
+
+                expect(validator.errors).to.be.eql(null);
+                expect(isBodysMatch).to.be.true;
+            });
+            it('Should return error when sending writeOnly property', function () {
+                const validator = schema['/users/optional']['post'].responses[200];
+
+                const isBodysMatch = validator.validate({
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: {
+                        email,
+                        password
+                    }
+                });
+
+                expect(validator.errors).to.be.eql([
+                    {
+                        keyword: 'additionalProperties',
+                        dataPath: '.body',
+                        schemaPath: '#/body/additionalProperties',
+                        params: { additionalProperty: 'password' },
+                        message: 'should NOT have additional properties'
+                    }
+                ]);
+                expect(isBodysMatch).to.be.false;
+            });
+        });
+    });
+
     describe('Validate for non-json content-type', function () {
         it('Should return error when request body has readOnly', function () {
             const validator = schema['/users/hal']['post'].body['application/hal+json'];
 
             const isBodysMatch = validator.validate({
-                'id': 'hav hav',
-                'hav': 'jav'
+                id,
+                email,
+                password
             });
 
             expect(validator.errors).to.be.eql([
@@ -157,27 +182,6 @@ describe('oai3 - readOnly/writeOnly', function () {
                     schemaPath: '#/additionalProperties',
                     params: { additionalProperty: 'id' },
                     message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'additionalProperties',
-                    dataPath: '',
-                    schemaPath: '#/additionalProperties',
-                    params: { additionalProperty: 'hav' },
-                    message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '',
-                    schemaPath: '#/required',
-                    params: { missingProperty: 'email' },
-                    message: 'should have required property \'email\''
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '',
-                    schemaPath: '#/required',
-                    params: { missingProperty: 'password' },
-                    message: 'should have required property \'password\''
                 }
             ]);
             expect(isBodysMatch).to.be.false;
@@ -190,7 +194,9 @@ describe('oai3 - readOnly/writeOnly', function () {
                     'content-type': 'application/hal+json'
                 },
                 body: {
-                    password: 'dsadas'
+                    id,
+                    email,
+                    password
                 }
             });
 
@@ -201,20 +207,6 @@ describe('oai3 - readOnly/writeOnly', function () {
                     schemaPath: '#/body/additionalProperties',
                     params: { additionalProperty: 'password' },
                     message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '.body',
-                    schemaPath: '#/body/required',
-                    params: { missingProperty: 'id' },
-                    message: 'should have required property \'id\''
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '.body',
-                    schemaPath: '#/body/required',
-                    params: { missingProperty: 'email' },
-                    message: 'should have required property \'email\''
                 }
             ]);
             expect(isBodysMatch).to.be.false;
@@ -226,9 +218,9 @@ describe('oai3 - readOnly/writeOnly', function () {
 
             const isBodysMatch = validator.validate({
                 user: {
-                    'id': 'hav hav',
-                    'email': 'user@doamin.com',
-                    'hav': 'jav'
+                    id,
+                    email,
+                    password
                 }
             });
 
@@ -239,27 +231,6 @@ describe('oai3 - readOnly/writeOnly', function () {
                     schemaPath: '#/properties/user/additionalProperties',
                     params: { additionalProperty: 'id' },
                     message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'additionalProperties',
-                    dataPath: '.user',
-                    schemaPath: '#/properties/user/additionalProperties',
-                    params: { additionalProperty: 'hav' },
-                    message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '.user',
-                    schemaPath: '#/properties/user/required',
-                    params: { missingProperty: 'password' },
-                    message: 'should have required property \'password\''
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '',
-                    schemaPath: '#/required',
-                    params: { missingProperty: 'count' },
-                    message: 'should have required property \'count\''
                 }
             ]);
             expect(isBodysMatch).to.be.false;
@@ -273,8 +244,11 @@ describe('oai3 - readOnly/writeOnly', function () {
                 },
                 body: {
                     user: {
-                        password: 'dsadas'
-                    }
+                        id,
+                        email,
+                        password
+                    },
+                    lastLogin: new Date().getTime()
                 }
             });
 
@@ -285,27 +259,6 @@ describe('oai3 - readOnly/writeOnly', function () {
                     schemaPath: '#/body/properties/user/additionalProperties',
                     params: { additionalProperty: 'password' },
                     message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '.body.user',
-                    schemaPath: '#/body/properties/user/required',
-                    params: { missingProperty: 'id' },
-                    message: 'should have required property \'id\''
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '.body.user',
-                    schemaPath: '#/body/properties/user/required',
-                    params: { missingProperty: 'email' },
-                    message: 'should have required property \'email\''
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '.body',
-                    schemaPath: '#/body/required',
-                    params: { missingProperty: 'count' },
-                    message: 'should have required property \'count\''
                 }
             ]);
             expect(isBodysMatch).to.be.false;
@@ -317,9 +270,9 @@ describe('oai3 - readOnly/writeOnly', function () {
 
             const isBodysMatch = validator.validate([
                 {
-                    'id': 'hav hav',
-                    'email': 'user@doamin.com',
-                    'hav': 'jav'
+                    id,
+                    email,
+                    password
                 }
             ]);
 
@@ -330,20 +283,6 @@ describe('oai3 - readOnly/writeOnly', function () {
                     schemaPath: '#/items/additionalProperties',
                     params: { additionalProperty: 'id' },
                     message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'additionalProperties',
-                    dataPath: '[0]',
-                    schemaPath: '#/items/additionalProperties',
-                    params: { additionalProperty: 'hav' },
-                    message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '[0]',
-                    schemaPath: '#/items/required',
-                    params: { missingProperty: 'password' },
-                    message: 'should have required property \'password\''
                 }
             ]);
             expect(isBodysMatch).to.be.false;
@@ -357,7 +296,9 @@ describe('oai3 - readOnly/writeOnly', function () {
                 },
                 body: [
                     {
-                        password: 'dsadas'
+                        id,
+                        email,
+                        password
                     }
                 ]
             });
@@ -369,20 +310,6 @@ describe('oai3 - readOnly/writeOnly', function () {
                     schemaPath: '#/body/items/additionalProperties',
                     params: { additionalProperty: 'password' },
                     message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '.body[0]',
-                    schemaPath: '#/body/items/required',
-                    params: { missingProperty: 'id' },
-                    message: 'should have required property \'id\''
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '.body[0]',
-                    schemaPath: '#/body/items/required',
-                    params: { missingProperty: 'email' },
-                    message: 'should have required property \'email\''
                 }
             ]);
             expect(isBodysMatch).to.be.false;
@@ -393,9 +320,9 @@ describe('oai3 - readOnly/writeOnly', function () {
             const validator = schema['/users/OneOf']['post'].body['application/json'];
 
             const isBodysMatch = validator.validate({
-                'id': 'hav hav',
-                'email': 'user@doamin.com',
-                'hav': 'jav'
+                id,
+                email,
+                password
             });
 
             expect(validator.errors).to.be.eql([
@@ -405,20 +332,6 @@ describe('oai3 - readOnly/writeOnly', function () {
                     schemaPath: '#/oneOf/0/additionalProperties',
                     params: { additionalProperty: 'id' },
                     message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'additionalProperties',
-                    dataPath: '',
-                    schemaPath: '#/oneOf/0/additionalProperties',
-                    params: { additionalProperty: 'hav' },
-                    message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '',
-                    schemaPath: '#/oneOf/0/required',
-                    params: { missingProperty: 'password' },
-                    message: 'should have required property \'password\''
                 },
                 {
                     keyword: 'required',
@@ -494,9 +407,9 @@ describe('oai3 - readOnly/writeOnly', function () {
             const validator = schema['/users/AnyOf']['post'].body['application/json'];
 
             const isBodysMatch = validator.validate({
-                'id': 'hav hav',
-                'email': 'user@doamin.com',
-                'hav': 'jav'
+                id,
+                email,
+                password
             });
 
             expect(validator.errors).to.be.eql([
@@ -506,20 +419,6 @@ describe('oai3 - readOnly/writeOnly', function () {
                     schemaPath: '#/anyOf/0/additionalProperties',
                     params: { additionalProperty: 'id' },
                     message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'additionalProperties',
-                    dataPath: '',
-                    schemaPath: '#/anyOf/0/additionalProperties',
-                    params: { additionalProperty: 'hav' },
-                    message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '',
-                    schemaPath: '#/anyOf/0/required',
-                    params: { missingProperty: 'password' },
-                    message: 'should have required property \'password\''
                 },
                 {
                     keyword: 'required',
@@ -546,7 +445,9 @@ describe('oai3 - readOnly/writeOnly', function () {
                     'content-type': 'application/json'
                 },
                 body: {
-                    password: 'dsadas'
+                    id,
+                    email,
+                    password
                 }
             });
 
@@ -557,20 +458,6 @@ describe('oai3 - readOnly/writeOnly', function () {
                     schemaPath: '#/body/anyOf/0/additionalProperties',
                     params: { additionalProperty: 'password' },
                     message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '.body',
-                    schemaPath: '#/body/anyOf/0/required',
-                    params: { missingProperty: 'id' },
-                    message: 'should have required property \'id\''
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '.body',
-                    schemaPath: '#/body/anyOf/0/required',
-                    params: { missingProperty: 'email' },
-                    message: 'should have required property \'email\''
                 },
                 {
                     keyword: 'required',
@@ -595,9 +482,9 @@ describe('oai3 - readOnly/writeOnly', function () {
             const validator = schema['/users/AllOf']['post'].body['application/json'];
 
             const isBodysMatch = validator.validate({
-                'id': 'hav hav',
-                'email': 'user@doamin.com',
-                'hav': 'jav'
+                id,
+                email,
+                password
             });
 
             expect(validator.errors).to.be.eql([
@@ -607,20 +494,6 @@ describe('oai3 - readOnly/writeOnly', function () {
                     schemaPath: '#/allOf/0/additionalProperties',
                     params: { additionalProperty: 'id' },
                     message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'additionalProperties',
-                    dataPath: '',
-                    schemaPath: '#/allOf/0/additionalProperties',
-                    params: { additionalProperty: 'hav' },
-                    message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '',
-                    schemaPath: '#/allOf/0/required',
-                    params: { missingProperty: 'password' },
-                    message: 'should have required property \'password\''
                 },
                 {
                     keyword: 'required',
@@ -640,7 +513,9 @@ describe('oai3 - readOnly/writeOnly', function () {
                     'content-type': 'application/json'
                 },
                 body: {
-                    password: 'dsadas'
+                    id,
+                    email,
+                    password
                 }
             });
 
@@ -651,20 +526,6 @@ describe('oai3 - readOnly/writeOnly', function () {
                     schemaPath: '#/body/allOf/0/additionalProperties',
                     params: { additionalProperty: 'password' },
                     message: 'should NOT have additional properties'
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '.body',
-                    schemaPath: '#/body/allOf/0/required',
-                    params: { missingProperty: 'id' },
-                    message: 'should have required property \'id\''
-                },
-                {
-                    keyword: 'required',
-                    dataPath: '.body',
-                    schemaPath: '#/body/allOf/0/required',
-                    params: { missingProperty: 'email' },
-                    message: 'should have required property \'email\''
                 },
                 {
                     keyword: 'required',
