@@ -1,4 +1,7 @@
 const values = require('object.values');
+
+const { readOnly, writeOnly, validationTypes } = require('./common');
+
 if (!Object.values) {
     values.shim();
 }
@@ -32,7 +35,7 @@ function getAllResponseContentTypes(responses) {
  * @param {string} omitByPropName the prop name to omit
  * @param {string} omitByValue omit if the prop value equals to this value
  */
-function addOAI3Support(dereferencedSchema, omitByPropName, omitByValue) {
+function addOAI3Support(dereferencedSchema, validationType) {
     const schemaType = getSchemaType(dereferencedSchema);
 
     addNullableSupport(dereferencedSchema);
@@ -41,7 +44,7 @@ function addOAI3Support(dereferencedSchema, omitByPropName, omitByValue) {
         // anyOf/oneOf/allOf handling
         const newSchema = Object.assign({}, dereferencedSchema);
         newSchema[schemaType] = dereferencedSchema[schemaType]
-            .map((dereferencedSchema) => addOAI3Support(dereferencedSchema, omitByPropName, omitByValue));
+            .map((dereferencedSchema) => addOAI3Support(dereferencedSchema, validationType));
         return newSchema;
     } else if (dereferencedSchema.properties) {
         // object handling
@@ -49,7 +52,7 @@ function addOAI3Support(dereferencedSchema, omitByPropName, omitByValue) {
         newSchema.properties = Object.assign({}, dereferencedSchema.properties);
 
         for (const propName of Object.keys(newSchema.properties)) {
-            addRWOnlySupport(newSchema, propName, omitByPropName, omitByValue);
+            addRWOnlySupport(newSchema, propName, validationType);
             addNullableSupport(newSchema, propName);
         }
         return newSchema;
@@ -58,7 +61,7 @@ function addOAI3Support(dereferencedSchema, omitByPropName, omitByValue) {
         const newSchema = Object.assign({}, dereferencedSchema);
         const newItems = Object.assign({}, dereferencedSchema.items);
 
-        newSchema.items = addOAI3Support(newItems, omitByPropName, omitByValue);
+        newSchema.items = addOAI3Support(newItems, validationType);
         return newSchema;
     } else {
         // other datatypes handling
@@ -73,11 +76,14 @@ function addOAI3Support(dereferencedSchema, omitByPropName, omitByValue) {
  * @param {string} omitByPropName the prop name to omit
  * @param {string} omitByValue omit if the prop value equals to this value
  */
-function addRWOnlySupport(dereferencedSchema, propName, omitByPropName, omitByValue) {
-    // console.info(propName,  dereferencedSchema);
+function addRWOnlySupport(dereferencedSchema, propName, validationType) {
+    const omitByKey = validationType === validationTypes.request
+        ? readOnly
+        : writeOnly;
+
     const { properties } = dereferencedSchema;
 
-    if (properties[propName][omitByPropName] === omitByValue) {
+    if (properties[propName][omitByKey] === true) {
         // delete the prop from properties object so it wouldn't be accepted in case of additionalProperties: true
         delete properties[propName];
 
@@ -89,7 +95,7 @@ function addRWOnlySupport(dereferencedSchema, propName, omitByPropName, omitByVa
         }
     } else if (properties[propName].properties) {
         // if the current prop is an object we need to recursively look for omitByPropName occurrences
-        properties[propName] = addOAI3Support(properties[propName], omitByPropName, omitByValue);
+        properties[propName] = addOAI3Support(properties[propName], validationType);
     }
 }
 
