@@ -6,19 +6,14 @@ const Validators = require('../validators/index');
 const ajvUtils = require('../utils/ajv-utils');
 const { Node } = require('../data_structures/tree');
 const createContentTypeHeaders = require('../utils/createContentTypeHeaders');
+const { validationTypes } = require('../utils/common');
 const schemaUtils = require('../utils/schemaUtils');
-const definitionKeywords = require('../utils/keywords');
 
 module.exports = {
     buildRequestBodyValidation,
     buildResponseBodyValidation,
     buildHeadersValidation,
     buildPathParameters
-};
-
-const validationTypes = {
-    request: 'request',
-    response: 'response'
 };
 
 function buildRequestBodyValidation(dereferenced, referenced, currentPath, currentMethod, options) {
@@ -109,11 +104,8 @@ function handleBodyValidation(
 
         return buildV3Inheritance(referencedSchemas, dereferencedSchemas, ajv, referenceName);
     } else {
-        // currently readOnly/writeOnly won't be supported in objects with discriminators
-        const omitByKey = validationType === validationTypes.request
-            ? definitionKeywords.readOnly
-            : definitionKeywords.writeOnly;
-        const newDereferencedBodySchema = schemaUtils.omitPropsFromSchema(dereferencedBodySchema, omitByKey, true);
+        // currently these features won't be supported in objects with discriminators
+        const newDereferencedBodySchema = schemaUtils.addOAI3Support(dereferencedBodySchema, validationType);
 
         return new Validators.SimpleValidator(ajv.compile(newDereferencedBodySchema));
     }

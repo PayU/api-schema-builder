@@ -3,51 +3,36 @@ info:
   version: 1.0.0
   title: Users
 paths:
-  /users/required:
+  /users:
     post:
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserRequired"
+              $ref: "#/components/schemas/User"
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserRequired"
-  /users/optional:
+                $ref: "#/components/schemas/User"
+  /usersWithoutType:
     post:
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserOptional"
+              $ref: "#/components/schemas/User"
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserOptional"
-  /users/hal:
-    post:
-      requestBody:
-        required: true
-        content:
-          application/hal+json:
-            schema:
-              $ref: "#/components/schemas/UserRequired"
-      responses:
-        200:
-          description: OK
-          content:
-            application/hal+json:
-              schema:
-                $ref: "#/components/schemas/UserRequired"
+                $ref: "#/components/schemas/UserWithoutType"
   /users/nested:
     post:
       requestBody:
@@ -63,7 +48,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Nested"
-
   /users/usersArray:
     post:
       requestBody:
@@ -127,34 +111,33 @@ paths:
 
 components:
   schemas:
-    UserRequired:
+    User:
       type: object
       required:
-        - id
         - email
         - password
-      additionalProperties: false
+        - name
       properties:
-        id:
-          type: string
-          readOnly: true
         email:
           type: string
         password:
           type: string
-          writeOnly: true
-    UserOptional:
+        name:
+          type: string
+          nullable: true
+    UserWithoutType:
       type: object
-      additionalProperties: false
+      required:
+        - email
+        - password
+        - name
       properties:
-        id:
-          type: string
-          readOnly: true
         email:
           type: string
         password:
           type: string
-          writeOnly: true
+        name:
+          nullable: true
     Nested:
       type: object
       required:
@@ -162,19 +145,18 @@ components:
         - lastLogin
       properties:
         user:
-          $ref: "#/components/schemas/UserRequired"
+          $ref: "#/components/schemas/User"
         lastLogin:
           type: number
           format: date-time
-          readOnly: true
     UsersArray:
       type: array
       items:
         type: object
-        $ref: "#/components/schemas/UserRequired"
+        $ref: "#/components/schemas/User"
     OneOf:
       oneOf:
-        - $ref: "#/components/schemas/UserRequired"
+        - $ref: "#/components/schemas/User"
         - type: object
           required:
             - additionalOneOfField
@@ -183,7 +165,7 @@ components:
               type: string
     AnyOf:
       anyOf:
-        - $ref: "#/components/schemas/UserRequired"
+        - $ref: "#/components/schemas/User"
         - type: object
           required:
             - additionalOneOfField
@@ -192,7 +174,7 @@ components:
               type: string
     AllOf:
       allOf:
-        - $ref: "#/components/schemas/UserRequired"
+        - $ref: "#/components/schemas/User"
         - type: object
           required:
             - additionalOneOfField
