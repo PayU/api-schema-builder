@@ -110,13 +110,9 @@ function addNullableSupport(dereferencedSchema, propName) {
 
         if (!property || property.nullable !== true) {
             return;
-        }
-
-        if (!property.type) {
+        } else if (!property.type) {
             dereferencedSchema.properties[propName].type = allDataTypes;
-        }
-
-        if (!property.type.includes('null')) {
+        } else if (!property.type.includes('null')) {
             dereferencedSchema.properties[propName].type = ['null'].concat(property.type);
         }
     }
