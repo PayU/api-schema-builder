@@ -21,6 +21,7 @@ This package is used to build schema for input validation base on openapi doc [S
     - [Arguments](#arguments)
       - [Options](#options)
     - [Response](#response)
+  - [api-schema-builder.buildSchemaSync(jsonSchema, options)](#express-ajv-swagger-validationgetSchemajsonSchema-options)
   - [api-schema-builder.buildSchema(PathToSwaggerFile, options)](#express-ajv-swagger-validationgetSchemaAsyncpathtoswaggerfile-options)
 - [Usage Example](#usage-example)
 - [Important Notes](#important-notes)
@@ -90,6 +91,12 @@ formats: [
     { name: 'int32', pattern: /^\d{1,10}$/ }
 ]
 ```
+
+### api-schema-builder.buildSchema(jsonSchema, options)
+
+Synchronously build schema that would contain ajv validators for each endpoint, based on given OpenAPI specification as json schema.
+
+The function returns schema object.
 
 
 ### api-schema-builder.buildSchema(PathToSwaggerFile, options)
