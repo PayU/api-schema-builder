@@ -38,14 +38,14 @@ function buildSchemaSync(pathOrSchema, options) {
 }
 
 function getJsonSchema(pathOrSchema) {
-    if (pathOrSchema instanceof Object) {
-        // json schema
-        return pathOrSchema;
-    } else {
-        // yaml
+    if (typeof pathOrSchema === 'string') {
+        // file
         const fileContents = fs.readFileSync(pathOrSchema);
         const jsonSchema = yaml.load(fileContents, 'utf8');
         return jsonSchema;
+    } else {
+        // json schema
+        return pathOrSchema;
     }
 }
 
