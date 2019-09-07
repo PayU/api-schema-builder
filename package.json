@@ -45,7 +45,6 @@
   "author": "Gal Cohen",
   "dependencies": {
     "ajv": "^6.10.2",
-    "big-integer": "^1.6.44",
     "clone-deep": "^4.0.1",
     "decimal.js": "^10.2.0",
     "js-yaml": "^3.13.1",
