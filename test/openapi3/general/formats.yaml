@@ -1,0 +1,48 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  license:
+    name: MIT
+paths:
+  /types:
+    post:
+      requestBody:
+        description: Expected response to a valid request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Types"
+      responses:
+        200:
+          description: OK
+
+components:
+  schemas:
+    Types:
+      type: object
+      properties:
+        _int32:
+          type: integer
+          format: int32
+        _int64:
+          type: integer
+          format: int64
+        _float:
+          type: number
+          format: float
+        _double:
+          type: number
+          format: double
+        _file:
+          type: string
+          format: file
+        _binary:
+          type: string
+          format: binary
+        _password:
+          type: string
+          format: password
+        _byte:
+          type: string
+          format: byte

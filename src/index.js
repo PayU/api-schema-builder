@@ -7,6 +7,7 @@ const fs = require('fs');
 const yaml = require('js-yaml');
 const SwaggerParser = require('swagger-parser');
 
+const { defaultFormatsValidators } = require('./validators/formatValidators.js');
 const schemaPreprocessor = require('./utils/schema-preprocessor');
 const oai3 = require('./parsers/open-api3');
 const oai2 = require('./parsers/open-api2');
@@ -16,7 +17,7 @@ const sourceResolver = require('./utils/sourceResolver');
 const Validators = require('./validators/index');
 const createContentTypeHeaders = require('./utils/createContentTypeHeaders');
 
-const DEFAULT_SETTINGS = {
+const DEFAULT_OPTIONS = {
     buildRequests: true,
     buildResponses: true
 };
@@ -50,8 +51,8 @@ function getJsonSchema(pathOrSchema) {
 }
 
 function buildValidations(referenced, dereferenced, receivedOptions) {
-    const options = Object.assign({}, DEFAULT_SETTINGS, receivedOptions);
-    const { buildRequests, buildResponses } = options;
+    const options = getOptions(receivedOptions);
+
     const schemas = {};
     Object.keys(dereferenced.paths).forEach(function (currentPath) {
         const parsedPath = dereferenced.basePath && dereferenced.basePath !== '/'
@@ -64,13 +65,13 @@ function buildValidations(referenced, dereferenced, receivedOptions) {
                 const parsedMethod = currentMethod.toLowerCase();
 
                 let requestValidator;
-                if (buildRequests) {
+                if (options.buildRequests) {
                     requestValidator = buildRequestValidator(referenced, dereferenced, currentPath,
                         parsedPath, currentMethod, options);
                 }
 
                 let responseValidator;
-                if (buildResponses) {
+                if (options.buildResponses) {
                     responseValidator = buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options);
                 }
 
@@ -78,6 +79,19 @@ function buildValidations(referenced, dereferenced, receivedOptions) {
             });
     });
     return schemas;
+}
+
+function getOptions(opts = {}) {
+    const formats = opts.formats
+        ? defaultFormatsValidators.concat(opts.formats)
+        : defaultFormatsValidators;
+
+    return Object.assign(
+        {},
+        DEFAULT_OPTIONS,
+        opts,
+        { formats }
+    );
 }
 
 function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options) {

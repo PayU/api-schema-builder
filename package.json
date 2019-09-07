@@ -46,6 +46,7 @@
   "dependencies": {
     "ajv": "^6.10.2",
     "clone-deep": "^4.0.1",
+    "decimal.js": "^10.2.0",
     "js-yaml": "^3.13.1",
     "json-schema-deref-sync": "^0.10.1",
     "object.values": "^1.1.0",
