@@ -30,20 +30,20 @@ function buildSchema(swaggerPath, options) {
     });
 }
 
-function buildSchemaSync(pathOrContents, options) {
-    const jsonSchema = getJsonSchema(pathOrContents);
+function buildSchemaSync(pathOrSchema, options) {
+    const jsonSchema = getJsonSchema(pathOrSchema);
     const dereferencedSchema = deref(jsonSchema);
 
     return buildValidations(jsonSchema, dereferencedSchema, options);
 }
 
-function getJsonSchema(pathOrContents) {
-    if (pathOrContents instanceof Object) {
+function getJsonSchema(pathOrSchema) {
+    if (pathOrSchema instanceof Object) {
         // json schema
-        return pathOrContents;
+        return pathOrSchema;
     } else {
         // yaml
-        const fileContents = fs.readFileSync(pathOrContents);
+        const fileContents = fs.readFileSync(pathOrSchema);
         const jsonSchema = yaml.load(fileContents, 'utf8');
         return jsonSchema;
     }
