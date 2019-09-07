@@ -47,8 +47,10 @@ describe('formats', function () {
             expect(validator.validate({ _double: 1 })).to.be.true;
             expect(validator.validate({ _double: 1.0 })).to.be.true;
             expect(validator.validate({ _double: -1.0 })).to.be.true;
-            expect(validator.validate({ _double: 3.4e+38 })).to.be.true;
-            expect(validator.validate({ _double: -3.4e+38 })).to.be.true;
+            expect(validator.validate({ _double: 9223372036854775000 })).to.be.true;
+            expect(validator.validate({ _double: -9223372036854775000 })).to.be.true;
+            expect(validator.validate({ _double: 1.7976931348623158e308 })).to.be.true;
+            expect(validator.validate({ _double: -1.7976931348623158e308 })).to.be.true;
         });
         it('invalid', function () {
             expect(validator.validate({ _double: '0' })).to.be.false;
@@ -62,8 +64,10 @@ describe('formats', function () {
             expect(validator.validate({ _float: 1 })).to.be.true;
             expect(validator.validate({ _float: 1.0 })).to.be.true;
             expect(validator.validate({ _float: -1.0 })).to.be.true;
-            expect(validator.validate({ _float: 3.4e+38 })).to.be.true;
-            expect(validator.validate({ _float: -3.4e+38 })).to.be.true;
+            expect(validator.validate({ _float: 9223372036854775000 })).to.be.true;
+            expect(validator.validate({ _float: -9223372036854775000 })).to.be.true;
+            expect(validator.validate({ _float: 3.402823466e38 })).to.be.true;
+            expect(validator.validate({ _float: -3.402823466e38 })).to.be.true;
         });
         it('invalid', function () {
             expect(validator.validate({ _float: '0' })).to.be.false;
