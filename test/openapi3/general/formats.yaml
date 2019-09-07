@@ -43,3 +43,6 @@ components:
         _password:
           type: string
           format: password
+        _byte:
+          type: string
+          format: byte
