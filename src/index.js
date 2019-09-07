@@ -25,16 +25,28 @@ function buildSchema(swaggerPath, options) {
     return Promise.all([
         SwaggerParser.dereference(swaggerPath),
         SwaggerParser.parse(swaggerPath)
-    ]).then(function ([dereferenced, referenced]) {
-        return buildValidations(referenced, dereferenced, options);
+    ]).then(function ([dereferencedJsonSchema, jsonSchema]) {
+        return buildValidations(jsonSchema, dereferencedJsonSchema, options);
     });
 }
 
-function buildSchemaSync(swaggerPath, options) {
-    const parsed = yaml.load(fs.readFileSync(swaggerPath), 'utf8');
-    const dereferenced = deref(parsed);
+function buildSchemaSync(pathOrSchema, options) {
+    const jsonSchema = getJsonSchema(pathOrSchema);
+    const dereferencedSchema = deref(jsonSchema);
 
-    return buildValidations(parsed, dereferenced, options);
+    return buildValidations(jsonSchema, dereferencedSchema, options);
+}
+
+function getJsonSchema(pathOrSchema) {
+    if (typeof pathOrSchema === 'string') {
+        // file
+        const fileContents = fs.readFileSync(pathOrSchema);
+        const jsonSchema = yaml.load(fileContents, 'utf8');
+        return jsonSchema;
+    } else {
+        // json schema
+        return pathOrSchema;
+    }
 }
 
 function buildValidations(referenced, dereferenced, receivedOptions) {
@@ -42,14 +54,14 @@ function buildValidations(referenced, dereferenced, receivedOptions) {
     const { buildRequests, buildResponses } = options;
     const schemas = {};
     Object.keys(dereferenced.paths).forEach(function (currentPath) {
-        let parsedPath = dereferenced.basePath && dereferenced.basePath !== '/'
+        const parsedPath = dereferenced.basePath && dereferenced.basePath !== '/'
             ? dereferenced.basePath.concat(currentPath.replace(/{/g, ':').replace(/}/g, ''))
             : currentPath.replace(/{/g, ':').replace(/}/g, '');
         schemas[parsedPath] = {};
         Object.keys(dereferenced.paths[currentPath])
             .filter(function (parameter) { return parameter !== 'parameters' })
             .forEach(function (currentMethod) {
-                let parsedMethod = currentMethod.toLowerCase();
+                const parsedMethod = currentMethod.toLowerCase();
 
                 let requestValidator;
                 if (buildRequests) {
@@ -69,16 +81,16 @@ function buildValidations(referenced, dereferenced, receivedOptions) {
 }
 
 function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options) {
-    let requestSchema = {};
+    const requestSchema = {};
     let localParameters = [];
-    let pathParameters = dereferenced.paths[currentPath].parameters || [];
+    const pathParameters = dereferenced.paths[currentPath].parameters || [];
     const isOpenApi3 = schemaUtils.isOpenApi3(dereferenced);
     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
     if (isOpenApi3) {
         requestSchema.body = oai3.buildRequestBodyValidation(dereferenced, referenced, currentPath, currentMethod, options);
         localParameters = oai3.buildPathParameters(parameters, pathParameters);
     } else {
-        let bodySchema = options.expectFormFieldsInBody
+        const bodySchema = options.expectFormFieldsInBody
             ? parameters.filter(function (parameter) {
                 return (parameter.in === 'body' ||
                     (parameter.in === 'formData' && parameter.type !== 'file'));
@@ -118,7 +130,7 @@ function buildResponseValidator(referenced, dereferenced, currentPath, parsedPat
                     bodyValidator = oai3.buildResponseBodyValidation(dereferenced, referenced,
                         currentPath, currentMethod, statusCode, options);
                 } else {
-                    let contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
+                    const contentTypes = dereferenced.paths[currentPath][currentMethod].produces || dereferenced.paths[currentPath].produces || dereferenced.produces;
                     headersValidator = oai2.buildHeadersValidation(responses, contentTypes, statusCode, options);
                     bodyValidator = oai2.buildResponseBodyValidation(responses,
                         dereferenced.definitions, referenced, currentPath, currentMethod, statusCode, options);
@@ -143,7 +155,7 @@ function buildParametersValidation(parameters, contentTypes, options) {
         // unknownFormats: 'ignore'
     };
     const ajvOptions = Object.assign({}, defaultAjvOptions, options.ajvConfigParams);
-    let ajv = new Ajv(ajvOptions);
+    const ajv = new Ajv(ajvOptions);
 
     ajvUtils.addCustomKeyword(ajv, options.formats, options.keywords);
 
