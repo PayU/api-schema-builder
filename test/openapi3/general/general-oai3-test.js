@@ -5,7 +5,7 @@ const path = require('path');
 const yaml = require('js-yaml');
 const fs = require('fs');
 
-const schemaValidatorGenerator = require('../../../src/index');
+const schemaValidatorGenerator = require('../../../src');
 
 const { expect } = chai;
 
