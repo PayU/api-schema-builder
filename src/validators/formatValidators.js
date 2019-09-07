@@ -18,13 +18,13 @@ const constraints = {
     }
 };
 
-module.exports.defaultFormatsValidators = [
+const defaultFormatsValidators = [
     {
         name: 'int64',
         pattern: {
             validate: (value) =>
                 constraints.int64.max.greaterThanOrEqualTo(value) &&
-        constraints.int64.min.lessThanOrEqualTo(value),
+                constraints.int64.min.lessThanOrEqualTo(value),
             type: 'number'
         }
     },
@@ -33,7 +33,7 @@ module.exports.defaultFormatsValidators = [
         pattern: {
             validate: (value) =>
                 value >= -2147483648 &&
-        value <= 2147483647,
+                value <= 2147483647,
             type: 'number'
         }
     },
@@ -42,7 +42,7 @@ module.exports.defaultFormatsValidators = [
         pattern: {
             validate: (value) =>
                 constraints.float.max.greaterThanOrEqualTo(value) &&
-        constraints.float.min.lessThanOrEqualTo(value),
+                constraints.float.min.lessThanOrEqualTo(value),
             type: 'number'
         }
     },
@@ -51,7 +51,7 @@ module.exports.defaultFormatsValidators = [
         pattern: {
             validate: (value) =>
                 constraints.double.max.greaterThanOrEqualTo(value) &&
-        constraints.double.min.lessThanOrEqualTo(value),
+                constraints.double.min.lessThanOrEqualTo(value),
             type: 'number'
         }
     },
@@ -72,7 +72,9 @@ module.exports.defaultFormatsValidators = [
         pattern: {
             validate: (value) =>
                 value.length % 4 === 0 &&
-        constraints.byte.regex.test(value)
+                constraints.byte.regex.test(value)
         }
     }
 ];
+
+module.exports = { defaultFormatsValidators };
