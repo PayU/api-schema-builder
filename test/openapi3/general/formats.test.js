@@ -5,7 +5,7 @@ const expect = chai.expect;
 const schemaValidatorGenerator = require('../../../src/index');
 const path = require('path');
 
-describe.only('formats', function () {
+describe('formats', function () {
     const swaggerPath = path.join(__dirname, 'formats.yaml');
     const schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
     const validator = schema['/types'].post.body['application/json'];
