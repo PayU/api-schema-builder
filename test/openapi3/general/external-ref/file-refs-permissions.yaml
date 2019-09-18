@@ -1,0 +1,9 @@
+components:
+  schemas:
+    Permissions:
+      type: object
+      properties:
+        permissions:
+          type: array
+          items:
+            type: string

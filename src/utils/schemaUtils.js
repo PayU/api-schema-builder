@@ -1,4 +1,7 @@
 const values = require('object.values');
+const fs = require('fs');
+const yaml = require('js-yaml');
+const path = require('path');
 
 const { readOnly, writeOnly, validationTypes, allDataTypes } = require('./common');
 
@@ -144,11 +147,41 @@ function getSchemaType(dereferencedSchema) {
     }
 }
 
+function getJsonSchema(pathOrSchema) {
+    if (typeof pathOrSchema === 'string') {
+        // file path
+        const fileContents = fs.readFileSync(pathOrSchema);
+        const jsonSchema = yaml.load(fileContents, 'utf8');
+        return jsonSchema;
+    } else {
+        // json schema
+        return pathOrSchema;
+    }
+}
+
+function getSchemaBasePath(pathOrSchema, options = {}) {
+    // always return basePath from options if exists
+    if (options.basePath) {
+        return options.basePath;
+    }
+
+    // in case a path to defintions file was given
+    if (typeof pathOrSchema === 'string') {
+        const fullPath = path.resolve(pathOrSchema).split('/');
+        fullPath.pop();
+        return fullPath.join('/');
+    }
+
+    return process.cwd();
+}
+
 module.exports = {
     DEFAULT_RESPONSE_CONTENT_TYPE,
     DEFAULT_REQUEST_CONTENT_TYPE,
     getAllResponseContentTypes,
     addOAI3Support,
     getSchemaType,
-    isOpenApi3
+    isOpenApi3,
+    getJsonSchema,
+    getSchemaBasePath
 };

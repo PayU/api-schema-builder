@@ -73,7 +73,6 @@ Array that contains:
 ##### Options
 
 Options currently supports:.
-- `formats` - Array of formats that can be added to `ajv` configuration, each element in the array should include `name` and `pattern`.
 - `keywords` - Array of keywords that can be added to `ajv` configuration, each element in the array can be either an object or a function. 
 If the element is an object, it must include `name` and `definition`. If the element is a function, it should accept `ajv` as its first argument and inside the function you need to call `ajv.addKeyword` to add your custom keyword 
 - `makeOptionalAttributesNullable` - Boolean that forces preprocessing of Swagger schema to include 'null' as possible type for all non-required properties. Main use-case for this is to ensure correct handling of null values when Ajv type coercion is enabled
@@ -83,14 +82,16 @@ If the element is an object, it must include `name` and `definition`. If the ele
 - `expectFormFieldsInBody` - Boolean that indicates whether form fields of non-file type that are specified in the schema should be validated against request body (e. g. Multer is copying text form fields to body)
 - `buildRequests` - Boolean that indicates whether if create validators for requests, default is true.
 - `buildResponses` - Boolean that indicates whether if create validators for responses, default is false.
+- `basePath` - Base path of the external definition files referenced in the given schema. This is required whenever passing json schema instead of `PathToSwaggerFile` to the constructor or the external files are not stored in the same path of `PathToSwaggerFile`
+- `formats` - Array of formats that can be added to `ajv` configuration, each element in the array should include `name` and `pattern`.
 
-```js
-formats: [
-    { name: 'double', pattern: /\d+\.(\d+)+/ },
-    { name: 'int64', pattern: /^\d{1,19}$/ },
-    { name: 'int32', pattern: /^\d{1,10}$/ }
-]
-```
+  ```js
+  formats: [
+      { name: 'double', pattern: /\d+\.(\d+)+/ },
+      { name: 'int64', pattern: /^\d{1,19}$/ },
+      { name: 'int32', pattern: /^\d{1,10}$/ }
+  ]
+  ```
 
 ### api-schema-builder.buildSchema(jsonSchema, options)
 
