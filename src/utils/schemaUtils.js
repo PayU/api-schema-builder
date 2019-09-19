@@ -171,8 +171,6 @@ function getSchemaBasePath(pathOrSchema, options = {}) {
         fullPath.pop();
         return fullPath.join('/');
     }
-
-    return process.cwd();
 }
 
 module.exports = {
