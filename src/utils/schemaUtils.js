@@ -167,9 +167,9 @@ function getSchemaBasePath(pathOrSchema, options = {}) {
 
     // in case a path to defintions file was given
     if (typeof pathOrSchema === 'string') {
-        const fullPath = path.resolve(pathOrSchema).split('/');
+        const fullPath = path.resolve(pathOrSchema).split(path.sep);
         fullPath.pop();
-        return fullPath.join('/');
+        return fullPath.join(path.sep);
     }
 }
 
