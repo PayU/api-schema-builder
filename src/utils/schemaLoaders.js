@@ -17,14 +17,12 @@ const file = function (refValue, options) {
     const filePath = getRefFilePath(refPath);
     const filePathLowerCase = filePath.toLowerCase();
 
-    try {
-        var data = fs.readFileSync(filePath, 'utf8');
-        if (filePathLowerCase.endsWith('.json')) {
-            return JSON.parse(data);
-        } else if (filePathLowerCase.endsWith('.yml') || filePathLowerCase.endsWith('.yaml')) {
-            return jsyaml.load(data);
-        }
-    } catch (e) { }
+    var data = fs.readFileSync(filePath, 'utf8');
+    if (filePathLowerCase.endsWith('.json')) {
+        return JSON.parse(data);
+    } else if (filePathLowerCase.endsWith('.yml') || filePathLowerCase.endsWith('.yaml')) {
+        return jsyaml.load(data);
+    }
 };
 
 function getRefFilePath(refPath) {
