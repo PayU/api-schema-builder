@@ -42,7 +42,12 @@
     "url": "https://github.com/Zooz/api-schema-builder/issues"
   },
   "homepage": "https://github.com/Zooz/api-schema-builder.git",
-  "author": "Gal Cohen",
+  "author": "Idan Tovi",
+  "contributors": [
+    "Igor Savin",
+    "Kobi Carmeli",
+    "Gal Cohen"
+  ],
   "dependencies": {
     "ajv": "^6.10.2",
     "clone-deep": "^4.0.1",
