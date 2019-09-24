@@ -4,7 +4,7 @@ const jsyaml = require('js-yaml');
 
 const cwd = process.cwd();
 
-const file = function (refValue, options) {
+const file = (refValue, options) => {
     let refPath = refValue;
     const baseFolder = options.baseFolder ? path.resolve(cwd, options.baseFolder) : cwd;
 
