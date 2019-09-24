@@ -180,7 +180,7 @@ function getSchemaBasePath(pathOrSchema, options = {}) {
         return options.basePath;
     }
 
-    // in case a path to defintions file was given
+    // in case a path to definitions file was given
     if (typeof pathOrSchema === 'string') {
         const fullPath = path.resolve(pathOrSchema).split(path.sep);
         fullPath.pop();

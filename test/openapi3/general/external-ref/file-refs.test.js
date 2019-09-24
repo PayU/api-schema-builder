@@ -8,13 +8,13 @@ const { expect } = chai;
 
 const schemaValidatorGenerator = require('../../../../src');
 
-describe('Loading defintions file with file refs', () => {
-    describe('calling buildSchemaSync with path to defintions file', () => {
+describe('Loading definitions file with file refs', () => {
+    describe('calling buildSchemaSync with path to definitions file', () => {
         const swaggerPath = path.join(__dirname, 'file-refs.yaml');
         const schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
         const validator = schema['/users'].post.body['application/json'];
 
-        it('should validate accroding to yaml file schema', () => {
+        it('should validate according to yaml file schema', () => {
             validator.validate({
                 id: 'dsadasda',
                 permissions: []
@@ -52,7 +52,7 @@ describe('Loading defintions file with file refs', () => {
                 }
             ]);
         });
-        it('should validate accroding to json file schema', () => {
+        it('should validate according to json file schema', () => {
             validator.validate({
                 email: 'sarabia@gmail.com',
                 password: 'qwerty',
