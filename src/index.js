@@ -2,9 +2,6 @@
 
 const get = require('lodash.get');
 const Ajv = require('ajv');
-const deref = require('json-schema-deref-sync');
-const fs = require('fs');
-const yaml = require('js-yaml');
 const SwaggerParser = require('swagger-parser');
 
 const { defaultFormatsValidators } = require('./validators/formatValidators.js');
@@ -32,22 +29,9 @@ function buildSchema(swaggerPath, options) {
 }
 
 function buildSchemaSync(pathOrSchema, options) {
-    const jsonSchema = getJsonSchema(pathOrSchema);
-    const dereferencedSchema = deref(jsonSchema);
+    const { jsonSchema, dereferencedSchema } = schemaUtils.getSchemas(pathOrSchema, options);
 
     return buildValidations(jsonSchema, dereferencedSchema, options);
-}
-
-function getJsonSchema(pathOrSchema) {
-    if (typeof pathOrSchema === 'string') {
-        // file
-        const fileContents = fs.readFileSync(pathOrSchema);
-        const jsonSchema = yaml.load(fileContents, 'utf8');
-        return jsonSchema;
-    } else {
-        // json schema
-        return pathOrSchema;
-    }
 }
 
 function buildValidations(referenced, dereferenced, receivedOptions) {

@@ -1,4 +1,10 @@
 const values = require('object.values');
+const fs = require('fs');
+const yaml = require('js-yaml');
+const path = require('path');
+const deref = require('json-schema-deref-sync');
+
+const schemaLoaders = require('./schemaLoaders');
 
 const { readOnly, writeOnly, validationTypes, allDataTypes } = require('./common');
 
@@ -144,11 +150,50 @@ function getSchemaType(dereferencedSchema) {
     }
 }
 
+function getSchemas(pathOrSchema, options) {
+    const jsonSchema = getJsonSchema(pathOrSchema);
+    const basePath = getSchemaBasePath(pathOrSchema, options);
+    const dereferencedSchema = deref(jsonSchema, {
+        baseFolder: basePath,
+        failOnMissing: true,
+        loaders: schemaLoaders
+    });
+
+    return { jsonSchema, dereferencedSchema };
+}
+
+function getJsonSchema(pathOrSchema) {
+    if (typeof pathOrSchema === 'string') {
+        // file path
+        const fileContents = fs.readFileSync(pathOrSchema);
+        const jsonSchema = yaml.load(fileContents, 'utf8');
+        return jsonSchema;
+    } else {
+        // json schema
+        return pathOrSchema;
+    }
+}
+
+function getSchemaBasePath(pathOrSchema, options = {}) {
+    // always return basePath from options if exists
+    if (options.basePath) {
+        return options.basePath;
+    }
+
+    // in case a path to definitions file was given
+    if (typeof pathOrSchema === 'string') {
+        const fullPath = path.resolve(pathOrSchema).split(path.sep);
+        fullPath.pop();
+        return fullPath.join(path.sep);
+    }
+}
+
 module.exports = {
     DEFAULT_RESPONSE_CONTENT_TYPE,
     DEFAULT_REQUEST_CONTENT_TYPE,
     getAllResponseContentTypes,
     addOAI3Support,
     getSchemaType,
-    isOpenApi3
+    isOpenApi3,
+    getSchemas
 };
