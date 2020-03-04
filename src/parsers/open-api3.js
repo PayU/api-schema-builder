@@ -86,7 +86,14 @@ function handleBodyValidation(
     validationType,
     { ajvConfigBody, formats, keywords }
 ) {
-    if (!dereferencedBodySchema || !referencedBodySchema) return;
+
+    if (!dereferencedBodySchema) {
+        return
+    }
+
+    if (dereferencedBodySchema.discriminator && !referencedBodySchema) {
+        return
+    }
 
     const defaultAjvOptions = {
         allErrors: true
