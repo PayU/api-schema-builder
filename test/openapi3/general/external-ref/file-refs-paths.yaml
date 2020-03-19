@@ -1,0 +1,7 @@
+openapi: 3.0.1
+info:
+  version: 1.0.0
+  title: Users
+paths:
+  /users:
+    $ref: "./file-refs-paths-users.yaml#/paths/users"

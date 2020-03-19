@@ -1,0 +1,20 @@
+paths:
+  users:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "./file-refs-user.yaml#/components/schemas/User"
+                - $ref: "./file-refs-permissions.json#/components/schemas/Permissions"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "./file-refs-user.yaml#/components/schemas/User"
+                  - $ref: "./file-refs-permissions.json#/components/schemas/Permissions"
