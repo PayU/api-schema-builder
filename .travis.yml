@@ -3,7 +3,7 @@ language: node_js
 node_js:
 - "8"
 - "10"
-- "node"
+- "12"
 
 before_script: "node -v | grep -v v6 && npm run lint || :"
 script: "npm run test:coverage"
