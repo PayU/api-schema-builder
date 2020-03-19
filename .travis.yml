@@ -9,3 +9,10 @@ node_js:
 before_script: "node -v | grep -v v6 && npm run lint || :"
 script: "npm run test:coverage"
 after_success: "npm run coveralls"
+
+jobs:
+  include:
+    - language: node_js
+      node_js: 6
+      script:
+      - npm run test
