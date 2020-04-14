@@ -8,8 +8,8 @@ class ResponseValidator extends Validator {
     }
 }
 function responseValidator(response, data) {
-    let bodySchema = response.body;
-    let headersSchema = response.headers;
+    const bodySchema = response.body;
+    const headersSchema = response.headers;
     let bodyValidationResult = true, bodyValidationErrors = [],
         headersValidationResult = true, headersValidationErrors = [];
     if (bodySchema) {
@@ -35,7 +35,7 @@ function responseValidator(response, data) {
         headersValidationErrors = headersSchema.errors ? addErrorPrefix(headersSchema.errors, 'headers') : [];
     }
 
-    let errors = bodyValidationErrors.concat(headersValidationErrors);
+    const errors = bodyValidationErrors.concat(headersValidationErrors);
     this.errors = errors.length === 0 ? null : errors;
 
     return bodyValidationResult && headersValidationResult;

@@ -86,13 +86,12 @@ function handleBodyValidation(
     validationType,
     { ajvConfigBody, formats, keywords }
 ) {
-
     if (!dereferencedBodySchema) {
-        return
+        return;
     }
 
     if (dereferencedBodySchema.discriminator && !referencedBodySchema) {
-        return
+        return;
     }
 
     const defaultAjvOptions = {
@@ -100,14 +99,14 @@ function handleBodyValidation(
     };
 
     const ajvOptions = Object.assign({}, defaultAjvOptions, ajvConfigBody);
-    let ajv = new Ajv(ajvOptions);
+    const ajv = new Ajv(ajvOptions);
 
     ajvUtils.addCustomKeyword(ajv, formats, keywords);
 
     if (dereferencedBodySchema.discriminator) {
-        let referencedSchemas = referenced.components.schemas;
-        let dereferencedSchemas = dereferenced.components.schemas;
-        let referenceName = referencedBodySchema['$ref'];
+        const referencedSchemas = referenced.components.schemas;
+        const dereferencedSchemas = dereferenced.components.schemas;
+        const referenceName = referencedBodySchema.$ref;
 
         return buildV3Inheritance(referencedSchemas, dereferencedSchemas, ajv, referenceName);
     } else {
@@ -119,23 +118,23 @@ function handleBodyValidation(
 }
 
 function buildPathParameters(parameters, pathParameters) {
-    let allParameters = [].concat(parameters, pathParameters);
-    let localParameters = allParameters.map(handleSchema);
+    const allParameters = [].concat(parameters, pathParameters);
+    const localParameters = allParameters.map(handleSchema);
     return localParameters;
 }
 
 function handleSchema(data) {
-    let clonedData = cloneDeep(data);
-    let schema = data.schema;
+    const clonedData = cloneDeep(data);
+    const schema = data.schema;
     if (schema) {
-        delete clonedData['schema'];
+        delete clonedData.schema;
         Object.assign(clonedData, schema);
     }
     return clonedData;
 }
 
 function buildHeadersValidation(responses, statusCode, { ajvConfigParams, formats, keywords, contentTypeValidation }) {
-    let headers = get(responses, `[${statusCode}].headers`);
+    const headers = get(responses, `[${statusCode}].headers`);
     if (!headers) return;
 
     const defaultAjvOptions = {
@@ -143,7 +142,7 @@ function buildHeadersValidation(responses, statusCode, { ajvConfigParams, format
         coerceTypes: 'array'
     };
     const ajvOptions = Object.assign({}, defaultAjvOptions, ajvConfigParams);
-    let ajv = new Ajv(ajvOptions);
+    const ajv = new Ajv(ajvOptions);
 
     ajvUtils.addCustomKeyword(ajv, formats, keywords);
 
@@ -156,7 +155,7 @@ function buildHeadersValidation(responses, statusCode, { ajvConfigParams, format
     };
 
     Object.keys(headers).forEach(key => {
-        let headerObj = Object.assign({}, headers[key].schema);
+        const headerObj = Object.assign({}, headers[key].schema);
         const headerName = key.toLowerCase();
         delete headerObj.name;
         delete headerObj.required;
@@ -214,8 +213,8 @@ function buildV3Inheritance(referencedSchemas, dereferencedSchemas, ajv, referen
         }
 
         const options = currentSchema.oneOf.map((refObject) => {
-            let option = findKey(currentSchema.discriminator.mapping, (value) => (value === refObject['$ref']));
-            const ref = getKeyFromRef(refObject['$ref']);
+            const option = findKey(currentSchema.discriminator.mapping, (value) => (value === refObject.$ref));
+            const ref = getKeyFromRef(refObject.$ref);
             return { option: option || ref, ref };
         });
         discriminatorObject.allowedValues = options.map((option) => option.option);
