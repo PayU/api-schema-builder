@@ -1,0 +1,25 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  license:
+    name: MIT
+basePath: /staging
+paths:
+  /pets:
+    post:
+      summary: Create a pet
+      operationId: createPets
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            required:
+              - name
+            properties:
+              name:
+                type: string
+      responses:
+        "201":
+          description: Null response

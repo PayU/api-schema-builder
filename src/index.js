@@ -38,29 +38,35 @@ function buildValidations(referenced, dereferenced, receivedOptions) {
     const options = getOptions(receivedOptions);
 
     const schemas = {};
+
+    const basePaths = dereferenced.servers
+        ? dereferenced.servers.map(({ url }) => new URL(url).pathname)
+        : [dereferenced.basePath || '/'];
+
     Object.keys(dereferenced.paths).forEach(function (currentPath) {
-        const parsedPath = dereferenced.basePath && dereferenced.basePath !== '/'
-            ? dereferenced.basePath.concat(currentPath.replace(/{/g, ':').replace(/}/g, ''))
-            : currentPath.replace(/{/g, ':').replace(/}/g, '');
-        schemas[parsedPath] = {};
-        Object.keys(dereferenced.paths[currentPath])
-            .filter(function (parameter) { return parameter !== 'parameters' })
-            .forEach(function (currentMethod) {
-                const parsedMethod = currentMethod.toLowerCase();
+        basePaths.forEach(basePath => {
+            const fullPath = basePath.replace(/\/$/, '').concat(currentPath);
+            const parsedPath = fullPath.replace(/{/g, ':').replace(/}/g, '');
+            schemas[parsedPath] = {};
+            Object.keys(dereferenced.paths[currentPath])
+                .filter(function (parameter) { return parameter !== 'parameters' })
+                .forEach(function (currentMethod) {
+                    const parsedMethod = currentMethod.toLowerCase();
 
-                let requestValidator;
-                if (options.buildRequests) {
-                    requestValidator = buildRequestValidator(referenced, dereferenced, currentPath,
-                        parsedPath, currentMethod, options);
-                }
+                    let requestValidator;
+                    if (options.buildRequests) {
+                        requestValidator = buildRequestValidator(referenced, dereferenced, currentPath,
+                            parsedPath, currentMethod, options);
+                    }
 
-                let responseValidator;
-                if (options.buildResponses) {
-                    responseValidator = buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options);
-                }
+                    let responseValidator;
+                    if (options.buildResponses) {
+                        responseValidator = buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options);
+                    }
 
-                schemas[parsedPath][parsedMethod] = Object.assign({}, requestValidator, { responses: responseValidator });
-            });
+                    schemas[parsedPath][parsedMethod] = Object.assign({}, requestValidator, { responses: responseValidator });
+                });
+        });
     });
     return schemas;
 }

@@ -79,6 +79,7 @@ paths:
                 $ref: "#/components/schemas/Error"
 servers:
 - url: http://petstore.swagger.io
+- url: http://petstore.swagger.io/staging/
 components:
   schemas:
     Error:
