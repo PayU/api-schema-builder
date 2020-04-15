@@ -3,6 +3,7 @@
 const get = require('lodash.get');
 const Ajv = require('ajv');
 const SwaggerParser = require('swagger-parser');
+const URL = require('url');
 
 const { defaultFormatsValidators } = require('./validators/formatValidators.js');
 const schemaPreprocessor = require('./utils/schema-preprocessor');
@@ -40,7 +41,7 @@ function buildValidations(referenced, dereferenced, receivedOptions) {
     const schemas = {};
 
     const basePaths = dereferenced.servers
-        ? dereferenced.servers.map(({ url }) => new URL(url).pathname)
+        ? dereferenced.servers.map(({ url }) => URL.parse(url).pathname)
         : [dereferenced.basePath || '/'];
 
     Object.keys(dereferenced.paths).forEach(function (currentPath) {
