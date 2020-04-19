@@ -8,7 +8,7 @@ class OneOfValidator extends Validator {
     }
 }
 function oneOf(schemas, data) {
-    let schema = schemas[data[schemas.discriminator]];
+    const schema = schemas[data[schemas.discriminator]];
     let result = false;
     if (schema) {
         result = schema(data);

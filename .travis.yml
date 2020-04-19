@@ -11,9 +11,6 @@ script: "npm run test:coverage"
 jobs:
   include:
     - language: node_js
-      node_js: 6
-      script: "npm run test"
-    - language: node_js
       node_js: node
       script: "npm run test:coverage"
       after_success: "npm run coveralls"

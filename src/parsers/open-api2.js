@@ -14,7 +14,7 @@ module.exports = {
 };
 
 function buildPathParameters(parameters, pathParameters) {
-    let localParameters = parameters.filter(function (parameter) {
+    const localParameters = parameters.filter(function (parameter) {
         return parameter.in !== 'body';
     }).concat(pathParameters);
     return localParameters;
@@ -46,7 +46,7 @@ function getValidatedBodySchema(bodySchema) {
 }
 
 function buildHeadersValidation(responses, contentTypes, statusCode, options) {
-    let headers = get(responses, `[${statusCode}].headers`);
+    const headers = get(responses, `[${statusCode}].headers`);
     if (!headers && !contentTypes) return;
 
     const defaultAjvOptions = {
@@ -54,7 +54,7 @@ function buildHeadersValidation(responses, contentTypes, statusCode, options) {
         coerceTypes: 'array'
     };
     const ajvOptions = Object.assign({}, defaultAjvOptions, options.ajvConfigParams);
-    let ajv = new Ajv(ajvOptions);
+    const ajv = new Ajv(ajvOptions);
 
     ajvUtils.addCustomKeyword(ajv, options.formats, options.keywords);
 
@@ -67,7 +67,7 @@ function buildHeadersValidation(responses, contentTypes, statusCode, options) {
 
     if (headers) {
         Object.keys(headers).forEach(key => {
-            let headerObj = Object.assign({}, headers[key]);
+            const headerObj = Object.assign({}, headers[key]);
             const headerName = key.toLowerCase();
             delete headerObj.name;
             ajvHeadersSchema.properties[headerName] = headerObj;
@@ -84,20 +84,20 @@ function buildAjvValidator(ajvConfigBody, formats, keywords){
         allErrors: true
     };
     const ajvOptions = Object.assign({}, defaultAjvOptions, ajvConfigBody);
-    let ajv = new Ajv(ajvOptions);
+    const ajv = new Ajv(ajvOptions);
 
     ajvUtils.addCustomKeyword(ajv, formats, keywords);
     return ajv;
 }
 
 function buildResponseBodyValidation(responses, swaggerDefinitions, originalSwagger, currentPath, currentMethod, statusCode, options) {
-    let schema = get(responses, `[${statusCode}].schema`);
+    const schema = get(responses, `[${statusCode}].schema`);
     if (!schema) return;
 
-    let ajv = buildAjvValidator(options.ajvConfigBody, options.formats, options.keywords);
+    const ajv = buildAjvValidator(options.ajvConfigBody, options.formats, options.keywords);
 
     if (schema.discriminator) {
-        let referenceName = originalSwagger.paths[currentPath][currentMethod].responses[statusCode].schema['$ref'];
+        const referenceName = originalSwagger.paths[currentPath][currentMethod].responses[statusCode].schema.$ref;
         return buildInheritance(schema.discriminator, swaggerDefinitions, originalSwagger, ajv, referenceName);
     } else {
         return new Validators.SimpleValidator(ajv.compile(schema));
@@ -105,10 +105,10 @@ function buildResponseBodyValidation(responses, swaggerDefinitions, originalSwag
 }
 
 function buildRequestBodyValidation(schema, swaggerDefinitions, originalSwagger, currentPath, currentMethod, options) {
-    let ajv = buildAjvValidator(options.ajvConfigBody, options.formats, options.keywords);
+    const ajv = buildAjvValidator(options.ajvConfigBody, options.formats, options.keywords);
 
     if (schema.discriminator) {
-        let referenceName = originalSwagger.paths[currentPath][currentMethod].parameters.filter(function (parameter) { return parameter.in === 'body' })[0].schema['$ref'];
+        const referenceName = originalSwagger.paths[currentPath][currentMethod].parameters.filter(function (parameter) { return parameter.in === 'body' })[0].schema.$ref;
         return buildInheritance(schema.discriminator, swaggerDefinitions, originalSwagger, ajv, referenceName);
     } else {
         return new Validators.SimpleValidator(ajv.compile(schema));
@@ -124,7 +124,7 @@ function buildInheritance(discriminator, dereferencedDefinitions, swagger, ajv, 
     Object.keys(swagger.definitions).forEach(key => {
         if (swagger.definitions[key].allOf) {
             swagger.definitions[key].allOf.forEach(element => {
-                if (element['$ref'] && element['$ref'] === referenceName) {
+                if (element.$ref && element.$ref === referenceName) {
                     inheritsObject[key] = ajv.compile(dereferencedDefinitions[key]);
                     inheritsObject.inheritance.push(key);
                 }
