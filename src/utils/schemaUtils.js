@@ -1,4 +1,3 @@
-const values = require('object.values');
 const fs = require('fs');
 const yaml = require('js-yaml');
 const path = require('path');
@@ -8,10 +7,6 @@ const schemaLoaders = require('./schemaLoaders');
 const schemaValidators = require('./schemaValidators');
 
 const { readOnly, writeOnly, validationTypes, allDataTypes } = require('./common');
-
-if (!Object.values) {
-    values.shim();
-}
 
 const DEFAULT_REQUEST_CONTENT_TYPE = 'application/json';
 const DEFAULT_RESPONSE_CONTENT_TYPE = 'application/json';

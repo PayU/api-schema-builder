@@ -7,7 +7,7 @@ function makeOptionalAttributesNullable(bodySchema) {
         return;
     }
 
-    for (let schemaEntry of bodySchema) {
+    for (const schemaEntry of bodySchema) {
         if (schemaEntry && schemaEntry.schema) {
             _processSchemaEntry(schemaEntry.schema);
         }
@@ -26,7 +26,7 @@ function _processSchemaEntry(schema) {
 
     const properties = schema.properties;
     for (const property in properties) {
-        if (properties.hasOwnProperty(property)) {
+        if (Object.prototype.hasOwnProperty.call(properties, property)) {
             if (!schema.required || schema.required.indexOf(property) === -1) {
                 if (!Array.isArray(properties[property].type)) {
                     properties[property].type = [properties[property].type, 'null'];

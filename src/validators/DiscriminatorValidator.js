@@ -26,7 +26,7 @@ function findSchemaValidation(tree, data) {
 }
 
 function discriminator(schemas, data) {
-    let schema = findSchemaValidation.call(this, schemas, data);
+    const schema = findSchemaValidation.call(this, schemas, data);
     let result = false;
     if (schema) {
         result = schema(data);

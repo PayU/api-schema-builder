@@ -8,7 +8,7 @@ class SimpleValidator extends Validator {
 }
 
 function simple(ajvValidate, data) {
-    let result = ajvValidate(data);
+    const result = ajvValidate(data);
     this.errors = ajvValidate.errors;
 
     return result;

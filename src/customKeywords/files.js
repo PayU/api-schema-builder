@@ -2,7 +2,7 @@ var Ajv = require('ajv');
 const fileNameField = 'fieldname';
 
 function missingElements(superSet, subset) {
-    let missingElements = [];
+    const missingElements = [];
     subset.every(function (subsetElement) {
         if (!superSet.includes(subsetElement)) {
             missingElements.push(subsetElement);
@@ -17,7 +17,7 @@ module.exports = {
     validate: function filesValidation(schema, data) {
         filesValidation.errors = [];
         const dataFileName = data.map((element) => { return element[fileNameField] });
-        let missingFiles = missingElements(dataFileName, schema.required);
+        const missingFiles = missingElements(dataFileName, schema.required);
         if (missingFiles.length > 0) {
             filesValidation.errors.push(new Ajv.ValidationError({
                 keyword: 'files',
@@ -28,8 +28,8 @@ module.exports = {
         }
 
         // Check that only the optional files exists
-        let allFiles = schema.required.concat(schema.optional);
-        let extraFiles = missingElements(allFiles, dataFileName);
+        const allFiles = schema.required.concat(schema.optional);
+        const extraFiles = missingElements(allFiles, dataFileName);
         if (extraFiles.length > 0) {
             filesValidation.errors.push(new Ajv.ValidationError({
                 keyword: 'files',

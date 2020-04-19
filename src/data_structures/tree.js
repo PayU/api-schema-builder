@@ -10,6 +10,7 @@ class Node {
         this.value = value;
         this.childrenAsKeyValue = {};
     }
+
     /**
      * Add child to the node.
      * @param node - The node which going to be the child.
@@ -18,6 +19,7 @@ class Node {
     addChild(node, key){
         this.childrenAsKeyValue[key] = node;
     }
+
     /**
      * Override node data by other node by reference.
      * @param node - The node which going to use to take his data.
@@ -28,6 +30,7 @@ class Node {
             this.childrenAsKeyValue = node.childrenAsKeyValue;
         }
     };
+
     /**
      * Get node value.
      * @return The value of the node.

@@ -24,7 +24,8 @@
     "test": "mocha",
     "test:coverage": "nyc npm test",
     "coveralls": "cat ./coverage/lcov.info |./node_modules/.bin/coveralls",
-    "lint": "./node_modules/.bin/eslint src"
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix"
   },
   "repository": {
     "type": "git",
@@ -54,9 +55,8 @@
     "decimal.js": "^10.2.0",
     "js-yaml": "^3.13.1",
     "json-schema-deref-sync": "^0.13.0",
-    "object.values": "^1.1.1",
     "openapi-schema-validator": "^3.0.3",
-    "swagger-parser": "^6.0.5"
+    "swagger-parser": "^9.0.1"
   },
   "devDependencies": {
     "ajv-keywords": "^3.4.1",
@@ -71,11 +71,14 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "lodash.get": "^4.4.2",
-    "mocha": "^6.2.2",
-    "nyc": "^15.0.0",
-    "uuid": "^3.3.3"
+    "mocha": "^6.2.3",
+    "nyc": "^15.0.1",
+    "uuid": "^3.4.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
+  },
+  "engines": {
+    "node": ">=8"
   }
 }
