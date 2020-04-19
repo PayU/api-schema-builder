@@ -33,6 +33,10 @@ paths:
     post:
       requestBody:
         description: Expected response to a valid request
+        content:
+          plain/text:
+            schema:
+              type: string
         required: true
       responses:
         "200":

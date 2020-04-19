@@ -55,6 +55,7 @@
     "js-yaml": "^3.13.1",
     "json-schema-deref-sync": "^0.13.0",
     "object.values": "^1.1.1",
+    "openapi-schema-validator": "^3.0.3",
     "swagger-parser": "^6.0.5"
   },
   "devDependencies": {
