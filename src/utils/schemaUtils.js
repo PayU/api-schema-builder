@@ -4,6 +4,7 @@ const path = require('path');
 const deref = require('json-schema-deref-sync');
 
 const schemaLoaders = require('./schemaLoaders');
+const schemaValidators = require('./schemaValidators');
 
 const { readOnly, writeOnly, validationTypes, allDataTypes } = require('./common');
 
@@ -153,6 +154,15 @@ function getSchemas(pathOrSchema, options) {
         failOnMissing: true,
         loaders: schemaLoaders
     });
+
+    if (isOpenApi3(dereferencedSchema)) {
+        const validationResult = schemaValidators.openApi3Validator.validate(dereferencedSchema);
+        if (validationResult.errors && validationResult.errors.length > 0) {
+            const error = new Error('Invalid OpenAPI 3 schema');
+            error.errors = validationResult.errors;
+            throw error;
+        }
+    }
 
     return { jsonSchema, dereferencedSchema };
 }
