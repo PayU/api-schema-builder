@@ -59,6 +59,14 @@ describe('oai2 - general tests', () => {
                 expect(typeof receivedSchema['/pets']['post'].parameters).to.exist;
             });
         });
+        describe('base path', () => {
+            it('is prepended to each path', () => {
+                const swaggerPath = path.join(__dirname, 'pet-store-basepath.yaml');
+                const schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
+                expect(Object.keys(schema)).to.eql(['/staging/pets']);
+                expect(typeof schema['/staging/pets'].post.body.validate).to.eql('function');
+            });
+        });
     });
 
     describe('async', () => {

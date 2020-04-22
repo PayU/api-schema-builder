@@ -103,6 +103,22 @@ describe('oai3 - general tests', () => {
                 expect(typeof receivedSchema['/json'].put.responses['200'].validate).to.eql('function');
             });
         });
+        describe('servers', () => {
+            it('copies schema for each base path', () => {
+                const swaggerPath = path.join(__dirname, 'pets-general.yaml');
+                const schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
+                expect(Object.keys(schema)).to.eql([
+                    '/text',
+                    '/staging/text',
+                    '/empty',
+                    '/staging/empty',
+                    '/json',
+                    '/staging/json'
+                ]);
+                expect(typeof schema['/json'].put.body['application/json'].validate).to.eql('function');
+                expect(typeof schema['/staging/json'].put.body['application/json'].validate).to.eql('function');
+            });
+        });
     });
 
     describe('async', () => {

@@ -3,6 +3,7 @@
 const get = require('lodash.get');
 const Ajv = require('ajv');
 const SwaggerParser = require('swagger-parser');
+const { URL } = require('url');
 
 const { defaultFormatsValidators } = require('./validators/formatValidators.js');
 const schemaPreprocessor = require('./utils/schema-preprocessor');
@@ -38,30 +39,49 @@ function buildValidations(referenced, dereferenced, receivedOptions) {
     const options = getOptions(receivedOptions);
 
     const schemas = {};
-    Object.keys(dereferenced.paths).forEach(function (currentPath) {
-        const parsedPath = dereferenced.basePath && dereferenced.basePath !== '/'
-            ? dereferenced.basePath.concat(currentPath.replace(/{/g, ':').replace(/}/g, ''))
-            : currentPath.replace(/{/g, ':').replace(/}/g, '');
-        schemas[parsedPath] = {};
+
+    const basePaths = dereferenced.servers
+        ? dereferenced.servers.map(({ url }) => new URL(url).pathname)
+        : [dereferenced.basePath || '/'];
+
+    Object.keys(dereferenced.paths).forEach(currentPath => {
+        const operationSchemas = {};
         Object.keys(dereferenced.paths[currentPath])
-            .filter(function (parameter) { return parameter !== 'parameters' })
-            .forEach(function (currentMethod) {
+            .filter(parameter => parameter !== 'parameters')
+            .forEach(currentMethod => {
                 const parsedMethod = currentMethod.toLowerCase();
 
                 let requestValidator;
                 if (options.buildRequests) {
-                    requestValidator = buildRequestValidator(referenced, dereferenced, currentPath,
-                        parsedPath, currentMethod, options);
+                    requestValidator = buildRequestValidator(
+                        referenced,
+                        dereferenced,
+                        currentPath,
+                        currentMethod,
+                        options
+                    );
                 }
 
                 let responseValidator;
                 if (options.buildResponses) {
-                    responseValidator = buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options);
+                    responseValidator = buildResponseValidator(
+                        referenced,
+                        dereferenced,
+                        currentPath,
+                        currentMethod,
+                        options
+                    );
                 }
 
-                schemas[parsedPath][parsedMethod] = Object.assign({}, requestValidator, { responses: responseValidator });
+                operationSchemas[parsedMethod] = Object.assign({}, requestValidator, { responses: responseValidator });
             });
+
+        basePaths.forEach(basePath => {
+            const normalizedPath = basePath.replace(/\/$/, '') + currentPath.replace(/{(\w+)}/g, ':$1');
+            schemas[normalizedPath] = operationSchemas;
+        });
     });
+
     return schemas;
 }
 
@@ -78,7 +98,7 @@ function getOptions(opts = {}) {
     );
 }
 
-function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options) {
+function buildRequestValidator(referenced, dereferenced, currentPath, currentMethod, options) {
     const requestSchema = {};
     let localParameters = [];
     const pathParameters = dereferenced.paths[currentPath].parameters || [];
@@ -114,7 +134,7 @@ function buildRequestValidator(referenced, dereferenced, currentPath, parsedPath
     return requestSchema;
 }
 
-function buildResponseValidator(referenced, dereferenced, currentPath, parsedPath, currentMethod, options) {
+function buildResponseValidator(referenced, dereferenced, currentPath, currentMethod, options) {
     const responsesSchema = {};
     const isOpenApi3 = schemaUtils.isOpenApi3(dereferenced);
     const responses = get(dereferenced, `paths[${currentPath}][${currentMethod}].responses`);
