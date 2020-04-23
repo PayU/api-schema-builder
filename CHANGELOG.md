@@ -1,6 +1,6 @@
 # Master (Unreleased)
 
-# 2.0.0 - ?? April, 2020
+# 2.0.0 - 23 April, 2020
 
 ### New features
 
