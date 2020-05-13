@@ -29,7 +29,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Zooz/api-schema-builder.git"
+    "url": "https://github.com/PayU/api-schema-builder.git"
   },
   "keywords": [
     "ajv",
@@ -40,9 +40,9 @@
     "validator"
   ],
   "bugs": {
-    "url": "https://github.com/Zooz/api-schema-builder/issues"
+    "url": "https://github.com/PayU/api-schema-builder/issues"
   },
-  "homepage": "https://github.com/Zooz/api-schema-builder.git",
+  "homepage": "https://github.com/PayU/api-schema-builder.git",
   "author": "Idan Tovi",
   "contributors": [
     "Igor Savin",
