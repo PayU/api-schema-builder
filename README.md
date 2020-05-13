@@ -1,8 +1,8 @@
 
 # api-schema-builder
 [![NPM Version](https://img.shields.io/npm/v/api-schema-builder.svg?style=flat)](https://npmjs.org/package/api-schema-builder)
-[![Build Status](https://travis-ci.org/Zooz/api-schema-builder.svg?branch=master)](https://travis-ci.org/Zooz/api-schema-builder)
-[![Coverage Status](https://coveralls.io/repos/github/Zooz/api-schema-builder/badge.svg?branch=master)](https://coveralls.io/github/Zooz/api-schema-builder?branch=master)
+[![Build Status](https://travis-ci.org/payu/api-schema-builder.svg?branch=master)](https://travis-ci.org/payu/api-schema-builder)
+[![Coverage Status](https://coveralls.io/repos/github/PayU/api-schema-builder/badge.svg?branch=master)](https://coveralls.io/github/PayU/api-schema-builder?branch=master)
 [![Known Vulnerabilities](https://snyk.io/test/npm/api-schema-builder/badge.svg)](https://snyk.io/test/npm/api-schema-builder)
 [![Apache 2.0 License](https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat)](LICENSE)
 
@@ -17,12 +17,12 @@ This package is used to build schema for input validation base on openapi doc [S
 - [Install](#install)
 - [API](#api)
   - [How to use](#how-to-use)
-  - [api-schema-builder.buildSchemaSync(PathToSwaggerFile, options)](#express-ajv-swagger-validationgetSchemapathtoswaggerfile-options)
+  - [api-schema-builder.buildSchemaSync(PathToSwaggerFile, options)](#api-schema-buildergetSchemapathtoswaggerfile-options)
     - [Arguments](#arguments)
       - [Options](#options)
     - [Response](#response)
-  - [api-schema-builder.buildSchemaSync(jsonSchema, options)](#express-ajv-swagger-validationgetSchemajsonSchema-options)
-  - [api-schema-builder.buildSchema(PathToSwaggerFile, options)](#express-ajv-swagger-validationgetSchemaAsyncpathtoswaggerfile-options)
+  - [api-schema-builder.buildSchemaSync(jsonSchema, options)](#api-schema-buildergetSchemajsonSchema-options)
+  - [api-schema-builder.buildSchema(PathToSwaggerFile, options)](#api-schema-buildergetSchemaAsyncpathtoswaggerfile-options)
 - [Usage Example](#usage-example)
 - [Important Notes](#important-notes)
 - [Open api 3 - known issues](#open-api-3---known-issues)
@@ -173,14 +173,3 @@ Using mocha and istanbul
 ```bash
 npm run test
 ```
-
-[npm-image]: https://img.shields.io/npm/v/express-ajv-swagger-validation.svg?style=flat
-[npm-url]: https://npmjs.org/package/express-ajv-swagger-validation
-[travis-image]: https://travis-ci.org/Zooz/express-ajv-swagger-validation.svg?branch=master
-[travis-url]: https://travis-ci.org/Zooz/express-ajv-swagger-validation
-[coveralls-image]: https://coveralls.io/repos/github/Zooz/express-ajv-swagger-validation/badge.svg?branch=master
-[coveralls-url]: https://coveralls.io/github/Zooz/express-ajv-swagger-validation?branch=master
-[downloads-image]: http://img.shields.io/npm/dm/express-ajv-swagger-validation.svg?style=flat
-[downloads-url]: https://npmjs.org/package/express-ajv-swagger-validation
-[license-image]: https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat
-[license-url]: LICENSE
