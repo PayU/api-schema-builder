@@ -118,6 +118,26 @@ describe('oai3 - general tests', () => {
                 expect(typeof schema['/json'].put.body['application/json'].validate).to.eql('function');
                 expect(typeof schema['/staging/json'].put.body['application/json'].validate).to.eql('function');
             });
+            it('correctly works with empty servers', () => {
+                const swaggerPath = path.join(__dirname, 'pets-general-empty-servers.yaml');
+                const schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
+                expect(Object.keys(schema)).to.eql([
+                    '/text',
+                    '/empty',
+                    '/json'
+                ]);
+                expect(typeof schema['/json'].put.body['application/json'].validate).to.eql('function');
+            });
+            it('correctly works without servers', () => {
+                const swaggerPath = path.join(__dirname, 'pets-general-no-servers.yaml');
+                const schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
+                expect(Object.keys(schema)).to.eql([
+                    '/text',
+                    '/empty',
+                    '/json'
+                ]);
+                expect(typeof schema['/json'].put.body['application/json'].validate).to.eql('function');
+            });
         });
     });
 

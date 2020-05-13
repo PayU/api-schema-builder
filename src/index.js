@@ -40,7 +40,7 @@ function buildValidations(referenced, dereferenced, receivedOptions) {
 
     const schemas = {};
 
-    const basePaths = dereferenced.servers
+    const basePaths = dereferenced.servers && dereferenced.servers.length
         ? dereferenced.servers.map(({ url }) => new URL(url).pathname)
         : [dereferenced.basePath || '/'];
 
