@@ -156,7 +156,7 @@ function getSchemas(pathOrSchema, options) {
     });
 
     if (isOpenApi3(dereferencedSchema)) {
-        const validationResult = schemaValidators.openApi3Validator.validate(dereferencedSchema);
+        const validationResult = schemaValidators.getOAI3Validator().validate(dereferencedSchema);
         if (validationResult.errors && validationResult.errors.length > 0) {
             const error = new Error('Invalid OpenAPI 3 schema');
             error.errors = validationResult.errors;
