@@ -1,11 +1,3 @@
-const fs = require('fs');
-const yaml = require('js-yaml');
-const path = require('path');
-const deref = require('json-schema-deref-sync');
-
-const schemaLoaders = require('./schemaLoaders');
-const schemaValidators = require('./schemaValidators');
-
 const { readOnly, writeOnly, validationTypes, allDataTypes } = require('./common');
 
 const DEFAULT_REQUEST_CONTENT_TYPE = 'application/json';
@@ -121,15 +113,6 @@ function addNullableSupport(dereferencedSchema, propName) {
 }
 
 /**
- * returns true if given dereferenced schema object is an openapi version 3.x.x
- *
- * @param {object} dereferencedSchema
- */
-function isOpenApi3(dereferencedSchema) {
-    return dereferencedSchema.openapi ? dereferencedSchema.openapi.startsWith('3.') : false;
-}
-
-/**
  * returns the type of the given dereferenced schema object (anyOf, oneOf, allOf)
  *
  * @param {object} dereferencedSchema
@@ -146,51 +129,17 @@ function getSchemaType(dereferencedSchema) {
     }
 }
 
-function getSchemas(pathOrSchema, options) {
-    const jsonSchema = getJsonSchema(pathOrSchema);
-    const basePath = getSchemaBasePath(pathOrSchema, options);
-    const dereferencedSchema = deref(jsonSchema, {
-        baseFolder: basePath,
-        failOnMissing: true,
-        loaders: schemaLoaders
-    });
+/**
+ * returns true if given dereferenced schema object is an openapi version 3.x.x
+ *
+ * @param {object} dereferencedSchema
+ */
+function getOAIVersion(dereferencedSchema) {
+    const version = dereferencedSchema.openapi && dereferencedSchema.openapi.split('.')[0];
 
-    if (isOpenApi3(dereferencedSchema)) {
-        const validationResult = schemaValidators.getOAI3Validator().validate(dereferencedSchema);
-        if (validationResult.errors && validationResult.errors.length > 0) {
-            const error = new Error('Invalid OpenAPI 3 schema');
-            error.errors = validationResult.errors;
-            throw error;
-        }
-    }
-
-    return { jsonSchema, dereferencedSchema };
-}
-
-function getJsonSchema(pathOrSchema) {
-    if (typeof pathOrSchema === 'string') {
-        // file path
-        const fileContents = fs.readFileSync(pathOrSchema);
-        const jsonSchema = yaml.load(fileContents, 'utf8');
-        return jsonSchema;
-    } else {
-        // json schema
-        return pathOrSchema;
-    }
-}
-
-function getSchemaBasePath(pathOrSchema, options = {}) {
-    // always return basePath from options if exists
-    if (options.basePath) {
-        return options.basePath;
-    }
-
-    // in case a path to definitions file was given
-    if (typeof pathOrSchema === 'string') {
-        const fullPath = path.resolve(pathOrSchema).split(path.sep);
-        fullPath.pop();
-        return fullPath.join(path.sep);
-    }
+    return version
+        ? parseInt(version)
+        : undefined;
 }
 
 module.exports = {
@@ -199,6 +148,5 @@ module.exports = {
     getAllResponseContentTypes,
     addOAI3Support,
     getSchemaType,
-    isOpenApi3,
-    getSchemas
+    getOAIVersion
 };
