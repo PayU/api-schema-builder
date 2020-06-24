@@ -1,20 +1,18 @@
+const OpenAPISchemaValidator = require('openapi-schema-validator').default;
 
-const getOAI3Validator = (() => {
-    const OpenAPISchemaValidator = require('openapi-schema-validator').default;
+let validator;
 
-    let validator;
-    return () => {
-        if (!validator) {
-            validator = new OpenAPISchemaValidator({
-                version: 3,
-                version3Extensions: {
-                }
-            });
-        }
+function getOAI3Validator() {
+    if (!validator) {
+        validator = new OpenAPISchemaValidator({
+            version: 3,
+            version3Extensions: {
+            }
+        });
+    }
 
-        return validator;
-    };
-})();
+    return validator;
+}
 
 module.exports = {
     getOAI3Validator
