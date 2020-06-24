@@ -17,7 +17,7 @@ const file = (refValue, options) => {
     const filePath = getRefFilePath(refPath);
     const filePathLowerCase = filePath.toLowerCase();
 
-    var data = fs.readFileSync(filePath, 'utf8');
+    const data = fs.readFileSync(filePath, 'utf8');
     if (filePathLowerCase.endsWith('.json')) {
         return JSON.parse(data);
     } else if (filePathLowerCase.endsWith('.yml') || filePathLowerCase.endsWith('.yaml')) {
@@ -26,13 +26,12 @@ const file = (refValue, options) => {
 };
 
 function getRefFilePath(refPath) {
-    let filePath = refPath;
-    const hashIndex = filePath.indexOf('#');
+    const hashIndex = refPath.indexOf('#');
     if (hashIndex > 0) {
-        filePath = refPath.substring(0, hashIndex);
+        return refPath.substring(0, hashIndex);
+    } else {
+        return refPath;
     }
-
-    return filePath;
 }
 
 module.exports = { file };
