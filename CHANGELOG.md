@@ -1,4 +1,17 @@
-# Master (Unreleased)
+# Master
+# 2.0.2 - 7 July, 2020
+
+### Improvements
+
+- Speed-up `api-schema-builder` import by lazy loading required dependencies #54
+
+
+# 2.0.1 - 13 May, 2020
+
+### Improvements
+
+- Support empty servers in OpenAPI 3.0 spec #50
+
 
 # 2.0.0 - 23 April, 2020
 
