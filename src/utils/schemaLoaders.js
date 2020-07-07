@@ -1,38 +1,77 @@
-const fs = require('fs');
 const path = require('path');
-const jsyaml = require('js-yaml');
+const fs = require('fs');
 
-const cwd = process.cwd();
+const { getOAIVersion } = require('./schemaUtils');
 
-const file = (refValue, options) => {
-    let refPath = refValue;
-    const baseFolder = options.baseFolder ? path.resolve(cwd, options.baseFolder) : cwd;
+async function loadSchemaAsync(swaggerPath) {
+    const SwaggerParser = require('swagger-parser');
 
-    if (refPath.indexOf('file:') === 0) {
-        refPath = refPath.substring(5);
-    } else {
-        refPath = path.resolve(baseFolder, refPath);
-    }
+    const [dereferencedSchema, jsonSchema] = await Promise.all([
+        SwaggerParser.dereference(swaggerPath),
+        SwaggerParser.parse(swaggerPath)
+    ]);
 
-    const filePath = getRefFilePath(refPath);
-    const filePathLowerCase = filePath.toLowerCase();
-
-    var data = fs.readFileSync(filePath, 'utf8');
-    if (filePathLowerCase.endsWith('.json')) {
-        return JSON.parse(data);
-    } else if (filePathLowerCase.endsWith('.yml') || filePathLowerCase.endsWith('.yaml')) {
-        return jsyaml.load(data);
-    }
-};
-
-function getRefFilePath(refPath) {
-    let filePath = refPath;
-    const hashIndex = filePath.indexOf('#');
-    if (hashIndex > 0) {
-        filePath = refPath.substring(0, hashIndex);
-    }
-
-    return filePath;
+    return { dereferencedSchema, jsonSchema };
 }
 
-module.exports = { file };
+function loadSchema(pathOrSchema, options) {
+    const schemaValidators = require('./schemaValidators');
+
+    const jsonSchema = getJsonSchema(pathOrSchema);
+    const basePath = getSchemaBasePath(pathOrSchema, options);
+    const dereferencedSchema = dereference(basePath, jsonSchema);
+
+    if (getOAIVersion(dereferencedSchema) === 3) {
+        const validationResult = schemaValidators.getOAI3Validator().validate(dereferencedSchema);
+        if (validationResult.errors && validationResult.errors.length > 0) {
+            const error = new Error('Invalid OpenAPI 3 schema');
+            error.errors = validationResult.errors;
+            throw error;
+        }
+    }
+
+    return { jsonSchema, dereferencedSchema };
+}
+
+function dereference(basePath, jsonSchema) {
+    const deref = require('json-schema-deref-sync');
+    const schemaLoaders = require('./fileLoaders');
+
+    const dereferencedSchema = deref(jsonSchema, {
+        baseFolder: basePath,
+        failOnMissing: true,
+        loaders: schemaLoaders
+    });
+
+    return dereferencedSchema;
+}
+
+function getJsonSchema(pathOrSchema) {
+    if (typeof pathOrSchema === 'string') {
+        // file path
+        const yaml = require('js-yaml');
+
+        const fileContents = fs.readFileSync(pathOrSchema);
+        const jsonSchema = yaml.load(fileContents, 'utf8');
+        return jsonSchema;
+    } else {
+        // json schema
+        return pathOrSchema;
+    }
+}
+
+function getSchemaBasePath(pathOrSchema, options = {}) {
+    // always return basePath from options if exists
+    if (options.basePath) {
+        return options.basePath;
+    }
+
+    // in case a path to definitions file was given
+    if (typeof pathOrSchema === 'string') {
+        const fullPath = path.resolve(pathOrSchema).split(path.sep);
+        fullPath.pop();
+        return fullPath.join(path.sep);
+    }
+}
+
+module.exports = { loadSchema, loadSchemaAsync };

@@ -1,8 +1,6 @@
 'use strict';
-
 const get = require('lodash.get');
 const Ajv = require('ajv');
-const SwaggerParser = require('swagger-parser');
 const { URL } = require('url');
 
 const { defaultFormatsValidators } = require('./validators/formatValidators.js');
@@ -14,23 +12,21 @@ const schemaUtils = require('./utils/schemaUtils');
 const sourceResolver = require('./utils/sourceResolver');
 const Validators = require('./validators/index');
 const createContentTypeHeaders = require('./utils/createContentTypeHeaders');
+const { loadSchemaAsync, loadSchema } = require('./utils/schemaLoaders.js');
 
 const DEFAULT_OPTIONS = {
     buildRequests: true,
     buildResponses: true
 };
 
-function buildSchema(swaggerPath, options) {
-    return Promise.all([
-        SwaggerParser.dereference(swaggerPath),
-        SwaggerParser.parse(swaggerPath)
-    ]).then(function ([dereferencedJsonSchema, jsonSchema]) {
-        return buildValidations(jsonSchema, dereferencedJsonSchema, options);
-    });
+async function buildSchema(swaggerPath, options) {
+    const { jsonSchema, dereferencedSchema } = await loadSchemaAsync(swaggerPath, options);
+
+    return buildValidations(jsonSchema, dereferencedSchema, options);
 }
 
 function buildSchemaSync(pathOrSchema, options) {
-    const { jsonSchema, dereferencedSchema } = schemaUtils.getSchemas(pathOrSchema, options);
+    const { jsonSchema, dereferencedSchema } = loadSchema(pathOrSchema, options);
 
     return buildValidations(jsonSchema, dereferencedSchema, options);
 }
@@ -102,7 +98,7 @@ function buildRequestValidator(referenced, dereferenced, currentPath, currentMet
     const requestSchema = {};
     let localParameters = [];
     const pathParameters = dereferenced.paths[currentPath].parameters || [];
-    const isOpenApi3 = schemaUtils.isOpenApi3(dereferenced);
+    const isOpenApi3 = schemaUtils.getOAIVersion(dereferenced) === 3;
     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
     if (isOpenApi3) {
         requestSchema.body = oai3.buildRequestBodyValidation(dereferenced, referenced, currentPath, currentMethod, options);
@@ -136,7 +132,7 @@ function buildRequestValidator(referenced, dereferenced, currentPath, currentMet
 
 function buildResponseValidator(referenced, dereferenced, currentPath, currentMethod, options) {
     const responsesSchema = {};
-    const isOpenApi3 = schemaUtils.isOpenApi3(dereferenced);
+    const isOpenApi3 = schemaUtils.getOAIVersion(dereferenced) === 3;
     const responses = get(dereferenced, `paths[${currentPath}][${currentMethod}].responses`);
     if (responses) {
         Object

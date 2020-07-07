@@ -6,11 +6,33 @@ const yaml = require('js-yaml');
 const fs = require('fs');
 
 const schemaValidatorGenerator = require('../../../src');
+const schemaLoaders = require('../../../src/utils/schemaLoaders');
 
 const { expect } = chai;
 
 describe('oai3 - general tests', () => {
     describe('sync', () => {
+        describe('getSchemas', () => {
+            it('Validates OpenAPI specification to be valid', (done) => {
+                try {
+                    schemaLoaders.loadSchema('test/utils/specs/openApi3SpecInvalid.yaml');
+                } catch (err) {
+                    expect(err.message).to.equal('Invalid OpenAPI 3 schema');
+                    expect(err.errors).to.deep.equal([
+                        {
+                            keyword: 'required',
+                            dataPath: '',
+                            schemaPath: '#/required',
+                            params: {
+                                missingProperty: 'info'
+                            },
+                            message: "should have required property 'info'"
+                        }
+                    ]);
+                    done();
+                }
+            });
+        });
         describe('loading yaml with discriminator with allOf', () => {
             it('fail to load with relevant error', () => {
                 const swaggerPath = path.join(__dirname, 'pets-discriminator-allOf.yaml');
