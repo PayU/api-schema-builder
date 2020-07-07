@@ -1,11 +1,11 @@
 'use strict';
 
-let chai = require('chai'),
-    expect = chai.expect,
-    schemaValidatorGenerator = require('../../../src/index'),
-    path = require('path'),
-    uuid = require('uuid/v4');
+const chai = require('chai');
+const schemaValidatorGenerator = require('../../../src/index');
+const path = require('path');
+const uuid = require('uuid').v4;
 
+const expect = chai.expect;
 const DEFAULT_HEADERS = {
     'Content-Type': 'application/json'
 };
