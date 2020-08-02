@@ -1,4 +1,9 @@
 # Master
+
+### Improvements
+
+- Update dependencies to fix security vulnerabilities
+
 # 2.0.2 - 7 July, 2020
 
 ### Improvements
