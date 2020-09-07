@@ -37,7 +37,8 @@ function buildValidations(referenced, dereferenced, receivedOptions) {
     const schemas = {};
 
     const basePaths = dereferenced.servers && dereferenced.servers.length
-        ? dereferenced.servers.map(({ url }) => new URL(url).pathname)
+        // dummy base path is required by URL constructor when server url is not absolute
+        ? dereferenced.servers.map(({ url }) => new URL(url, 'http://example.com').pathname)
         : [dereferenced.basePath || '/'];
 
     Object.keys(dereferenced.paths).forEach(currentPath => {
