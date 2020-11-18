@@ -95,7 +95,8 @@ function handleBodyValidation(
     }
 
     const defaultAjvOptions = {
-        allErrors: true
+        allErrors: true,
+        nullable: true
     };
 
     const ajvOptions = Object.assign({}, defaultAjvOptions, ajvConfigBody);

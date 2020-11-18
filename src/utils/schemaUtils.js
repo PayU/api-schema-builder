@@ -32,8 +32,6 @@ function getAllResponseContentTypes(responses) {
 function addOAI3Support(dereferencedSchema, validationType) {
     const schemaType = getSchemaType(dereferencedSchema);
 
-    addNullableSupport(dereferencedSchema);
-
     if (schemaType) {
         // anyOf/oneOf/allOf handling
         const newSchema = Object.assign({}, dereferencedSchema);
@@ -47,7 +45,6 @@ function addOAI3Support(dereferencedSchema, validationType) {
 
         for (const propName of Object.keys(newSchema.properties)) {
             addRWOnlySupport(newSchema, propName, validationType);
-            addNullableSupport(newSchema, propName);
         }
         return newSchema;
     } else if (dereferencedSchema.items && dereferencedSchema.items.properties) {
@@ -90,25 +87,6 @@ function addRWOnlySupport(dereferencedSchema, propName, validationType) {
     } else if (properties[propName].properties) {
         // if the current prop is an object we need to recursively look for omitByPropName occurrences
         properties[propName] = addOAI3Support(properties[propName], validationType);
-    }
-}
-
-/**
- * add missing nullable support to AJV
- *
- * @param {object} dereferencedSchema dereferenced schema
- */
-function addNullableSupport(dereferencedSchema, propName) {
-    if (dereferencedSchema.properties) {
-        const property = dereferencedSchema.properties[propName];
-
-        if (!property || property.nullable !== true) {
-            return;
-        } else if (!property.type) {
-            dereferencedSchema.properties[propName].type = allDataTypes;
-        } else if (!property.type.includes('null')) {
-            dereferencedSchema.properties[propName].type = ['null'].concat(property.type);
-        }
     }
 }
 
