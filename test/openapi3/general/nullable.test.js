@@ -17,20 +17,21 @@ describe('oai3 - nullable', function () {
     });
     describe('validate nullable in request', function () {
         it('Should return error when request body has nullable and required prop', function () {
-            const validator = schema['/users']['post'].body['application/json'];
+            const validator = schema['/users'].post.body['application/json'];
 
             const isBodysMatch = validator.validate({
                 id,
                 email,
                 password,
-                name: null
+                name: null,
+                favorites: [{ name: null }, { name: 'sing' }]
             });
 
             expect(validator.errors).to.be.eql(null);
             expect(isBodysMatch).to.be.true;
         });
         it('Should return error when request body has nullable and required prop without type', function () {
-            const validator = schema['/usersWithoutType']['post'].body['application/json'];
+            const validator = schema['/usersWithoutType'].post.body['application/json'];
 
             const isBodysMatch = validator.validate({
                 id,
@@ -45,7 +46,7 @@ describe('oai3 - nullable', function () {
     });
     describe('validate nullable in response', function () {
         it('Should return error when response body has nullable and required prop', function () {
-            const validator = schema['/users']['post'].responses[200];
+            const validator = schema['/users'].post.responses[200];
 
             const isBodysMatch = validator.validate({
                 headers: {
@@ -54,7 +55,8 @@ describe('oai3 - nullable', function () {
                 body: {
                     email,
                     password,
-                    name: null
+                    name: null,
+                    favorites: [{ name: null }, { name: 'sing' }]
                 }
             });
 
@@ -64,7 +66,7 @@ describe('oai3 - nullable', function () {
     });
     describe('Validate nested objects', function () {
         it('Should return error when request body has nullable', function () {
-            const validator = schema['/users/nested']['post'].body['application/json'];
+            const validator = schema['/users/nested'].post.body['application/json'];
 
             const isBodysMatch = validator.validate({
                 user: {
@@ -82,7 +84,7 @@ describe('oai3 - nullable', function () {
     });
     describe('Validate nested object in array', function () {
         it('Should return error when request body has nullable', function () {
-            const validator = schema['/users/usersArray']['post'].body['application/json'];
+            const validator = schema['/users/usersArray'].post.body['application/json'];
 
             const isBodysMatch = validator.validate([
                 {
@@ -98,7 +100,7 @@ describe('oai3 - nullable', function () {
     });
     describe('Validate oneOf', function () {
         it('Should return error when request body has nullable', function () {
-            const validator = schema['/users/OneOf']['post'].body['application/json'];
+            const validator = schema['/users/OneOf'].post.body['application/json'];
 
             const isBodysMatch = validator.validate({
                 id,
