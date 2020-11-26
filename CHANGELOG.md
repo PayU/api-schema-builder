@@ -1,8 +1,8 @@
 # Master
 
-# 2.0.3 - 26 Nov, 2020
+# 2.0.4 - 26 Nov, 2020
 ### Improvements
-- Nullable is fully supported
+- Nullable is now fully supported
 - Update dependencies to fix security vulnerabilities
 
 # 2.0.2 - 7 July, 2020
