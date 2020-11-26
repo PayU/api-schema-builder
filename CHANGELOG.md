@@ -1,5 +1,6 @@
 # Master
 
+# 2.0.3 - 26 Nov, 2020
 ### Improvements
 
 - Update dependencies to fix security vulnerabilities

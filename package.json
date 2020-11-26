@@ -50,30 +50,30 @@
     "Gal Cohen"
   ],
   "dependencies": {
-    "ajv": "^6.12.3",
+    "ajv": "^6.12.6",
     "clone-deep": "^4.0.1",
-    "decimal.js": "^10.2.0",
+    "decimal.js": "^10.2.1",
     "js-yaml": "^3.14.0",
     "json-schema-deref-sync": "^0.13.0",
     "openapi-schema-validator": "^3.0.3",
-    "swagger-parser": "^10.0.1"
+    "swagger-parser": "^10.0.2"
   },
   "devDependencies": {
-    "ajv-keywords": "^3.5.1",
+    "ajv-keywords": "^3.5.2",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "coveralls": "^3.1.0",
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-chai-friendly": "^0.6.0",
-    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-standard": "^4.1.0",
     "lodash.get": "^4.4.2",
     "mocha": "^7.2.0",
     "nyc": "^15.1.0",
-    "uuid": "^8.2.0"
+    "uuid": "^8.3.1"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
