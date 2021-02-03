@@ -1,4 +1,4 @@
-const { readOnly, writeOnly, validationTypes, allDataTypes } = require('./common');
+const { readOnly, writeOnly, validationTypes } = require('./common');
 
 const DEFAULT_REQUEST_CONTENT_TYPE = 'application/json';
 const DEFAULT_RESPONSE_CONTENT_TYPE = 'application/json';
