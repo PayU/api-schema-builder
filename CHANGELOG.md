@@ -1,5 +1,9 @@
 # Master
 
+# 2.0.5 - 4 March, 2021
+### Improvements
+- Added support for relative URLs and variables in servers #59
+
 # 2.0.4 - 26 Nov, 2020
 ### Improvements
 - Nullable is now fully supported
