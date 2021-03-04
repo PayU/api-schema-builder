@@ -37,7 +37,12 @@ function buildValidations(referenced, dereferenced, receivedOptions) {
     const schemas = {};
 
     const basePaths = dereferenced.servers && dereferenced.servers.length
-        ? dereferenced.servers.map(({ url }) => url.slice(0, 1) === '/' ? url : new URL(url).pathname)
+        ? dereferenced.servers.map(({ url, variables = {} }) => {
+            Object.keys(variables).forEach((key) => {
+                url = url.replace(new RegExp(`{${key}}`), variables[key].default || '')
+            })
+            return url.slice(0,1) === '/' ? url : new URL(url).pathname
+        })
         : [dereferenced.basePath || '/'];
 
     Object.keys(dereferenced.paths).forEach(currentPath => {
