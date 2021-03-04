@@ -85,6 +85,18 @@ servers:
 - url: http://petstore.swagger.io
 - url: http://petstore.swagger.io/staging/
 - url: /staging
+- url: '{protocol}://petstore.swagger.io/{env}'
+  variables:
+    protocol:
+      enum:
+        - http
+        - https
+      default: http
+    env:
+      enum:
+        - staging
+        - ''
+      default: ''
 components:
   schemas:
     Error:
