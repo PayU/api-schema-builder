@@ -33,19 +33,19 @@ function buildSchemaSync(pathOrSchema, options) {
 
 function getBasePaths(dereferenced) {
     return dereferenced.servers && dereferenced.servers.length
-    ? dereferenced.servers.map(({ url, variables = {} }) => {
+        ? dereferenced.servers.map(({ url, variables = {} }) => {
         // replace variables with deafault values
-        Object.keys(variables).forEach((key) => {
-            url = url.replace(new RegExp(`{${key}}`), variables[key].default);
-        });
+            Object.keys(variables).forEach((key) => {
+                url = url.replace(new RegExp(`{${key}}`), variables[key].default);
+            });
 
-        // replace leading '//' with 'http://' (in cases such as //api.example.com)
-        url = url.replace(/^\/\//, 'http://');
+            // replace leading '//' with 'http://' (in cases such as //api.example.com)
+            url = url.replace(/^\/\//, 'http://');
 
-        // return base path
-        return (/\/\//.test(url)) ? new URL(url).pathname : url;
-    })
-    : [dereferenced.basePath || '/'];
+            // return base path
+            return (/\/\//.test(url)) ? new URL(url).pathname : url;
+        })
+        : [dereferenced.basePath || '/'];
 }
 
 function buildValidations(referenced, dereferenced, receivedOptions) {
