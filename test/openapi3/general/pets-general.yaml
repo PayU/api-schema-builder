@@ -96,7 +96,8 @@ servers:
       enum:
         - staging
         - ''
-      default: ''
+      default: staging
+- url: //petstore.swagger.io
 components:
   schemas:
     Error:
