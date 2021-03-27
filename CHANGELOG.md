@@ -1,6 +1,6 @@
 # Master
 
-# 2.0.6 - 10 Mar, 2021
+# 2.0.6 - 27 Mar, 2021
 ### Improvements
 - Added support for relative URLs and variables in servers #59
 
