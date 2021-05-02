@@ -123,8 +123,10 @@ function buildRequestValidator(referenced, dereferenced, currentPath, currentMet
     }
 
     if (localParameters.length > 0 || options.contentTypeValidation) {
-        requestSchema.parameters = buildParametersValidation(localParameters,
-            dereferenced.paths[currentPath][currentMethod].consumes || dereferenced.paths[currentPath].consumes || dereferenced.consumes, options);
+        const contentTypes = isOpenApi3 ?
+            Object.keys( get(dereferenced.paths[currentPath][currentMethod], 'requestBody.content') || {} ) :
+            ( dereferenced.paths[currentPath][currentMethod].consumes || dereferenced.paths[currentPath].consumes || dereferenced.consumes );
+        requestSchema.parameters = buildParametersValidation(localParameters, contentTypes, options);
     }
 
     return requestSchema;
