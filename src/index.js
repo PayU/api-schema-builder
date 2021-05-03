@@ -37,7 +37,7 @@ function buildValidations(referenced, dereferenced, receivedOptions) {
     const schemas = {};
 
     const basePaths = dereferenced.servers && dereferenced.servers.length
-        ? dereferenced.servers.map(({ url }) => new URL(url).pathname)
+        ? dereferenced.servers.map(({ url }) => new URL(url, 'http://foo').pathname)
         : [dereferenced.basePath || '/'];
 
     Object.keys(dereferenced.paths).forEach(currentPath => {
