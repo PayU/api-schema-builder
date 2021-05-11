@@ -140,6 +140,24 @@ describe('oai3 - general tests', () => {
                 expect(typeof schema['/json'].put.body['application/json'].validate).to.eql('function');
                 expect(typeof schema['/staging/json'].put.body['application/json'].validate).to.eql('function');
             });
+            it('correctly works with servers with relative paths', () => {
+                const swaggerPath = path.join(__dirname, 'pets-general-relative-paths-too.yaml');
+                const schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
+                expect(Object.keys(schema)).to.eql([
+                    '/text',
+                    '/staging/text',
+                    '/v1/reports/text',
+                    '/empty',
+                    '/staging/empty',
+                    '/v1/reports/empty',
+                    '/json',
+                    '/staging/json',
+                    '/v1/reports/json'
+                ]);
+                expect(typeof schema['/json'].put.body['application/json'].validate).to.eql('function');
+                expect(typeof schema['/staging/json'].put.body['application/json'].validate).to.eql('function');
+                expect(typeof schema['/v1/reports/json'].put.body['application/json'].validate).to.eql('function');
+            });
             it('correctly works with empty servers', () => {
                 const swaggerPath = path.join(__dirname, 'pets-general-empty-servers.yaml');
                 const schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
