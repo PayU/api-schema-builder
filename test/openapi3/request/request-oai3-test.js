@@ -4,13 +4,16 @@ const chai = require('chai');
 const schemaValidatorGenerator = require('../../../src/index');
 const path = require('path');
 const uuid = require('uuid').v4;
+const yaml = require('js-yaml');
+const fs = require('fs').promises;
 
 const expect = chai.expect;
+
+const swaggerPath = path.join(__dirname, 'pets-request.yaml');
 
 describe('oai3 - request tests', function () {
     let schema;
     before(function () {
-        const swaggerPath = path.join(__dirname, 'pets-request.yaml');
         schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
     });
     describe('check headers', function () {
@@ -165,6 +168,34 @@ describe('oai3 - request tests', function () {
                         'format': 'uuid'
                     },
                     'schemaPath': '#/properties/query/properties/query_uuid/format'
+                }
+            ]);
+            expect(isParametersMatch).to.be.false;
+        });
+
+        it('invalid query due to invalid parameters specified', async function () {
+            const path = '/pets-empty-query';
+            const method = 'get';
+            const endpointSchema = schema[path][method];
+            const jsonSchema = yaml.load(await fs.readFile(swaggerPath, 'utf8'));
+
+            // Validate that the test case does not contain parameters set
+            expect(jsonSchema.paths[path][method].parameters || []).to.be.empty;
+
+            let isParametersMatch = endpointSchema.parameters.validate({
+                query: { page: '1' },
+                headers: {},
+                path: {},
+                files: undefined });
+            expect(endpointSchema.parameters.errors).to.be.eql([
+                {
+                    dataPath: '.query',
+                    keyword: 'additionalProperties',
+                    message: 'should NOT have additional properties',
+                    params: {
+                        additionalProperty: 'page'
+                    },
+                    schemaPath: '#/properties/query/additionalProperties'
                 }
             ]);
             expect(isParametersMatch).to.be.false;

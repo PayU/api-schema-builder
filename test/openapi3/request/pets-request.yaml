@@ -109,6 +109,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error_model'
+  /pets-empty-query:
+    get:
+      summary: get all pets with no query allowed
+      security:
+      - public-key: []
+      description: >-
+      tags:
+      - pets
+      responses:
+        '200':
+          description: list of pets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/pets'
   /pets/{pet_id}:
     get:
       summary: get pet by id
