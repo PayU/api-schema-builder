@@ -270,7 +270,7 @@ describe('oai3 - general tests', () => {
     describe('init with json schema', () => {
         function loadYamlAsJson(filename) {
             const swaggerPath = path.join(__dirname, filename);
-            const jsonSchema = yaml.load(fs.readFileSync(swaggerPath), 'utf8');
+            const jsonSchema = yaml.load(fs.readFileSync(swaggerPath, 'utf8'));
             return jsonSchema;
         }
         describe('loading yaml with discriminator with allOf', () => {
