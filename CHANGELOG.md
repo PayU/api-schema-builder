@@ -3,6 +3,7 @@
 # 2.0.5 - 1 February, 2021
 ### Improvements
 - Added basic support for relative URLs #59
+- Update dependencies to fix security vulnerabilities
 
 # 2.0.4 - 26 Nov, 2020
 ### Improvements
