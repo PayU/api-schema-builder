@@ -3,11 +3,9 @@ const filesKeyword = require('../customKeywords/files'),
     contentKeyword = require('../customKeywords/contentTypeValidation');
 
 function addCustomKeyword(ajv, formats, keywords) {
-    if (formats) {
-        formats.forEach(function (format) {
-            ajv.addFormat(format.name, format.pattern);
-        });
-    }
+    formats.forEach(function (format) {
+        ajv.addFormat(format.name, format.pattern);
+    });
 
     if (keywords) {
         keywords.forEach((keyword) => {

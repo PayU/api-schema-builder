@@ -137,10 +137,8 @@ function buildRequestValidator(referenced, dereferenced, currentPath, currentMet
         localParameters = oai2.buildPathParameters(parameters, pathParameters);
     }
 
-    if (localParameters.length > 0 || options.contentTypeValidation) {
-        requestSchema.parameters = buildParametersValidation(localParameters,
-            dereferenced.paths[currentPath][currentMethod].consumes || dereferenced.paths[currentPath].consumes || dereferenced.consumes, options);
-    }
+    requestSchema.parameters = buildParametersValidation(localParameters,
+        dereferenced.paths[currentPath][currentMethod].consumes || dereferenced.paths[currentPath].consumes || dereferenced.consumes, options);
 
     return requestSchema;
 }
