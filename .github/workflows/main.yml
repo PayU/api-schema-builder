@@ -16,7 +16,9 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - name: check GITHUB_TOKEN length
-        run: echo "${#secrets.GITHUB_TOKEN}"
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "${#GITHUB_TOKEN}"
       - name: install dependencies
         run: npm ci
       - name: lint + units tests + prepare coveralls
