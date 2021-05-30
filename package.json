@@ -24,7 +24,7 @@
     "test": "mocha",
     "test:ci": "npm run lint && npm run test:coverage && npm run coveralls",
     "test:coverage": "nyc npm test && nyc report --reporter=lcov",
-    "coveralls": "cat ./coverage/lcov.info |./node_modules/.bin/coveralls",
+    "coveralls": "cat ./coverage/lcov.info | coveralls",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix"
   },
