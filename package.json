@@ -23,9 +23,9 @@
   "scripts": {
     "test": "mocha",
     "test:ci": "npm run lint && npm run test:coverage",
+    "lockfile-lint-script": "npx lockfile-lint --path package-lock.json --allowed-hosts npm --validate-https",
     "test:coverage": "nyc npm test && nyc report --reporter=lcov",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix"
+    "lint": "eslint src --fix"
   },
   "repository": {
     "type": "git",
@@ -69,6 +69,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
     "eslint-plugin-standard": "^4.1.0",
+    "lockfile-lint": "^4.6.2",
     "lodash.get": "^4.4.2",
     "mocha": "^8.3.1",
     "nyc": "^15.1.0",
