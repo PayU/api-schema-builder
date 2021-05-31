@@ -22,7 +22,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "test": "mocha",
-    "test:ci": "npm run lint && npm run test:coverage && npm run coveralls",
+    "test:ci": "npm run lint && npm run test:coverage",
     "test:coverage": "nyc npm test && nyc report --reporter=lcov",
     "coveralls": "cat ./coverage/lcov.info | coveralls -v",
     "lint": "eslint src",
