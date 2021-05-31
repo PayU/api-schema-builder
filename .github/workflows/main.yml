@@ -31,8 +31,10 @@ jobs:
           node-version: ${{ matrix.node }}
       - name: install dependencies
         run: npm ci
-      - name: lint + units tests
-        run: npm run test:ci
+      - name: lint
+        run: npm run lint
+      - name: units tests
+        run: npm run test:coverage
       - name: Coveralls
         uses: coverallsapp/github-action@master
         if: matrix.node == ${{ env.LATEST_NODE }}
