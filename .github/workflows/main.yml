@@ -20,9 +20,9 @@ jobs:
     strategy:
       matrix:
         platform: [ ubuntu-latest ]
-        node: [ '10', '12', ${{ env.LATEST_NODE }} ]
-    needs: lockfile-lint
+        node: [ '10', '12', '14' ]
     name: Unit Tests Node ${{ matrix.node }} (${{ matrix.platform }})
+    needs: lockfile-lint
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
@@ -38,3 +38,22 @@ jobs:
         if: matrix.node == ${{ env.LATEST_NODE }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+
+  release:
+    name: release
+    needs: [ test, lockfile-lint ]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: install dependencies
+        run: npm ci --ignore-scripts
+      - name: release
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
