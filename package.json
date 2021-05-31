@@ -24,7 +24,6 @@
     "test": "mocha",
     "test:ci": "npm run lint && npm run test:coverage",
     "test:coverage": "nyc npm test && nyc report --reporter=lcov",
-    "coveralls": "cat ./coverage/lcov.info | coveralls -v",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix"
   },
@@ -63,7 +62,6 @@
     "ajv-keywords": "^3.5.2",
     "chai": "^4.3.3",
     "chai-as-promised": "^7.1.1",
-    "coveralls": "^3.1.0",
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-chai-friendly": "^0.6.0",

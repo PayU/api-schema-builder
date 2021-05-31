@@ -17,11 +17,10 @@ jobs:
           node-version: ${{ matrix.node }}
       - name: install dependencies
         run: npm ci
-      - name: lint + units tests + prepare coveralls
+      - name: lint + units tests
         run: npm run test:ci
       - name: Coveralls
         uses: coverallsapp/github-action@master
-        env:
-          NODE_COVERALLS_DEBUG: 1
+        if: matrix.node == '14'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
