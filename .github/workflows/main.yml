@@ -1,0 +1,29 @@
+name: CI
+
+on: [ push, pull_request ]
+env:
+  LATEST_NODE: '14'
+
+jobs:
+
+  test:
+    strategy:
+      matrix:
+        platform: [ ubuntu-latest ]
+        node: [ '10', '12', '14' ]
+    name: Unit Tests Node ${{ matrix.node }} (${{ matrix.platform }})
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+      - name: install dependencies
+        run: npm ci
+      - name: lint + units tests
+        run: npm run test:ci
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        if: matrix.node == ${{ env.LATEST_NODE }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
