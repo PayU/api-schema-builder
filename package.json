@@ -22,9 +22,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "test": "mocha",
-    "test:ci": "npm run lint && npm run test:coverage && npm run coveralls",
     "test:coverage": "nyc npm test",
-    "coveralls": "cat ./coverage/lcov.info |./node_modules/.bin/coveralls",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix"
   },
@@ -63,7 +61,6 @@
     "ajv-keywords": "^3.5.2",
     "chai": "^4.3.3",
     "chai-as-promised": "^7.1.1",
-    "coveralls": "^3.1.0",
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-chai-friendly": "^0.6.0",
@@ -74,7 +71,7 @@
     "lodash.get": "^4.4.2",
     "mocha": "^8.3.1",
     "nyc": "^15.1.0",
-    "snyk": "^1.476.0",
+    "snyk": "^1.618.0",
     "uuid": "^8.3.2"
   },
   "publishConfig": {

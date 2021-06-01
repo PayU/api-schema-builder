@@ -1,0 +1,61 @@
+name: CI
+
+on: [ push, pull_request ]
+env:
+  LATEST_NODE: '14'
+
+jobs:
+  lockfile-lint:
+    name: Lockfile lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.LATEST_NODE }}
+      - name: lint lock file
+        run: npx lockfile-lint --path package-lock.json --allowed-hosts npm --validate-https
+
+  test:
+    strategy:
+      matrix:
+        platform: [ ubuntu-latest ]
+        node: [ '10', '12', '14' ]
+    name: Unit Tests Node ${{ matrix.node }} (${{ matrix.platform }})
+    needs: lockfile-lint
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+      - name: install dependencies
+        run: npm ci
+      - name: lint
+        run: npm run lint
+      - name: units tests
+        run: npm run test:coverage
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        if: matrix.node == ${{ env.LATEST_NODE }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+
+  release:
+    name: release
+    needs: [ test, lockfile-lint ]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: install dependencies
+        run: npm ci --ignore-scripts
+      - name: release
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
