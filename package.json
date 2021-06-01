@@ -41,7 +41,7 @@
   "bugs": {
     "url": "https://github.com/PayU/api-schema-builder/issues"
   },
-  "homepage": "https://github.com/PayU/api-schema-builder.git",
+  "homepage": "git+https://github.com/PayU/api-schema-builder.git",
   "author": "Idan Tovi",
   "contributors": [
     "Igor Savin",
