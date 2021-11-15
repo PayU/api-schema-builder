@@ -5,6 +5,7 @@ const schemaValidatorGenerator = require('../../../src/index');
 const path = require('path');
 const uuid = require('uuid').v4;
 const yaml = require('js-yaml');
+const {validateParams} = require("../utils/schemaWrapper");
 const fs = require('fs').promises;
 
 const expect = chai.expect;
@@ -708,3 +709,31 @@ describe('oai3 - request tests', function () {
         });
     });
 });
+
+describe('oai3 - request tests with options', function () {
+    let schemas;
+    let options = { contentTypeValidation: true };
+    before(function () {
+        schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
+    });
+    it('bad request - wrong content-type (should be application/json)', function () {
+        let paramsValidationErrors = validateParams({
+            schemas: schemas,
+            headers: { 'content-length': 1, 'content-type': 'application/x-www-form-urlencoded' },
+            pathParams: {},
+            queries: {},
+            files: [],
+            path: '/v1/dogs',
+            method: 'post'
+        });
+        expect(paramsValidationErrors[0].errors.message).to.equal('content-type must be one of application/json');
+
+        expect(paramsValidationErrors[0].errors.params['content-type']).to.eql('application/x-www-form-urlencoded');
+
+        expect(paramsValidationErrors[0].errors.params.types).to.eql([
+            'application/json'
+        ]);
+    });
+});
+
+
