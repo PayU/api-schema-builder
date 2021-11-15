@@ -5,85 +5,93 @@ const schemaValidatorGenerator = require('../../../src/index');
 const path = require('path');
 const uuid = require('uuid').v4;
 const yaml = require('js-yaml');
-const {validateParams} = require("../utils/schemaWrapper");
 const fs = require('fs').promises;
 
 const expect = chai.expect;
 
 const swaggerPath = path.join(__dirname, 'pets-request.yaml');
+let schema;
 
 describe('oai3 - request tests', function () {
-    let schema;
     before(function () {
         schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
     });
     describe('check headers', function () {
         let schemaEndpoint;
         before(function() {
-            schemaEndpoint = schema['/pet']['post'];
+            schemaEndpoint = schema['/pet'].post;
         });
         it('valid headers', function () {
             // parameters match
-            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
-                headers: { 'public-key': '1.0'
-                },
+            const isParametersMatch = schemaEndpoint.parameters.validate({
+                query: {},
+                headers: { 'public-key': '1.0' },
                 path: {},
-                files: undefined });
+                files: undefined
+            });
             expect(schemaEndpoint.parameters.errors).to.be.equal(null);
             expect(isParametersMatch).to.be.true;
         });
         it('missing required header', function () {
             // parameters match
-            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
-                headers: { 'host': 'test' },
+            const isParametersMatch = schemaEndpoint.parameters.validate({
+                query: {},
+                headers: { host: 'test' },
                 path: {},
-                files: undefined });
+                files: undefined
+            });
             expect(schemaEndpoint.parameters.errors).to.be.eql([{
-                'dataPath': '.headers',
-                'keyword': 'required',
-                'message': "should have required property 'public-key'",
-                'params': {
-                    'missingProperty': 'public-key'
+                dataPath: '.headers',
+                keyword: 'required',
+                message: "should have required property 'public-key'",
+                params: {
+                    missingProperty: 'public-key'
                 },
-                'schemaPath': '#/properties/headers/required'
+                schemaPath: '#/properties/headers/required'
             }]);
             expect(isParametersMatch).to.be.false;
         });
 
         it('invalid type for headers', function () {
             // parameters match
-            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
+            const isParametersMatch = schemaEndpoint.parameters.validate({
+                query: {},
                 headers: 3,
                 path: {},
-                files: undefined });
+                files: undefined
+            });
             expect(schemaEndpoint.parameters.errors).to.be.eql([{
-                'dataPath': '.headers',
-                'keyword': 'type',
-                'message': 'should be object',
-                'params': {
-                    'type': 'object'
+                dataPath: '.headers',
+                keyword: 'type',
+                message: 'should be object',
+                params: {
+                    type: 'object'
                 },
-                'schemaPath': '#/properties/headers/type'
+                schemaPath: '#/properties/headers/type'
             }]);
             expect(isParametersMatch).to.be.false;
         });
 
         it('invalid format for headers', function () {
             // parameters match
-            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
-                headers: { 'public-key': '1.0',
-                    'header_uuid': '321' },
+            const isParametersMatch = schemaEndpoint.parameters.validate({
+                query: {},
+                headers: {
+                    'public-key': '1.0',
+                    header_uuid: '321'
+                },
                 path: {},
-                files: undefined });
+                files: undefined
+            });
             expect(schemaEndpoint.parameters.errors).to.be.eql([
                 {
-                    'dataPath': '.headers.header_uuid',
-                    'keyword': 'format',
-                    'message': 'should match format "uuid"',
-                    'params': {
-                        'format': 'uuid'
+                    dataPath: '.headers.header_uuid',
+                    keyword: 'format',
+                    message: 'should match format "uuid"',
+                    params: {
+                        format: 'uuid'
                     },
-                    'schemaPath': '#/properties/headers/properties/header_uuid/format'
+                    schemaPath: '#/properties/headers/properties/header_uuid/format'
                 }
             ]);
             expect(isParametersMatch).to.be.false;
@@ -91,11 +99,15 @@ describe('oai3 - request tests', function () {
 
         it('valid format for headers', function () {
             // parameters match
-            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
-                headers: { 'public-key': '1.0',
-                    'header_uuid': uuid() },
+            const isParametersMatch = schemaEndpoint.parameters.validate({
+                query: {},
+                headers: {
+                    'public-key': '1.0',
+                    header_uuid: uuid()
+                },
                 path: {},
-                files: undefined });
+                files: undefined
+            });
             expect(schemaEndpoint.parameters.errors).to.be.eql(null);
             expect(isParametersMatch).to.be.true;
         });
@@ -104,71 +116,75 @@ describe('oai3 - request tests', function () {
     describe('check queries', function () {
         let schemaEndpoint;
         before(function () {
-            schemaEndpoint = schema['/pets-query']['get'];
+            schemaEndpoint = schema['/pets-query'].get;
         });
         it('valid query', function () {
-            let isParametersMatch = schemaEndpoint.parameters.validate({
+            const isParametersMatch = schemaEndpoint.parameters.validate({
                 query: { page: '1' },
                 headers: {},
                 path: {},
-                files: undefined });
+                files: undefined
+            });
             expect(schemaEndpoint.parameters.errors).to.be.equal(null);
             expect(isParametersMatch).to.be.true;
         });
         it('missing required query', function () {
-            let isParametersMatch = schemaEndpoint.parameters.validate({
+            const isParametersMatch = schemaEndpoint.parameters.validate({
                 query: { wrong_query: 'nothing' },
                 headers: {},
                 path: {},
-                files: undefined });
+                files: undefined
+            });
             expect(schemaEndpoint.parameters.errors).to.be.eql([
                 {
-                    'dataPath': '.query',
-                    'keyword': 'additionalProperties',
-                    'message': 'should NOT have additional properties',
-                    'params': {
-                        'additionalProperty': 'wrong_query'
+                    dataPath: '.query',
+                    keyword: 'additionalProperties',
+                    message: 'should NOT have additional properties',
+                    params: {
+                        additionalProperty: 'wrong_query'
                     },
-                    'schemaPath': '#/properties/query/additionalProperties'
+                    schemaPath: '#/properties/query/additionalProperties'
                 },
                 {
-                    'dataPath': '.query',
-                    'keyword': 'required',
-                    'message': "should have required property 'page'",
-                    'params': {
-                        'missingProperty': 'page'
+                    dataPath: '.query',
+                    keyword: 'required',
+                    message: "should have required property 'page'",
+                    params: {
+                        missingProperty: 'page'
                     },
-                    'schemaPath': '#/properties/query/required'
+                    schemaPath: '#/properties/query/required'
                 }
             ]);
             expect(isParametersMatch).to.be.false;
         });
 
         it('valid format query', function () {
-            let isParametersMatch = schemaEndpoint.parameters.validate({
-                query: { page: '1', 'query_uuid': uuid() },
+            const isParametersMatch = schemaEndpoint.parameters.validate({
+                query: { page: '1', query_uuid: uuid() },
                 headers: {},
                 path: {},
-                files: undefined });
+                files: undefined
+            });
             expect(schemaEndpoint.parameters.errors).to.be.equal(null);
             expect(isParametersMatch).to.be.true;
         });
 
         it('invalid format query', function () {
-            let isParametersMatch = schemaEndpoint.parameters.validate({
-                query: { page: '1', 'query_uuid': 321 },
+            const isParametersMatch = schemaEndpoint.parameters.validate({
+                query: { page: '1', query_uuid: 321 },
                 headers: {},
                 path: {},
-                files: undefined });
+                files: undefined
+            });
             expect(schemaEndpoint.parameters.errors).to.be.eql([
                 {
-                    'dataPath': '.query.query_uuid',
-                    'keyword': 'format',
-                    'message': 'should match format "uuid"',
-                    'params': {
-                        'format': 'uuid'
+                    dataPath: '.query.query_uuid',
+                    keyword: 'format',
+                    message: 'should match format "uuid"',
+                    params: {
+                        format: 'uuid'
                     },
-                    'schemaPath': '#/properties/query/properties/query_uuid/format'
+                    schemaPath: '#/properties/query/properties/query_uuid/format'
                 }
             ]);
             expect(isParametersMatch).to.be.false;
@@ -183,11 +199,12 @@ describe('oai3 - request tests', function () {
             // Validate that the test case does not contain parameters set
             expect(jsonSchema.paths[path][method].parameters || []).to.be.empty;
 
-            let isParametersMatch = endpointSchema.parameters.validate({
+            const isParametersMatch = endpointSchema.parameters.validate({
                 query: { page: '1' },
                 headers: {},
                 path: {},
-                files: undefined });
+                files: undefined
+            });
             expect(endpointSchema.parameters.errors).to.be.eql([
                 {
                     dataPath: '.query',
@@ -205,74 +222,81 @@ describe('oai3 - request tests', function () {
 
     describe('check path', function () {
         it('valid path param', function () {
-            let schemaEndpoint = schema['/pets-path/:name']['get'];
+            const schemaEndpoint = schema['/pets-path/:name'].get;
             // parameters match
-            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
-                headers: { 'public-key': '1.0'
-                },
+            const isParametersMatch = schemaEndpoint.parameters.validate({
+                query: {},
+                headers: { 'public-key': '1.0' },
                 path: { name: 'kitty' },
-                files: undefined });
+                files: undefined
+            });
             expect(schemaEndpoint.parameters.errors).to.be.equal(null);
             expect(isParametersMatch).to.be.true;
         });
         it('missing required path', function () {
-            let schemaEndpoint = schema['/pets-path/:name']['get'];
+            const schemaEndpoint = schema['/pets-path/:name'].get;
 
             // parameters match
-            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
-                headers: { 'host': 'test' },
+            const isParametersMatch = schemaEndpoint.parameters.validate({
+                query: {},
+                headers: { host: 'test' },
                 path: { namee: 'kitty' },
-                files: undefined });
+                files: undefined
+            });
             expect(schemaEndpoint.parameters.errors).to.be.eql([
                 {
-                    'dataPath': '.path',
-                    'keyword': 'additionalProperties',
-                    'message': 'should NOT have additional properties',
-                    'params': {
-                        'additionalProperty': 'namee'
+                    dataPath: '.path',
+                    keyword: 'additionalProperties',
+                    message: 'should NOT have additional properties',
+                    params: {
+                        additionalProperty: 'namee'
                     },
-                    'schemaPath': '#/properties/path/additionalProperties'
+                    schemaPath: '#/properties/path/additionalProperties'
                 },
                 {
-                    'dataPath': '.path',
-                    'keyword': 'required',
-                    'message': "should have required property 'name'",
-                    'params': {
-                        'missingProperty': 'name'
+                    dataPath: '.path',
+                    keyword: 'required',
+                    message: "should have required property 'name'",
+                    params: {
+                        missingProperty: 'name'
                     },
-                    'schemaPath': '#/properties/path/required'
+                    schemaPath: '#/properties/path/required'
                 }
             ]);
             expect(isParametersMatch).to.be.false;
         });
 
         it('valid path param format', function () {
-            let schemaEndpoint = schema['/pets/:pet_id']['get'];
+            const schemaEndpoint = schema['/pets/:pet_id'].get;
             // parameters match
-            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
+            const isParametersMatch = schemaEndpoint.parameters.validate({
+                query: {},
                 headers: { },
                 path: { pet_id: uuid() },
-                files: undefined });
+                files: undefined
+            });
             expect(schemaEndpoint.parameters.errors).to.be.equal(null);
             expect(isParametersMatch).to.be.true;
         });
 
         it('invalid path param format', function () {
-            let schemaEndpoint = schema['/pets/:pet_id']['get'];
+            const schemaEndpoint = schema['/pets/:pet_id'].get;
             // parameters match
-            let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
+            const isParametersMatch = schemaEndpoint.parameters.validate({
+                query: {},
                 headers: { },
                 path: { pet_id: 321 },
-                files: undefined });
+                files: undefined
+            });
             expect(schemaEndpoint.parameters.errors).to.be.eql([
                 {
-                    'dataPath': '.path.pet_id',
-                    'keyword': 'format',
-                    'message': 'should match format "uuid"',
-                    'params': {
-                        'format': 'uuid'
+                    dataPath: '.path.pet_id',
+                    keyword: 'format',
+                    message: 'should match format "uuid"',
+                    params: {
+                        format: 'uuid'
                     },
-                    'schemaPath': '#/properties/path/properties/pet_id/format'
+                    schemaPath: '#/properties/path/properties/pet_id/format'
                 }
             ]);
             expect(isParametersMatch).to.be.false;
@@ -285,125 +309,127 @@ describe('oai3 - request tests', function () {
     describe('check body', function () {
         describe('simple body', function () {
             it('valid simple body', function () {
-                let schemaEndpoint = schema['/dog']['post'];
-                let isBodysMatch = schemaEndpoint.body['application/json'].validate({
-                    'bark': 'hav hav'
+                const schemaEndpoint = schema['/dog'].post;
+                const isBodysMatch = schemaEndpoint.body['application/json'].validate({
+                    bark: 'hav hav'
                 });
                 expect(schemaEndpoint.body['application/json'].errors).to.be.equal(null);
                 expect(isBodysMatch).to.be.true;
             });
             it('missing required field in simple body', function () {
-                let schemaEndpoint = schema['/dog']['post'];
+                const schemaEndpoint = schema['/dog'].post;
 
-                let isBodysMatch = schemaEndpoint.body['application/json'].validate({
-                    'fur': 'hav hav'
+                const isBodysMatch = schemaEndpoint.body['application/json'].validate({
+                    fur: 'hav hav'
                 });
 
                 expect(schemaEndpoint.body['application/json'].errors).to.be.eql([
                     {
-                        'dataPath': '',
-                        'keyword': 'required',
-                        'message': "should have required property 'bark'",
-                        'params': {
-                            'missingProperty': 'bark'
+                        dataPath: '',
+                        keyword: 'required',
+                        message: "should have required property 'bark'",
+                        params: {
+                            missingProperty: 'bark'
                         },
-                        'schemaPath': '#/required'
+                        schemaPath: '#/required'
                     }
                 ]);
                 expect(isBodysMatch).to.be.false;
             });
             it('invalid field type in simple body', function () {
-                let schemaEndpoint = schema['/dog']['post'];
+                const schemaEndpoint = schema['/dog'].post;
 
-                let isBodysMatch = schemaEndpoint.body['application/json'].validate({
-                    'bark': 111
+                const isBodysMatch = schemaEndpoint.body['application/json'].validate({
+                    bark: 111
                 });
 
                 expect(schemaEndpoint.body['application/json'].errors).to.be.eql([
                     {
-                        'dataPath': '.bark',
-                        'keyword': 'type',
-                        'message': 'should be string',
-                        'params': {
-                            'type': 'string'
+                        dataPath: '.bark',
+                        keyword: 'type',
+                        message: 'should be string',
+                        params: {
+                            type: 'string'
                         },
-                        'schemaPath': '#/properties/bark/type'
+                        schemaPath: '#/properties/bark/type'
                     }
                 ]);
                 expect(isBodysMatch).to.be.false;
             });
             it('valid body - quantitive test', function () {
-                let schemaEndpoint = schema['/many-body-fields']['post'];
+                const schemaEndpoint = schema['/many-body-fields'].post;
 
-                let isBodysMatch = schemaEndpoint.body['application/json'].validate({ 'fieldNum1': 1,
-                    'fieldNum2': 2,
-                    'fieldNum3': 3,
-                    'fieldStr1': 'name1',
-                    'fieldStr2': 'name2',
-                    'fieldStr3': 'name3' });
+                const isBodysMatch = schemaEndpoint.body['application/json'].validate({
+                    fieldNum1: 1,
+                    fieldNum2: 2,
+                    fieldNum3: 3,
+                    fieldStr1: 'name1',
+                    fieldStr2: 'name2',
+                    fieldStr3: 'name3'
+                });
 
                 expect(schemaEndpoint.body['application/json'].errors).to.be.eql(null);
                 expect(isBodysMatch).to.be.true;
             });
             it('invalid body - quantitive test', function () {
-                let schemaEndpoint = schema['/many-body-fields']['post'];
+                const schemaEndpoint = schema['/many-body-fields'].post;
 
-                let isBodysMatch = schemaEndpoint.body['application/json'].validate({ 'fieldNum1': 'name1', 'fieldNum2': 'name2', 'fieldNum3': 'name3', 'fieldStr1': 1, 'fieldStr2': 2, 'fieldStr3': 3 });
+                const isBodysMatch = schemaEndpoint.body['application/json'].validate({ fieldNum1: 'name1', fieldNum2: 'name2', fieldNum3: 'name3', fieldStr1: 1, fieldStr2: 2, fieldStr3: 3 });
 
                 expect(schemaEndpoint.body['application/json'].errors).to.be.eql([
                     {
-                        'keyword': 'type',
-                        'dataPath': '.fieldNum1',
-                        'schemaPath': '#/properties/fieldNum1/type',
-                        'params': {
-                            'type': 'number'
+                        keyword: 'type',
+                        dataPath: '.fieldNum1',
+                        schemaPath: '#/properties/fieldNum1/type',
+                        params: {
+                            type: 'number'
                         },
-                        'message': 'should be number'
+                        message: 'should be number'
                     },
                     {
-                        'keyword': 'type',
-                        'dataPath': '.fieldNum2',
-                        'schemaPath': '#/properties/fieldNum2/type',
-                        'params': {
-                            'type': 'number'
+                        keyword: 'type',
+                        dataPath: '.fieldNum2',
+                        schemaPath: '#/properties/fieldNum2/type',
+                        params: {
+                            type: 'number'
                         },
-                        'message': 'should be number'
+                        message: 'should be number'
                     },
                     {
-                        'keyword': 'type',
-                        'dataPath': '.fieldNum3',
-                        'schemaPath': '#/properties/fieldNum3/type',
-                        'params': {
-                            'type': 'number'
+                        keyword: 'type',
+                        dataPath: '.fieldNum3',
+                        schemaPath: '#/properties/fieldNum3/type',
+                        params: {
+                            type: 'number'
                         },
-                        'message': 'should be number'
+                        message: 'should be number'
                     },
                     {
-                        'keyword': 'type',
-                        'dataPath': '.fieldStr1',
-                        'schemaPath': '#/properties/fieldStr1/type',
-                        'params': {
-                            'type': 'string'
+                        keyword: 'type',
+                        dataPath: '.fieldStr1',
+                        schemaPath: '#/properties/fieldStr1/type',
+                        params: {
+                            type: 'string'
                         },
-                        'message': 'should be string'
+                        message: 'should be string'
                     },
                     {
-                        'keyword': 'type',
-                        'dataPath': '.fieldStr2',
-                        'schemaPath': '#/properties/fieldStr2/type',
-                        'params': {
-                            'type': 'string'
+                        keyword: 'type',
+                        dataPath: '.fieldStr2',
+                        schemaPath: '#/properties/fieldStr2/type',
+                        params: {
+                            type: 'string'
                         },
-                        'message': 'should be string'
+                        message: 'should be string'
                     },
                     {
-                        'keyword': 'type',
-                        'dataPath': '.fieldStr3',
-                        'schemaPath': '#/properties/fieldStr3/type',
-                        'params': {
-                            'type': 'string'
+                        keyword: 'type',
+                        dataPath: '.fieldStr3',
+                        schemaPath: '#/properties/fieldStr3/type',
+                        params: {
+                            type: 'string'
                         },
-                        'message': 'should be string'
+                        message: 'should be string'
                     }
                 ]);
                 expect(isBodysMatch).to.be.false;
@@ -412,79 +438,79 @@ describe('oai3 - request tests', function () {
         describe('anyOf body', function () {
             let schemaEndpoint;
             before(function () {
-                schemaEndpoint = schema['/pet-any-of']['post'].body['application/json'];
+                schemaEndpoint = schema['/pet-any-of'].post.body['application/json'];
             });
             it('valid full body', function () {
-                let isMatch = schemaEndpoint.validate(
+                const isMatch = schemaEndpoint.validate(
                     {
-                        'bark': 'hav hav',
-                        'fur': 1
+                        bark: 'hav hav',
+                        fur: 1
                     });
                 expect(schemaEndpoint.errors).to.be.equal(null);
                 expect(isMatch).to.be.true;
             });
 
             it('missing required field in body', function () {
-                let isMatch = schemaEndpoint.validate({ });
+                const isMatch = schemaEndpoint.validate({ });
                 expect(schemaEndpoint.errors).to.be.eql([
                     {
-                        'dataPath': '',
-                        'keyword': 'required',
-                        'message': "should have required property 'bark'",
-                        'params': {
-                            'missingProperty': 'bark'
+                        dataPath: '',
+                        keyword: 'required',
+                        message: "should have required property 'bark'",
+                        params: {
+                            missingProperty: 'bark'
                         },
-                        'schemaPath': '#/anyOf/0/required'
+                        schemaPath: '#/anyOf/0/required'
                     },
                     {
-                        'dataPath': '',
-                        'keyword': 'required',
-                        'message': "should have required property 'fur'",
-                        'params': {
-                            'missingProperty': 'fur'
+                        dataPath: '',
+                        keyword: 'required',
+                        message: "should have required property 'fur'",
+                        params: {
+                            missingProperty: 'fur'
                         },
-                        'schemaPath': '#/anyOf/1/required'
+                        schemaPath: '#/anyOf/1/required'
                     },
                     {
-                        'dataPath': '',
-                        'keyword': 'anyOf',
-                        'message': 'should match some schema in anyOf',
-                        'params': {},
-                        'schemaPath': '#/anyOf'
+                        dataPath: '',
+                        keyword: 'anyOf',
+                        message: 'should match some schema in anyOf',
+                        params: {},
+                        schemaPath: '#/anyOf'
                     }
                 ]);
                 expect(isMatch).to.be.false;
             });
             it('invalid field type in body', function () {
-                let isMatch = schemaEndpoint.validate({
-                    'bark': 111,
-                    'fur': 'wrong'
+                const isMatch = schemaEndpoint.validate({
+                    bark: 111,
+                    fur: 'wrong'
                 });
                 expect(schemaEndpoint.errors).to.be.eql([
                     {
-                        'dataPath': '.bark',
-                        'keyword': 'type',
-                        'message': 'should be string',
-                        'params': {
-                            'type': 'string'
+                        dataPath: '.bark',
+                        keyword: 'type',
+                        message: 'should be string',
+                        params: {
+                            type: 'string'
                         },
-                        'schemaPath': '#/anyOf/0/properties/bark/type'
+                        schemaPath: '#/anyOf/0/properties/bark/type'
                     },
                     {
-                        'dataPath': '.fur',
-                        'keyword': 'pattern',
-                        'message': 'should match pattern "^\\d+$"',
-                        'params': {
-                            'pattern': '^\\d+$'
+                        dataPath: '.fur',
+                        keyword: 'pattern',
+                        message: 'should match pattern "^\\d+$"',
+                        params: {
+                            pattern: '^\\d+$'
                         },
-                        'schemaPath': '#/anyOf/1/properties/fur/pattern'
+                        schemaPath: '#/anyOf/1/properties/fur/pattern'
                     },
                     {
-                        'dataPath': '',
-                        'keyword': 'anyOf',
-                        'message': 'should match some schema in anyOf',
-                        'params': {},
-                        'schemaPath': '#/anyOf'
+                        dataPath: '',
+                        keyword: 'anyOf',
+                        message: 'should match some schema in anyOf',
+                        params: {},
+                        schemaPath: '#/anyOf'
                     }
                 ]);
                 expect(isMatch).to.be.false;
@@ -494,56 +520,56 @@ describe('oai3 - request tests', function () {
             let schemaEndpoint;
 
             before(function () {
-                schemaEndpoint = schema['/pet-all-of']['post'].body['application/json'];
+                schemaEndpoint = schema['/pet-all-of'].post.body['application/json'];
             });
             it('valid full body', function () {
-                let isMatch = schemaEndpoint.validate({
-                    'bark': 'hav hav',
-                    'fur': '11'
+                const isMatch = schemaEndpoint.validate({
+                    bark: 'hav hav',
+                    fur: '11'
                 });
                 expect(schemaEndpoint.errors).to.be.equal(null);
                 expect(isMatch).to.be.true;
             });
             it('missing required field in body', function () {
-                let isMatch = schemaEndpoint.validate({
-                    'bark': 'hav hav'
+                const isMatch = schemaEndpoint.validate({
+                    bark: 'hav hav'
                 });
                 expect(schemaEndpoint.errors).to.be.eql([
                     {
-                        'dataPath': '',
-                        'keyword': 'required',
-                        'message': "should have required property 'fur'",
-                        'params': {
-                            'missingProperty': 'fur'
+                        dataPath: '',
+                        keyword: 'required',
+                        message: "should have required property 'fur'",
+                        params: {
+                            missingProperty: 'fur'
                         },
-                        'schemaPath': '#/allOf/1/required'
+                        schemaPath: '#/allOf/1/required'
                     }
                 ]);
                 expect(isMatch).to.be.false;
             });
             it('invalid field type in body', function () {
-                let isMatch = schemaEndpoint.validate({
-                    'bark': 111,
-                    'fur': 'wrong'
+                const isMatch = schemaEndpoint.validate({
+                    bark: 111,
+                    fur: 'wrong'
                 });
                 expect(schemaEndpoint.errors).to.be.eql([
                     {
-                        'dataPath': '.bark',
-                        'keyword': 'type',
-                        'message': 'should be string',
-                        'params': {
-                            'type': 'string'
+                        dataPath: '.bark',
+                        keyword: 'type',
+                        message: 'should be string',
+                        params: {
+                            type: 'string'
                         },
-                        'schemaPath': '#/allOf/0/properties/bark/type'
+                        schemaPath: '#/allOf/0/properties/bark/type'
                     },
                     {
-                        'dataPath': '.fur',
-                        'keyword': 'pattern',
-                        'message': 'should match pattern "^\\d+$"',
-                        'params': {
-                            'pattern': '^\\d+$'
+                        dataPath: '.fur',
+                        keyword: 'pattern',
+                        message: 'should match pattern "^\\d+$"',
+                        params: {
+                            pattern: '^\\d+$'
                         },
-                        'schemaPath': '#/allOf/1/properties/fur/pattern'
+                        schemaPath: '#/allOf/1/properties/fur/pattern'
                     }
                 ]);
                 expect(isMatch).to.be.false;
@@ -553,12 +579,12 @@ describe('oai3 - request tests', function () {
             describe('discriminator-pet', function () {
                 let schemaEndpoint;
                 before(function () {
-                    schemaEndpoint = schema['/pet-discriminator']['post'].body['application/json'];
+                    schemaEndpoint = schema['/pet-discriminator'].post.body['application/json'];
                 });
                 it('missing discriminator field', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.validate({
-                        'bark': 'hav hav'
+                    const isBodysMatch = schemaEndpoint.validate({
+                        bark: 'hav hav'
                     });
 
                     expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
@@ -572,25 +598,25 @@ describe('oai3 - request tests', function () {
                 });
                 it('when discriminator type is dog and missing field', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.validate({
-                        'type': 'dog_object'
+                    const isBodysMatch = schemaEndpoint.validate({
+                        type: 'dog_object'
                     });
                     expect(schemaEndpoint.errors).to.be.eql([
                         {
-                            'dataPath': '',
-                            'keyword': 'required',
-                            'message': "should have required property 'bark'",
-                            'params': {
-                                'missingProperty': 'bark'
+                            dataPath: '',
+                            keyword: 'required',
+                            message: "should have required property 'bark'",
+                            params: {
+                                missingProperty: 'bark'
                             },
-                            'schemaPath': '#/required'
+                            schemaPath: '#/required'
                         }
                     ]);
                     expect(isBodysMatch).to.be.false;
                 });
                 it('valid complex body', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.validate({
+                    const isBodysMatch = schemaEndpoint.validate({
                         bark: 'hav hav',
                         type: 'dog_object'
                     });
@@ -601,12 +627,12 @@ describe('oai3 - request tests', function () {
             describe('discriminator-multiple pet', function () {
                 let schemaEndpoint;
                 before(function () {
-                    schemaEndpoint = schema['/pet-discriminator-multiple']['post'].body['application/json'];
+                    schemaEndpoint = schema['/pet-discriminator-multiple'].post.body['application/json'];
                 });
                 it('missing discriminator field', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.validate({
-                        'fur': 'hav hav'
+                    const isBodysMatch = schemaEndpoint.validate({
+                        fur: 'hav hav'
                     });
 
                     expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
@@ -621,7 +647,7 @@ describe('oai3 - request tests', function () {
                 });
                 it('missing discriminator field on the on inside discriminator', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.validate({
+                    const isBodysMatch = schemaEndpoint.validate({
                         bark: 'hav hav',
                         type: 'dog_multiple'
                     });
@@ -637,7 +663,7 @@ describe('oai3 - request tests', function () {
                 });
                 it('when discriminator type is dog_multiple and model small_dog and missing root field name and specific plane field', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.validate({
+                    const isBodysMatch = schemaEndpoint.validate({
                         type: 'dog_multiple',
                         model: 'small_dog'
                     });
@@ -649,7 +675,7 @@ describe('oai3 - request tests', function () {
                 });
                 it('when valid discriminator type is dog_multiple and model small_dog', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.validate({
+                    const isBodysMatch = schemaEndpoint.validate({
                         name: 'sesna',
                         max_length: 'max_length',
                         dog_age: '3',
@@ -663,11 +689,11 @@ describe('oai3 - request tests', function () {
             describe('discriminator-mapping pet', function () {
                 let schemaEndpoint;
                 before(function () {
-                    schemaEndpoint = schema['/pet-discriminator-mapping']['post'].body['application/json'];
+                    schemaEndpoint = schema['/pet-discriminator-mapping'].post.body['application/json'];
                 });
                 it('missing discriminator field on the root', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.validate({
+                    const isBodysMatch = schemaEndpoint.validate({
                         fur: '6'
                     });
 
@@ -682,7 +708,7 @@ describe('oai3 - request tests', function () {
                 });
                 it('when discriminator type is mapped_dog and model small_dog and missing root field name and specific dog field', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.validate({
+                    const isBodysMatch = schemaEndpoint.validate({
                         type: 'mapped_dog',
                         model: 'small_dog'
                     });
@@ -694,7 +720,7 @@ describe('oai3 - request tests', function () {
                 });
                 it('when valid discriminator type is mapped_dog and model small_dog', function () {
                     // body match
-                    let isBodysMatch = schemaEndpoint.validate({
+                    const isBodysMatch = schemaEndpoint.validate({
                         name: 'sesna',
                         max_length: 'max_length',
                         dog_age: '200',
@@ -711,29 +737,21 @@ describe('oai3 - request tests', function () {
 });
 
 describe('oai3 - request tests with options', function () {
-    let schemas;
-    let options = { contentTypeValidation: true };
+    const options = { contentTypeValidation: true };
     before(function () {
-        schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
+        schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
     });
     it('bad request - wrong content-type (should be application/json)', function () {
-        let paramsValidationErrors = validateParams({
-            schemas: schemas,
-            headers: { 'content-length': 1, 'content-type': 'application/x-www-form-urlencoded' },
-            pathParams: {},
-            queries: {},
-            files: [],
-            path: '/v1/dogs',
-            method: 'post'
+        const schemaEndpoint = schema['/pet'].post;
+        schemaEndpoint.parameters.validate({
+            query: {},
+            headers: {
+                'public-key': '1.0',
+                'content-type': 'application/x-www-form-urlencoded'
+            },
+            path: {}
         });
-        expect(paramsValidationErrors[0].errors.message).to.equal('content-type must be one of application/json');
 
-        expect(paramsValidationErrors[0].errors.params['content-type']).to.eql('application/x-www-form-urlencoded');
-
-        expect(paramsValidationErrors[0].errors.params.types).to.eql([
-            'application/json'
-        ]);
+        expect(schemaEndpoint.parameters.errors).to.be.eql([]);
     });
 });
-
-
