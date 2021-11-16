@@ -94,6 +94,17 @@ function getOptions(opts = {}) {
     );
 }
 
+function getContentTypes(isOpenApi3, dereferenced, currentPath, currentMethod) {
+    let contentType;
+    if (isOpenApi3) {
+        const requestBody = dereferenced.paths[currentPath][currentMethod].requestBody;
+        contentType = requestBody && Object.keys(requestBody.content);
+    } else {
+        contentType = dereferenced.paths[currentPath][currentMethod].consumes || dereferenced.paths[currentPath].consumes || dereferenced.consumes;
+    }
+    return contentType;
+}
+
 function buildRequestValidator(referenced, dereferenced, currentPath, currentMethod, options) {
     const requestSchema = {};
     let localParameters = [];
@@ -122,8 +133,8 @@ function buildRequestValidator(referenced, dereferenced, currentPath, currentMet
         localParameters = oai2.buildPathParameters(parameters, pathParameters);
     }
 
-    requestSchema.parameters = buildParametersValidation(localParameters,
-        dereferenced.paths[currentPath][currentMethod].consumes || dereferenced.paths[currentPath].consumes || dereferenced.consumes, options);
+    const contentTypes = getContentTypes(isOpenApi3, dereferenced, currentPath, currentMethod);
+    requestSchema.parameters = buildParametersValidation(localParameters, contentTypes, options);
 
     return requestSchema;
 }
