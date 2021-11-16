@@ -747,11 +747,15 @@ describe('oai3 - request tests with options', function () {
             query: {},
             headers: {
                 'public-key': '1.0',
+                'content-length': 1,
                 'content-type': 'application/x-www-form-urlencoded'
             },
             path: {}
         });
 
-        expect(schemaEndpoint.parameters.errors).to.be.eql([]);
+        const { errors } = schemaEndpoint.parameters.errors[0];
+        expect(errors.message).to.eql('content-type must be one of application/json');
+        expect(errors.params['content-type']).to.eql('application/x-www-form-urlencoded');
+        expect(errors.params.types).to.eql(['application/json']);
     });
 });
