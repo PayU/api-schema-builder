@@ -33,12 +33,11 @@ jobs:
         run: npm ci
       - name: unit tests
         run: npm run test:coverage
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v2
-        if: matrix.node == env.LATEST_NODE
+      - name: Coveralls
+        if: ${{ matrix.node == env.LATEST_NODE }}
+        uses: coverallsapp/github-action@master
         with:
-          name: code-coverage-report
-          path: coverage
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   code-quality:
     needs: test
