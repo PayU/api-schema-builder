@@ -4,12 +4,11 @@ on: [ push, pull_request ]
 
 env:
   DEFAULT_NODE: '16'
-  DEFAULT_PLATFORM: 'ubuntu-latest'
 
 jobs:
   lockfile-lint:
     name: Lockfile lint
-    runs-on: ${{ env.DEFAULT_PLATFORM }}
+    runs-on: 'ubuntu-latest'
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -44,7 +43,7 @@ jobs:
 
   coverage:
     needs: [test, lockfile-lint]
-    runs-on: ${{ env.DEFAULT_PLATFORM }}
+    runs-on: 'ubuntu-latest'
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -64,7 +63,7 @@ jobs:
 
   lint:
     needs: lockfile-lint
-    runs-on: ${{ env.DEFAULT_PLATFORM }}
+    runs-on: 'ubuntu-latest'
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
