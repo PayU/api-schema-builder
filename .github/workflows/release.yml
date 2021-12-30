@@ -16,9 +16,8 @@ jobs:
       repository-projects: write
       security-events: write
       statuses: write
-    needs: [ test, lockfile-lint ]
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
