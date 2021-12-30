@@ -14,8 +14,8 @@ jobs:
         with:
           node-version: ${{ env.LATEST_NODE }}
       - name: lint lock file
-        run: npx lockfile-lint --path package-lock.json --allowed-hosts npm --validate-https
-
+        run: npx lockfile-lint --path package-lock.json --allowed-hosts npm --validate-http
+  
   test:
     strategy:
       matrix:
@@ -31,13 +31,30 @@ jobs:
           node-version: ${{ matrix.node }}
       - name: install dependencies
         run: npm ci
-      - name: lint
-        if: matrix.node == ${{ env.LATEST_NODE }}
-        run: npm run lint
+      # - name: lint
+      #   if: matrix.node == ${{ env.LATEST_NODE }}
+      #   run: npm run lint
       - name: unit tests
         run: npm run test:coverage
+      # - name: Coveralls
+      #   uses: coverallsapp/github-action@master
+      #   if: matrix.node == ${{ env.LATEST_NODE }}
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  code-quality:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.LATEST_NODE }}
+      - name: install dependencies
+        run: npm ci
+      - name: lint
+        run: npm run lint
       - name: Coveralls
         uses: coverallsapp/github-action@master
-        if: matrix.node == ${{ env.LATEST_NODE }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
