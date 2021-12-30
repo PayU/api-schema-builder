@@ -2,7 +2,8 @@ name: Release
 
 on: [ workflow_dispatch ]
 
-release:
+jobs:
+  release:
     name: release
     permissions:
       actions: write
