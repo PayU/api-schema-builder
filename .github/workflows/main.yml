@@ -2,7 +2,7 @@ name: CI
 
 on: [ push, pull_request ]
 env:
-  LATEST_NODE: '14'
+  LATEST_NODE: '16'
 
 jobs:
   lockfile-lint:
@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         platform: [ ubuntu-latest ]
-        node: [ '10', '12', '14' ]
+        node: [ '10', '12', '14', '16' ]
     name: Unit Tests Node ${{ matrix.node }} (${{ matrix.platform }})
     needs: lockfile-lint
     runs-on: ${{ matrix.platform }}
@@ -32,41 +32,12 @@ jobs:
       - name: install dependencies
         run: npm ci
       - name: lint
+        if: matrix.node == ${{ env.LATEST_NODE }}
         run: npm run lint
-      - name: units tests
+      - name: unit tests
         run: npm run test:coverage
       - name: Coveralls
         uses: coverallsapp/github-action@master
         if: matrix.node == ${{ env.LATEST_NODE }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-
-
-  release:
-    name: release
-    permissions:
-      actions: write
-      checks: write
-      contents: write
-      deployments: write
-      issues: write
-      packages: write
-      pull-requests: write
-      repository-projects: write
-      security-events: write
-      statuses: write
-    needs: [ test, lockfile-lint ]
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-      - name: install dependencies
-        run: npm ci --ignore-scripts
-      - name: release
-        run: npx semantic-release
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
