@@ -67,7 +67,7 @@ jobs:
 
   lint:
     needs: lockfile-lint
-    runs-on: ${{ matrix.platform }}
+    runs-on: ${{ env.LATEST_NODE }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
