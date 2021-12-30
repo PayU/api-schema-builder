@@ -3,17 +3,18 @@ name: CI
 on: [ push, pull_request ]
 
 env:
-  LATEST_NODE: '16'
+  DEFAULT_NODE: '16'
+  DEFAULT_PLATFORM: 'ubuntu-latest'
 
 jobs:
   lockfile-lint:
     name: Lockfile lint
-    runs-on: ubuntu-latest
+    runs-on: ${{ env.DEFAULT_PLATFORM }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: ${{ env.LATEST_NODE }}
+          node-version: ${{ env.DEFAULT_NODE }}
       - name: lint lock file
         run: npx lockfile-lint --path package-lock.json --allowed-hosts npm --validate-http
   
@@ -35,7 +36,7 @@ jobs:
       - name: unit tests
         run: npm run test:coverage
       - name: upload code coverage artifacts
-        if: ${{ matrix.node == env.LATEST_NODE }}
+        if: ${{ matrix.node == env.DEFAULT_NODE }}
         uses: actions/upload-artifact@v2
         with:
           name: coverage
@@ -43,12 +44,12 @@ jobs:
 
   coverage:
     needs: [test, lockfile-lint]
-    runs-on: ${{ matrix.platform }}
+    runs-on: ${{ env.DEFAULT_PLATFORM }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: ${{ env.LATEST_NODE }}
+          node-version: ${{ env.DEFAULT_NODE }}
       - name: install dependencies
         run: npm ci
       - name: download code coverage artifacts
@@ -63,12 +64,12 @@ jobs:
 
   lint:
     needs: lockfile-lint
-    runs-on: ubuntu-latest
+    runs-on: ${{ env.DEFAULT_PLATFORM }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: ${{ env.LATEST_NODE }}
+          node-version: ${{ env.DEFAULT_NODE }}
       - name: install dependencies
         run: npm ci
       - name: lint
