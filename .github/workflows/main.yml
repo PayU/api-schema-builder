@@ -63,7 +63,7 @@ jobs:
 
   lint:
     needs: lockfile-lint
-    runs-on: ${{ env.LATEST_NODE }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
