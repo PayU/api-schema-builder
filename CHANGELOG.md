@@ -1,5 +1,9 @@
 # Master
 
+# 2.0.6 - 5 April, 2023
+### Improvements
+- Fix the schema construction for `/` route
+
 # 2.0.5 - 1 February, 2021
 ### Improvements
 - Added basic support for relative URLs #59

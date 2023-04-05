@@ -140,6 +140,16 @@ describe('oai3 - general tests', () => {
                 expect(typeof schema['/json'].put.body['application/json'].validate).to.eql('function');
                 expect(typeof schema['/staging/json'].put.body['application/json'].validate).to.eql('function');
             });
+            describe('base path root', () => {
+                it('is prepended to each path root', () => {
+                    const swaggerPath = path.join(__dirname, 'pet-store-basepath-root.yaml');
+                    const schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
+                    expect(Object.keys(schema)).to.eql(['/pets', '/pets/:petName/', '/pets/species/:species']);
+                    expect(typeof schema['/pets'].post.body['application/json'].validate).to.eql('function');
+                    expect(typeof schema['/pets/:petName/'].get.parameters.validate).to.eql('function');
+                    expect(typeof schema['/pets/species/:species'].get.parameters.validate).to.eql('function');
+                });
+            });
             it('correctly works with servers with relative paths', () => {
                 const swaggerPath = path.join(__dirname, 'pets-general-relative-paths-too.yaml');
                 const schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, {});
