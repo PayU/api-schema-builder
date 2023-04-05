@@ -73,7 +73,7 @@ function buildValidations(referenced, dereferenced, receivedOptions) {
             });
 
         basePaths.forEach(basePath => {
-            const normalizedPath = basePath.replace(/\/$/, '') + currentPath.replace(/{(\w+)}/g, ':$1');
+            const normalizedPath = basePath.replace(/\/$/, '') + (currentPath === '/' ? '' : currentPath.replace(/{(\w+)}/g, ':$1'));
             schemas[normalizedPath] = operationSchemas;
         });
     });
