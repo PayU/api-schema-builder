@@ -49,3 +49,6 @@ components:
         _custom:
           type: string
           format: custom
+        _customViaAjvConfigParams:
+          type: string
+          format: customViaAjvConfigParams

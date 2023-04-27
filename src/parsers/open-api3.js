@@ -84,7 +84,7 @@ function handleBodyValidation(
     dereferenced, referenced,
     dereferencedBodySchema, referencedBodySchema,
     validationType,
-    { ajvConfigBody, formats, keywords }
+    { ajvConfigBody, formats, keywords, ajvConfigParams }
 ) {
     if (!dereferencedBodySchema) {
         return;
@@ -99,7 +99,7 @@ function handleBodyValidation(
         nullable: true
     };
 
-    const ajvOptions = Object.assign({}, defaultAjvOptions, ajvConfigBody);
+    const ajvOptions = Object.assign({}, defaultAjvOptions, ajvConfigBody, ajvConfigParams);
     const ajv = new Ajv(ajvOptions);
 
     ajvUtils.addCustomKeyword(ajv, formats, keywords);
