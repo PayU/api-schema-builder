@@ -100,24 +100,40 @@ describe('formats', function () {
                         type: 'string'
                     }
                 }
-            ]
+            ],
+            ajvConfigParams: {
+                formats: {
+                    customViaAjvConfigParams: (value) => value === 'My Custom Format via native AJV options',
+                }
+            }
         });
 
         const validator = schema['/types'].post.body['application/json'];
 
-        it('valid values', function () {
-            expect(validator.validate({ _custom: 'My Custom Format' })).to.be.true;
+        describe('custom formats', () => {
+            it('valid values', function () {
+                expect(validator.validate({ _custom: 'My Custom Format' })).to.be.true;
+            });
+            it('invalid values', function () {
+                expect(validator.validate({ _custom: 'Another format' })).to.be.false;
+            });
+            it('built in formats', function () {
+                expect(validator.validate({ _int32: 1 })).to.be.true;
+                expect(validator.validate({ _int32: 2147483648 })).to.be.false;
+                expect(validator.validate({ _int64: 9223372036854775000 })).to.be.true;
+                expect(validator.validate({ _int64: 9223372036854775808 })).to.be.false;
+                expect(validator.validate({ _byte: 'YmFzZTY0IAZ=' })).to.be.true;
+                expect(validator.validate({ _byte: 'YmFzZTY0IQ' })).to.be.false;
+            });
         });
-        it('invalid values', function () {
-            expect(validator.validate({ _custom: 'Another format' })).to.be.false;
-        });
-        it('built in formats', function () {
-            expect(validator.validate({ _int32: 1 })).to.be.true;
-            expect(validator.validate({ _int32: 2147483648 })).to.be.false;
-            expect(validator.validate({ _int64: 9223372036854775000 })).to.be.true;
-            expect(validator.validate({ _int64: 9223372036854775808 })).to.be.false;
-            expect(validator.validate({ _byte: 'YmFzZTY0IAZ=' })).to.be.true;
-            expect(validator.validate({ _byte: 'YmFzZTY0IQ' })).to.be.false;
+
+        describe('custom formats via native AJV options', () => {
+            it('valid values', function () {
+                expect(validator.validate({ _customViaAjvConfigParams: 'My Custom Format via native AJV options' })).to.be.true;
+            });
+            it('invalid values', function () {
+                expect(validator.validate({ _customViaAjvConfigParams: 'Another format' })).to.be.false;
+            });
         });
     });
 });
