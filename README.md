@@ -160,7 +160,7 @@ Arguments, options and response are the same as for the `buildSchemaSync` method
 
 - Objects - it is important to set any objects with the property `type: object` inside your swagger file, although it isn't a must in the Swagger (OpenAPI) spec in order to validate it accurately with [ajv](https://www.npmjs.com/package/ajv) it must be marked as `object`
 - Response validator does not support readOnly attribute
-- The Ajv flag `coerceTypes: "array"` enables type coercion for fields defined as arrays in the schema. It will attempt to parse values into arrays when possible (e.g., `1` → `[1]`, `"[1,2,3]"` → `[1,2,3]`).
+- It uses the Ajv `coerceTypes: "array"` flag, which enables type coercion for fields defined as arrays in the schema. This means values will be automatically parsed into arrays when possible. For example, `1` becomes `[1]`, and `"[1,2,3]"` becomes `[1, 2, 3]`.
 ## Open api 3 - known issues
 - supporting inheritance with discriminator , only if the ancestor object is the discriminator.
 - The discriminator supports in the inheritance chain stop when getting to a child with no discriminator (a leaf in the inheritance tree), meaning a leaf can't have a field which starts a new inheritance tree.
