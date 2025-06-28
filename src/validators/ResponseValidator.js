@@ -43,7 +43,7 @@ function responseValidator(response, data) {
 
 function addErrorPrefix(errors, prefix) {
     errors.forEach(error => {
-        error.dataPath = '.' + prefix + error.dataPath;
+        error.instancePath = '/' + prefix + error.instancePath;
         error.schemaPath = error.schemaPath.replace('#', '#/' + prefix);
     });
     return errors;

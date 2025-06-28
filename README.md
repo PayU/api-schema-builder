@@ -1,5 +1,5 @@
-
 # api-schema-builder
+
 [![NPM Version](https://img.shields.io/npm/v/api-schema-builder.svg?style=flat)](https://npmjs.org/package/api-schema-builder)
 [![Build Status](https://travis-ci.org/payu/api-schema-builder.svg?branch=master)](https://travis-ci.org/payu/api-schema-builder)
 [![Coverage Status](https://coveralls.io/repos/github/PayU/api-schema-builder/badge.svg?branch=master)](https://coveralls.io/github/PayU/api-schema-builder?branch=master)
@@ -10,9 +10,8 @@ This package is used to build schema for input validation base on openapi doc [S
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  <!-- *generated with [DocToc](https://github.com/thlorenz/doctoc)* -->
 
-
+**Table of Contents** <!-- *generated with [DocToc](https://github.com/thlorenz/doctoc)* -->
 
 - [Install](#install)
 - [API](#api)
@@ -31,6 +30,7 @@ This package is used to build schema for input validation base on openapi doc [S
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Install
+
 ```bash
 npm install --save api-schema-builder
 ```
@@ -40,7 +40,7 @@ npm install --save api-schema-builder
 ### How to use
 
 ```js
-const apiSchemaBuilder = require('api-schema-builder');
+const apiSchemaBuilder = require("api-schema-builder");
 ```
 
 ### api-schema-builder.buildSchemaSync(PathToSwaggerFile, options)
@@ -51,30 +51,32 @@ The function returns schema object.
 
 #### Arguments
 
-* `PathToSwaggerFile` &ndash; Path to the swagger definition
-* `options` &ndash; Additional options for build the schema.
+- `PathToSwaggerFile` &ndash; Path to the swagger definition
+- `options` &ndash; Additional options for build the schema.
 
 #### Response
-Array that contains:
-* `path_name`: the paths it written in the api doc, for example `/pet`.
-    * `method`: the relevant method it written in the api doc, for example `get`.
-        * `parameters`:
-            * `validate`:  ajv validator that check: paths, files, queries and headers.
-            * `errors`: in case of fail validation it return array of errors, otherwise return null
-        * `body`:
-            * `validate`: ajv validator that check: body only.
-            * `errors`: in case of fail validation it return array of errors, otherwise return null
-        * `responses`: contain array of statusCodes
-            * `statusCode`:
-                * `validate`: ajv validator that check body and headers.
-                * `errors`: in case of fail validation it return array of errors, otherwise return null
 
+Array that contains:
+
+- `path_name`: the paths it written in the api doc, for example `/pet`.
+  - `method`: the relevant method it written in the api doc, for example `get`.
+    - `parameters`:
+      - `validate`: ajv validator that check: paths, files, queries and headers.
+      - `errors`: in case of fail validation it return array of errors, otherwise return null
+    - `body`:
+      - `validate`: ajv validator that check: body only.
+      - `errors`: in case of fail validation it return array of errors, otherwise return null
+    - `responses`: contain array of statusCodes
+      - `statusCode`:
+        - `validate`: ajv validator that check body and headers.
+        - `errors`: in case of fail validation it return array of errors, otherwise return null
 
 ##### Options
 
 Options currently supports:.
-- `keywords` - Array of keywords that can be added to `ajv` configuration, each element in the array can be either an object or a function. 
-If the element is an object, it must include `name` and `definition`. If the element is a function, it should accept `ajv` as its first argument and inside the function you need to call `ajv.addKeyword` to add your custom keyword 
+
+- `keywords` - Array of keywords that can be added to `ajv` configuration, each element in the array can be either an object or a function.
+  If the element is an object, it must include `name` and `definition`. If the element is a function, it should accept `ajv` as its first argument and inside the function you need to call `ajv.addKeyword` to add your custom keyword
 - `makeOptionalAttributesNullable` - Boolean that forces preprocessing of Swagger schema to include 'null' as possible type for all non-required properties. Main use-case for this is to ensure correct handling of null values when Ajv type coercion is enabled
 - `ajvConfigBody` - Object that will be passed as config to new Ajv instance which will be used for validating request body. Can be useful to e. g. enable type coercion (to automatically convert strings to numbers etc). See Ajv documentation for supported values.
 - `ajvConfigParams` - Object that will be passed as config to new Ajv instance which will be used for validating request headers and parameters. See Ajv documentation for supported values.
@@ -87,10 +89,10 @@ If the element is an object, it must include `name` and `definition`. If the ele
 
   ```js
   formats: [
-      { name: 'double', pattern: /\d+\.(\d+)+/ },
-      { name: 'int64', pattern: /^\d{1,19}$/ },
-      { name: 'int32', pattern: /^\d{1,10}$/ }
-  ]
+    { name: "double", pattern: /\d+\.(\d+)+/ },
+    { name: "int64", pattern: /^\d{1,19}$/ },
+    { name: "int32", pattern: /^\d{1,10}$/ },
+  ];
   ```
 
 ### api-schema-builder.buildSchema(jsonSchema, options)
@@ -98,7 +100,6 @@ If the element is an object, it must include `name` and `definition`. If the ele
 Synchronously build schema that would contain ajv validators for each endpoint, based on given OpenAPI specification as json schema.
 
 The function returns schema object.
-
 
 ### api-schema-builder.buildSchema(PathToSwaggerFile, options)
 
@@ -111,49 +112,63 @@ Arguments, options and response are the same as for the `buildSchemaSync` method
 ## Usage Example
 
 ### Validate request
-```js
-  const schema = apiSchemaBuilder.buildSchemaSync('test/unit-tests/input-validation/pet-store-swagger.yaml');
-  let schemaEndpoint = schema['/pet']['post'];
 
-  //validate request's parameters
-  let isParametersMatch = schemaEndpoint.parameters.validate({ query: {},
-  headers: { 'public-key': '1.0'},path: {},files: undefined });
-  expect(schemaEndpoint.parameters.errors).to.be.equal(null);
-  expect(isParametersMatch).to.be.true;
-    
-  //validate request's body
-  let isBodysMatch =schemaEndpoint.body.validate({'bark': 111});
-  expect(schemaEndpoint.body.errors).to.be.eql([{
-      'dataPath': '.bark',
-      'keyword': 'type',
-      'message': 'should be string',
-      'params': {
-         'type': 'string'
-       },
-       'schemaPath': '#/properties/bark/type'}
-  ])
-  expect(isBodysMatch).to.be.false;
-```
-### Validate response
 ```js
-  const schema = apiSchemaBuilder.buildSchemaSync('test/unit-tests/input-validation/pet-store-swagger.yaml');
-  let schemaEndpoint = schema['/pet']['post'].responses['201'];
-  //validate response's body and headers
-  let isValid = schemaEndpoint.validate({
-          body :{ id:11, 'name': 111},
-          headers:{'x-next': '321'}
-  })
-  expect(schemaEndpoint.errors).to.be.eql([
-    {
-      'dataPath': '.body.name',
-      'keyword': 'type',
-      'message': 'should be string',
-      'params': {
-          'type': 'string'
-      },
-      'schemaPath': '#/body/properties/name/type'
-  }])
-  expect(isValid).to.be.false;
+const schema = apiSchemaBuilder.buildSchemaSync(
+  "test/unit-tests/input-validation/pet-store-swagger.yaml"
+);
+let schemaEndpoint = schema["/pet"]["post"];
+
+//validate request's parameters
+let isParametersMatch = schemaEndpoint.parameters.validate({
+  query: {},
+  headers: { "public-key": "1.0" },
+  path: {},
+  files: undefined,
+});
+expect(schemaEndpoint.parameters.errors).to.be.equal(null);
+expect(isParametersMatch).to.be.true;
+
+//validate request's body
+let isBodysMatch = schemaEndpoint.body.validate({ bark: 111 });
+expect(schemaEndpoint.body.errors).to.be.eql([
+  {
+    instancePath: "/bark",
+    keyword: "type",
+    message: "must be string",
+    params: {
+      type: "string",
+    },
+    schemaPath: "#/properties/bark/type",
+  },
+]);
+expect(isBodysMatch).to.be.false;
+```
+
+### Validate response
+
+```js
+const schema = apiSchemaBuilder.buildSchemaSync(
+  "test/unit-tests/input-validation/pet-store-swagger.yaml"
+);
+let schemaEndpoint = schema["/pet"]["post"].responses["201"];
+//validate response's body and headers
+let isValid = schemaEndpoint.validate({
+  body: { id: 11, name: 111 },
+  headers: { "x-next": "321" },
+});
+expect(schemaEndpoint.errors).to.be.eql([
+  {
+    instancePath: "/body.name",
+    keyword: "type",
+    message: "must be string",
+    params: {
+      type: "string",
+    },
+    schemaPath: "#/body/properties/name/type",
+  },
+]);
+expect(isValid).to.be.false;
 ```
 
 ## Important Notes
@@ -162,6 +177,7 @@ Arguments, options and response are the same as for the `buildSchemaSync` method
 - Response validator does not support readOnly attribute
 
 ## Open api 3 - known issues
+
 - supporting inheritance with discriminator , only if the ancestor object is the discriminator.
 - The discriminator supports in the inheritance chain stop when getting to a child with no discriminator (a leaf in the inheritance tree), meaning a leaf can't have a field which starts a new inheritance tree.
   so child with no discriminator cant point to other child with discriminator,
@@ -169,7 +185,9 @@ Arguments, options and response are the same as for the `buildSchemaSync` method
 - Response validator does not support links and writeOnly attribute
 
 ## Running Tests
+
 Using mocha and istanbul
+
 ```bash
 npm run test
 ```

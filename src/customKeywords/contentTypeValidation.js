@@ -1,6 +1,7 @@
 const Ajv = require('ajv');
 
 module.exports = {
+    keyword: 'content',
     compile: function contentTypeValidation(schema) {
         const regex = buildContentTypeRegex(schema.types);
         return function contentValidation(data) {

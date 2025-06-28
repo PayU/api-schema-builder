@@ -14,17 +14,13 @@ function addCustomKeyword(ajv, formats, keywords) {
             }
 
             if (typeof keyword === 'object') {
-                const name = keyword.name;
-                const definition = keyword.definition;
-                if (name && definition) {
-                    return ajv.addKeyword(name, definition);
-                }
+                return ajv.addKeyword(keyword);
             }
         });
     }
 
-    ajv.addKeyword('files', filesKeyword);
-    ajv.addKeyword('content', contentKeyword);
+    ajv.addKeyword(filesKeyword);
+    ajv.addKeyword(contentKeyword);
 }
 
 module.exports = {

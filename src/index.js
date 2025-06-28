@@ -1,6 +1,7 @@
 'use strict';
 const get = require('lodash.get');
 const Ajv = require('ajv');
+const addFormats = require('ajv-formats');
 const { URL } = require('url');
 
 const { defaultFormatsValidators } = require('./validators/formatValidators.js');
@@ -174,11 +175,13 @@ function buildResponseValidator(referenced, dereferenced, currentPath, currentMe
 function buildParametersValidation(parameters, contentTypes, options) {
     const defaultAjvOptions = {
         allErrors: true,
-        coerceTypes: 'array'
+        coerceTypes: 'array',
+        strict: false
         // unknownFormats: 'ignore'
     };
     const ajvOptions = Object.assign({}, defaultAjvOptions, options.ajvConfigParams);
     const ajv = new Ajv(ajvOptions);
+    addFormats(ajv);
 
     ajvUtils.addCustomKeyword(ajv, options.formats, options.keywords);
 

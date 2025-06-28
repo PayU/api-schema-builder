@@ -4,8 +4,8 @@ module.exports = {
 };
 
 function allowedValuesError(discriminator, allowedValues) {
-    const error = new Error('should be equal to one of the allowed values');
-    error.dataPath = '.' + discriminator;
+    const error = new Error('must be equal to one of the allowed values');
+    error.instancePath = '/' + discriminator;
     error.keyword = 'enum';
     error.params = {
         allowedValues: allowedValues

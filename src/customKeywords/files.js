@@ -14,6 +14,7 @@ function missingElements(superSet, subset) {
 };
 
 module.exports = {
+    keyword: 'files',
     validate: function filesValidation(schema, data) {
         filesValidation.errors = [];
         const dataFileName = data.map((element) => { return element[fileNameField] });
