@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest]
-        node: ["10", "12", "14", "16", "18", "20", "22"]
+        node: ["18", "20", "22"]
     name: Unit Tests Node ${{ matrix.node }} (${{ matrix.platform }})
     needs: lockfile-lint
     runs-on: ${{ matrix.platform }}

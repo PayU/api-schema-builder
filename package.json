@@ -79,6 +79,6 @@
     "registry": "https://registry.npmjs.org/"
   },
   "engines": {
-    "node": ">=8"
+    "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
   }
 }
