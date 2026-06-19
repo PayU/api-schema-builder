@@ -54,9 +54,9 @@ See [MIGRATION.md](./MIGRATION.md) for a detailed migration guide including a fu
 - Updated Node.js test matrix to [24]
 - Updated default Node.js version to 24
 - Updated actions/checkout@v4 → @v5
-- Updated actions/setup-node@v4
+- Updated actions/setup-node@v4 → @v6
 - Updated actions/upload-artifact@v4 → @v6
-- Updated actions/download-artifact@v4 → @v6
+- Updated actions/download-artifact@v4 → @v7
 - Updated github/codeql-action/*@v1 → @v3
 - Updated coverallsapp/github-action@master → @v2
 
