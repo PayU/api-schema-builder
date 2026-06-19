@@ -1,6 +1,7 @@
 
 const Validators = require('../validators'),
     Ajv = require('ajv'),
+    addFormats = require('ajv-formats'),
     ajvUtils = require('../utils/ajv-utils'),
     createContentTypeHeaders = require('../utils/createContentTypeHeaders'),
     get = require('lodash.get');
@@ -51,10 +52,12 @@ function buildHeadersValidation(responses, contentTypes, statusCode, options) {
 
     const defaultAjvOptions = {
         allErrors: true,
-        coerceTypes: 'array'
+        coerceTypes: 'array',
+        strict: false
     };
     const ajvOptions = Object.assign({}, defaultAjvOptions, options.ajvConfigParams);
     const ajv = new Ajv(ajvOptions);
+    addFormats(ajv);
 
     ajvUtils.addCustomKeyword(ajv, options.formats, options.keywords);
 
@@ -81,10 +84,12 @@ function buildHeadersValidation(responses, contentTypes, statusCode, options) {
 
 function buildAjvValidator(ajvConfigBody, formats, keywords){
     const defaultAjvOptions = {
-        allErrors: true
+        allErrors: true,
+        strict: false
     };
     const ajvOptions = Object.assign({}, defaultAjvOptions, ajvConfigBody);
     const ajv = new Ajv(ajvOptions);
+    addFormats(ajv);
 
     ajvUtils.addCustomKeyword(ajv, formats, keywords);
     return ajv;

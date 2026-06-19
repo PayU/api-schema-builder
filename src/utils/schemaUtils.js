@@ -37,7 +37,7 @@ function addOAI3Support(dereferencedSchema, validationType) {
         const newSchema = Object.assign({}, dereferencedSchema);
         newSchema[schemaType] = dereferencedSchema[schemaType]
             .map((dereferencedSchema) => addOAI3Support(dereferencedSchema, validationType));
-        return newSchema;
+        return convertNullable(newSchema);
     } else if (dereferencedSchema.properties) {
         // object handling
         const newSchema = Object.assign({}, dereferencedSchema);
@@ -45,19 +45,41 @@ function addOAI3Support(dereferencedSchema, validationType) {
 
         for (const propName of Object.keys(newSchema.properties)) {
             addRWOnlySupport(newSchema, propName, validationType);
+            // Convert nullable properties for Ajv v8 compatibility
+            if (newSchema.properties[propName]) {
+                newSchema.properties[propName] = convertNullable(
+                    addOAI3Support(Object.assign({}, newSchema.properties[propName]), validationType)
+                );
+            }
         }
-        return newSchema;
+        return convertNullable(newSchema);
     } else if (dereferencedSchema.items && dereferencedSchema.items.properties) {
         // array handling
         const newSchema = Object.assign({}, dereferencedSchema);
         const newItems = Object.assign({}, dereferencedSchema.items);
 
         newSchema.items = addOAI3Support(newItems, validationType);
-        return newSchema;
+        return convertNullable(newSchema);
     } else {
         // other datatypes handling
-        return dereferencedSchema;
+        return convertNullable(dereferencedSchema);
     }
+}
+
+function convertNullable(schema) {
+    if (!schema.nullable) return schema;
+    const newSchema = Object.assign({}, schema);
+    delete newSchema.nullable;
+    if (newSchema.type) {
+        newSchema.type = Array.isArray(newSchema.type)
+            ? [...newSchema.type, 'null']
+            : [newSchema.type, 'null'];
+    } else {
+        // nullable without type — wrap in oneOf to allow null or any value
+        const { nullable, ...rest } = newSchema;
+        return { oneOf: [rest, { type: 'null' }] };
+    }
+    return newSchema;
 }
 
 /**

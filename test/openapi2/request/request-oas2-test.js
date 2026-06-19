@@ -24,7 +24,7 @@ describe('oai2 - request tests', () => {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger.yaml');
             schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
         });
-        it('valid request - should pass validation', function () {
+        it('valid request - must pass validation', function () {
             let paramsValidationErrors = validateParams({
                 schemas: schemas,
                 headers: { 'api-version': '1.0', 'request-id': '123456' },
@@ -51,7 +51,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.headers',
                 'schemaPath': '#/properties/headers/required',
                 'params': { 'missingProperty': 'api-version' },
-                'message': 'should have required property \'api-version\''
+                'message': 'must have required property \'api-version\''
             }]);
         });
         it('bad header - invalid pattern', function () {
@@ -69,7 +69,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.headers[\'api-version\']',
                 'schemaPath': '#/properties/headers/properties/api-version/pattern',
                 'params': { 'pattern': '^\\d{1,3}\\.\\d{1,3}$' },
-                'message': 'should match pattern "^\\d{1,3}\\.\\d{1,3}$"'
+                'message': 'must match pattern "^\\d{1,3}\\.\\d{1,3}$"'
             }]);
         });
         it('bad header - empty header', function () {
@@ -87,7 +87,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.headers[\'request-id\']',
                 'schemaPath': '#/properties/headers/properties/request-id/minLength',
                 'params': { 'limit': 1 },
-                'message': 'should NOT be shorter than 1 characters'
+                'message': 'must NOT have fewer than 1 characters'
             }]);
         });
         it('bad body - wrong type', function () {
@@ -101,7 +101,7 @@ describe('oai2 - request tests', () => {
                 {
                     'dataPath': '.tag',
                     'keyword': 'type',
-                    'message': 'should be string',
+                    'message': 'must be string',
                     'params': {
                         'type': 'string'
                     },
@@ -121,7 +121,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '',
                 'schemaPath': '#/required',
                 'params': { 'missingProperty': 'name' },
-                'message': 'should have required property \'name\''
+                'message': 'must have required property \'name\''
             }]);
         });
         it('bad body - missing required object attribute', function () {
@@ -136,7 +136,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '',
                 'schemaPath': '#/required',
                 'params': { 'missingProperty': 'test' },
-                'message': 'should have required property \'test\''
+                'message': 'must have required property \'test\''
             }]);
         });
         it('bad body - wrong type object attribute', function () {
@@ -151,7 +151,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.test',
                 'schemaPath': '#/properties/test/type',
                 'params': { 'type': 'object' },
-                'message': 'should be object'
+                'message': 'must be object'
             }]);
         });
         it('bad body - missing required nested attribute', function () {
@@ -166,7 +166,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.test',
                 'schemaPath': '#/properties/test/required',
                 'params': { 'missingProperty': 'field1' },
-                'message': 'should have required property \'field1\''
+                'message': 'must have required property \'field1\''
             }]);
         });
         it('bad body - wrong format nested attribute', function () {
@@ -181,13 +181,13 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.test.field1',
                 'schemaPath': '#/properties/test/properties/field1/type',
                 'params': { 'type': 'string' },
-                'message': 'should be string'
+                'message': 'must be string'
             }, {
                 'keyword': 'enum',
                 'dataPath': '.test.field1',
                 'schemaPath': '#/properties/test/properties/field1/enum',
                 'params': { 'allowedValues': ['enum1', 'enum2'] },
-                'message': 'should be equal to one of the allowed values'
+                'message': 'must be equal to one of the allowed values'
             }]);
         });
         it('bad body - wrong enum value', function () {
@@ -202,7 +202,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.test.field1',
                 'schemaPath': '#/properties/test/properties/field1/enum',
                 'params': { 'allowedValues': ['enum1', 'enum2'] },
-                'message': 'should be equal to one of the allowed values'
+                'message': 'must be equal to one of the allowed values'
             }]);
         });
         it('bad query param - missing required params', function () {
@@ -256,7 +256,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.path.petId',
                 'schemaPath': '#/properties/path/properties/petId/minLength',
                 'params': { 'limit': 3 },
-                'message': 'should NOT be shorter than 3 characters'
+                'message': 'must NOT have fewer than 3 characters'
             }]);
         });
         it('bad body - wrong format nested attribute (not parameters)', function () {
@@ -271,13 +271,13 @@ describe('oai2 - request tests', () => {
                 'dataPath': '[0].test.field1',
                 'schemaPath': '#/items/properties/test/properties/field1/type',
                 'params': { 'type': 'string' },
-                'message': 'should be string'
+                'message': 'must be string'
             }, {
                 'keyword': 'enum',
                 'dataPath': '[0].test.field1',
                 'schemaPath': '#/items/properties/test/properties/field1/enum',
                 'params': { 'allowedValues': ['enum1', 'enum2'] },
-                'message': 'should be equal to one of the allowed values'
+                'message': 'must be equal to one of the allowed values'
             }]);
         });
         it('bad body - wrong format in array item body (second item)', function () {
@@ -296,13 +296,13 @@ describe('oai2 - request tests', () => {
                 'dataPath': '[1].test.field1',
                 'schemaPath': '#/items/properties/test/properties/field1/type',
                 'params': { 'type': 'string' },
-                'message': 'should be string'
+                'message': 'must be string'
             }, {
                 'keyword': 'enum',
                 'dataPath': '[1].test.field1',
                 'schemaPath': '#/items/properties/test/properties/field1/enum',
                 'params': { 'allowedValues': ['enum1', 'enum2'] },
-                'message': 'should be equal to one of the allowed values'
+                'message': 'must be equal to one of the allowed values'
             }]);
         });
         it('bad body - wrong format body (should be an array)', function () {
@@ -317,7 +317,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '',
                 'schemaPath': '#/type',
                 'params': { 'type': 'array' },
-                'message': 'should be array'
+                'message': 'must be array'
             }]);
         });
         it('valid body - quantitive test', function () {
@@ -344,7 +344,7 @@ describe('oai2 - request tests', () => {
                     'params': {
                         'type': 'integer'
                     },
-                    'message': 'should be integer'
+                    'message': 'must be integer'
                 },
                 {
                     'keyword': 'type',
@@ -353,7 +353,7 @@ describe('oai2 - request tests', () => {
                     'params': {
                         'type': 'integer'
                     },
-                    'message': 'should be integer'
+                    'message': 'must be integer'
                 },
                 {
                     'keyword': 'type',
@@ -362,7 +362,7 @@ describe('oai2 - request tests', () => {
                     'params': {
                         'type': 'integer'
                     },
-                    'message': 'should be integer'
+                    'message': 'must be integer'
                 },
                 {
                     'keyword': 'type',
@@ -371,7 +371,7 @@ describe('oai2 - request tests', () => {
                     'params': {
                         'type': 'string'
                     },
-                    'message': 'should be string'
+                    'message': 'must be string'
                 },
                 {
                     'keyword': 'type',
@@ -380,7 +380,7 @@ describe('oai2 - request tests', () => {
                     'params': {
                         'type': 'string'
                     },
-                    'message': 'should be string'
+                    'message': 'must be string'
                 },
                 {
                     'keyword': 'type',
@@ -389,7 +389,7 @@ describe('oai2 - request tests', () => {
                     'params': {
                         'type': 'string'
                     },
-                    'message': 'should be string'
+                    'message': 'must be string'
                 }
             ]);
         });
@@ -407,7 +407,7 @@ describe('oai2 - request tests', () => {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger.yaml');
             schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
         });
-        it('request with wrong parameter type - should pass validation due to coercion', function () {
+        it('request with wrong parameter type - must pass validation due to coercion', function () {
             let bodyValidationErrors = validateBody({
                 schemas: schemas,
                 body: [{ 'name': 1, 'tag': 'tag', 'test': { 'field1': 'enum1' } }],
@@ -496,7 +496,7 @@ describe('oai2 - request tests', () => {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger-with-base-path.yaml');
             schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
         });
-        it('valid request - should pass validation', function () {
+        it('valid request - must pass validation', function () {
             let paramsValidationErrors = validateParams({
                 schemas: schemas,
                 headers: { 'api-version': '1.0', 'request-id': '123456' },
@@ -526,7 +526,7 @@ describe('oai2 - request tests', () => {
                 'application/json'
             ]);
         });
-        it('headers are in lowercase letters - should pass validation', function () {
+        it('headers are in lowercase letters - must pass validation', function () {
             let paramsValidationErrors = validateParams({
                 schemas: schemas,
                 headers: { 'capital-letters': '1.0' },
@@ -553,7 +553,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.headers',
                 'schemaPath': '#/properties/headers/required',
                 'params': { 'missingProperty': 'api-version' },
-                'message': 'should have required property \'api-version\''
+                'message': 'must have required property \'api-version\''
             }]);
         });
         it('bad header - invalid pattern', function () {
@@ -571,7 +571,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.headers[\'api-version\']',
                 'schemaPath': '#/properties/headers/properties/api-version/pattern',
                 'params': { 'pattern': '^\\d{1,3}\\.\\d{1,3}$' },
-                'message': 'should match pattern "^\\d{1,3}\\.\\d{1,3}$"'
+                'message': 'must match pattern "^\\d{1,3}\\.\\d{1,3}$"'
             }]);
         });
         it('bad header - empty header', function () {
@@ -589,7 +589,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.headers[\'request-id\']',
                 'schemaPath': '#/properties/headers/properties/request-id/minLength',
                 'params': { 'limit': 1 },
-                'message': 'should NOT be shorter than 1 characters'
+                'message': 'must NOT have fewer than 1 characters'
             }]);
         });
         it('bad body - wrong type', function () {
@@ -604,7 +604,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.tag',
                 'schemaPath': '#/properties/tag/type',
                 'params': { 'type': 'string' },
-                'message': 'should be string'
+                'message': 'must be string'
             }]);
         });
         it('bad body - missing required params', function () {
@@ -619,7 +619,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '',
                 'schemaPath': '#/required',
                 'params': { 'missingProperty': 'name' },
-                'message': 'should have required property \'name\''
+                'message': 'must have required property \'name\''
             }]);
         });
         it('bad body - missing required object attribute', function () {
@@ -634,7 +634,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '',
                 'schemaPath': '#/required',
                 'params': { 'missingProperty': 'test' },
-                'message': 'should have required property \'test\''
+                'message': 'must have required property \'test\''
             }]);
         });
         it('bad body - wrong type object attribute', function () {
@@ -649,7 +649,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.test',
                 'schemaPath': '#/properties/test/type',
                 'params': { 'type': 'object' },
-                'message': 'should be object'
+                'message': 'must be object'
             }]);
         });
         it('bad body - missing required nested attribute', function () {
@@ -664,7 +664,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.test',
                 'schemaPath': '#/properties/test/required',
                 'params': { 'missingProperty': 'field1' },
-                'message': 'should have required property \'field1\''
+                'message': 'must have required property \'field1\''
             }]);
         });
         it('bad body - wrong format nested attribute', function () {
@@ -679,13 +679,13 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.test.field1',
                 'schemaPath': '#/properties/test/properties/field1/type',
                 'params': { 'type': 'string' },
-                'message': 'should be string'
+                'message': 'must be string'
             }, {
                 'keyword': 'enum',
                 'dataPath': '.test.field1',
                 'schemaPath': '#/properties/test/properties/field1/enum',
                 'params': { 'allowedValues': ['enum1', 'enum2'] },
-                'message': 'should be equal to one of the allowed values'
+                'message': 'must be equal to one of the allowed values'
             }]);
         });
         it('bad body - wrong enum value', function () {
@@ -700,7 +700,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.test.field1',
                 'schemaPath': '#/properties/test/properties/field1/enum',
                 'params': { 'allowedValues': ['enum1', 'enum2'] },
-                'message': 'should be equal to one of the allowed values'
+                'message': 'must be equal to one of the allowed values'
             }]);
         });
         it('bad query param - missing required params', function () {
@@ -754,7 +754,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.path.petId',
                 'schemaPath': '#/properties/path/properties/petId/minLength',
                 'params': { 'limit': 3 },
-                'message': 'should NOT be shorter than 3 characters'
+                'message': 'must NOT have fewer than 3 characters'
             }]);
         });
         it('bad body - wrong format nested attribute (not parameters)', function () {
@@ -769,13 +769,13 @@ describe('oai2 - request tests', () => {
                 'dataPath': '[0].test.field1',
                 'schemaPath': '#/items/properties/test/properties/field1/type',
                 'params': { 'type': 'string' },
-                'message': 'should be string'
+                'message': 'must be string'
             }, {
                 'keyword': 'enum',
                 'dataPath': '[0].test.field1',
                 'schemaPath': '#/items/properties/test/properties/field1/enum',
                 'params': { 'allowedValues': ['enum1', 'enum2'] },
-                'message': 'should be equal to one of the allowed values'
+                'message': 'must be equal to one of the allowed values'
             }]);
         });
         it('bad body - wrong format in array item body (second item)', function () {
@@ -794,13 +794,13 @@ describe('oai2 - request tests', () => {
                 'dataPath': '[1].test.field1',
                 'schemaPath': '#/items/properties/test/properties/field1/type',
                 'params': { 'type': 'string' },
-                'message': 'should be string'
+                'message': 'must be string'
             }, {
                 'keyword': 'enum',
                 'dataPath': '[1].test.field1',
                 'schemaPath': '#/items/properties/test/properties/field1/enum',
                 'params': { 'allowedValues': ['enum1', 'enum2'] },
-                'message': 'should be equal to one of the allowed values'
+                'message': 'must be equal to one of the allowed values'
             }]);
         });
         it('bad body - wrong format body (should be an array)', function () {
@@ -815,7 +815,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '',
                 'schemaPath': '#/type',
                 'params': { 'type': 'array' },
-                'message': 'should be array'
+                'message': 'must be array'
             }]);
         });
     });
@@ -827,7 +827,7 @@ describe('oai2 - request tests', () => {
             schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
         });
 
-        it('valid request - should pass validation', function () {
+        it('valid request - must pass validation', function () {
             let paramsValidationErrors = validateParams({
                 schemas: schemas,
                 headers: { 'api-version': '1.0', 'request-id': '123456' },
@@ -854,7 +854,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.headers',
                 'schemaPath': '#/properties/headers/required',
                 'params': { 'missingProperty': 'api-version' },
-                'message': 'should have required property \'api-version\''
+                'message': 'must have required property \'api-version\''
             }]);
         });
         it('bad header - invalid pattern', function () {
@@ -872,7 +872,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.headers[\'api-version\']',
                 'schemaPath': '#/properties/headers/properties/api-version/pattern',
                 'params': { 'pattern': '^\\d{1,3}\\.\\d{1,3}$' },
-                'message': 'should match pattern "^\\d{1,3}\\.\\d{1,3}$"'
+                'message': 'must match pattern "^\\d{1,3}\\.\\d{1,3}$"'
             }]);
         });
         it('bad header - empty header', function () {
@@ -890,7 +890,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.headers[\'request-id\']',
                 'schemaPath': '#/properties/headers/properties/request-id/minLength',
                 'params': { 'limit': 1 },
-                'message': 'should NOT be shorter than 1 characters'
+                'message': 'must NOT have fewer than 1 characters'
             }]);
         });
         it('bad body - wrong type', function () {
@@ -905,7 +905,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.tag',
                 'schemaPath': '#/properties/tag/type',
                 'params': { 'type': 'string' },
-                'message': 'should be string'
+                'message': 'must be string'
             }]);
         });
         it('bad body - missing required params', function () {
@@ -920,7 +920,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '',
                 'schemaPath': '#/required',
                 'params': { 'missingProperty': 'name' },
-                'message': 'should have required property \'name\''
+                'message': 'must have required property \'name\''
             }]);
         });
         it('bad body - missing required object attribute', function () {
@@ -935,7 +935,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '',
                 'schemaPath': '#/required',
                 'params': { 'missingProperty': 'test' },
-                'message': 'should have required property \'test\''
+                'message': 'must have required property \'test\''
             }]);
         });
         it('bad body - wrong type object attribute', function () {
@@ -950,7 +950,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.test',
                 'schemaPath': '#/properties/test/type',
                 'params': { 'type': 'object' },
-                'message': 'should be object'
+                'message': 'must be object'
             }]);
         });
         it('bad body - missing required nested attribute', function () {
@@ -965,7 +965,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.test',
                 'schemaPath': '#/properties/test/required',
                 'params': { 'missingProperty': 'field1' },
-                'message': 'should have required property \'field1\''
+                'message': 'must have required property \'field1\''
             }]);
         });
         it('bad body - wrong format nested attribute', function () {
@@ -980,13 +980,13 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.test.field1',
                 'schemaPath': '#/properties/test/properties/field1/type',
                 'params': { 'type': 'string' },
-                'message': 'should be string'
+                'message': 'must be string'
             }, {
                 'keyword': 'enum',
                 'dataPath': '.test.field1',
                 'schemaPath': '#/properties/test/properties/field1/enum',
                 'params': { 'allowedValues': ['enum1', 'enum2'] },
-                'message': 'should be equal to one of the allowed values'
+                'message': 'must be equal to one of the allowed values'
             }]);
         });
         it('bad body - wrong enum value', function () {
@@ -1001,7 +1001,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.test.field1',
                 'schemaPath': '#/properties/test/properties/field1/enum',
                 'params': { 'allowedValues': ['enum1', 'enum2'] },
-                'message': 'should be equal to one of the allowed values'
+                'message': 'must be equal to one of the allowed values'
             }]);
         });
         it('bad query param - missing required params', function () {
@@ -1055,7 +1055,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.path.petId',
                 'schemaPath': '#/properties/path/properties/petId/minLength',
                 'params': { 'limit': 3 },
-                'message': 'should NOT be shorter than 3 characters'
+                'message': 'must NOT have fewer than 3 characters'
             }]);
         });
         it('bad body - wrong format nested attribute (not parameters)', function () {
@@ -1070,13 +1070,13 @@ describe('oai2 - request tests', () => {
                 'dataPath': '[0].test.field1',
                 'schemaPath': '#/items/properties/test/properties/field1/type',
                 'params': { 'type': 'string' },
-                'message': 'should be string'
+                'message': 'must be string'
             }, {
                 'keyword': 'enum',
                 'dataPath': '[0].test.field1',
                 'schemaPath': '#/items/properties/test/properties/field1/enum',
                 'params': { 'allowedValues': ['enum1', 'enum2'] },
-                'message': 'should be equal to one of the allowed values'
+                'message': 'must be equal to one of the allowed values'
             }]);
         });
         it('bad body - wrong format in array item body (second item)', function () {
@@ -1095,13 +1095,13 @@ describe('oai2 - request tests', () => {
                 'dataPath': '[1].test.field1',
                 'schemaPath': '#/items/properties/test/properties/field1/type',
                 'params': { 'type': 'string' },
-                'message': 'should be string'
+                'message': 'must be string'
             }, {
                 'keyword': 'enum',
                 'dataPath': '[1].test.field1',
                 'schemaPath': '#/items/properties/test/properties/field1/enum',
                 'params': { 'allowedValues': ['enum1', 'enum2'] },
-                'message': 'should be equal to one of the allowed values'
+                'message': 'must be equal to one of the allowed values'
             }]);
         });
         it('bad body - wrong format body (should be an array)', function () {
@@ -1116,7 +1116,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '',
                 'schemaPath': '#/type',
                 'params': { 'type': 'array' },
-                'message': 'should be array'
+                'message': 'must be array'
             }]);
         });
     });
@@ -1135,7 +1135,7 @@ describe('oai2 - request tests', () => {
             schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
         });
 
-        it('valid request - should pass validation', function () {
+        it('valid request - must pass validation', function () {
             let paramsValidationErrors = validateParams({
                 schemas: schemas,
                 headers: { 'api-version': '1.0', 'request-id': '123456' },
@@ -1162,7 +1162,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.headers',
                 'schemaPath': '#/properties/headers/required',
                 'params': { 'missingProperty': 'api-version' },
-                'message': 'should have required property \'api-version\''
+                'message': 'must have required property \'api-version\''
             }]);
         });
         it('bad header - invalid pattern', function () {
@@ -1180,7 +1180,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.headers[\'api-version\']',
                 'schemaPath': '#/properties/headers/properties/api-version/pattern',
                 'params': { 'pattern': '^\\d{1,3}\\.\\d{1,3}$' },
-                'message': 'should match pattern "^\\d{1,3}\\.\\d{1,3}$"'
+                'message': 'must match pattern "^\\d{1,3}\\.\\d{1,3}$"'
             }]);
         });
         it('bad header - empty header', function () {
@@ -1198,7 +1198,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.headers[\'request-id\']',
                 'schemaPath': '#/properties/headers/properties/request-id/minLength',
                 'params': { 'limit': 1 },
-                'message': 'should NOT be shorter than 1 characters'
+                'message': 'must NOT have fewer than 1 characters'
             }]);
         });
         it('bad body - wrong type', function () {
@@ -1213,7 +1213,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.tag',
                 'schemaPath': '#/properties/tag/type',
                 'params': { 'type': 'string' },
-                'message': 'should be string'
+                'message': 'must be string'
             }]);
         });
         it('bad body - missing required params', function () {
@@ -1228,7 +1228,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '',
                 'schemaPath': '#/required',
                 'params': { 'missingProperty': 'name' },
-                'message': 'should have required property \'name\''
+                'message': 'must have required property \'name\''
             }]);
         });
         it('bad body - missing required object attribute', function () {
@@ -1243,7 +1243,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '',
                 'schemaPath': '#/required',
                 'params': { 'missingProperty': 'test' },
-                'message': 'should have required property \'test\''
+                'message': 'must have required property \'test\''
             }]);
         });
         it('bad body - wrong type object attribute', function () {
@@ -1258,7 +1258,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.test',
                 'schemaPath': '#/properties/test/type',
                 'params': { 'type': 'object' },
-                'message': 'should be object'
+                'message': 'must be object'
             }]);
         });
         it('bad body - missing required nested attribute', function () {
@@ -1273,7 +1273,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.test',
                 'schemaPath': '#/properties/test/required',
                 'params': { 'missingProperty': 'field1' },
-                'message': 'should have required property \'field1\''
+                'message': 'must have required property \'field1\''
             }]);
         });
         it('bad body - wrong format nested attribute', function () {
@@ -1288,13 +1288,13 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.test.field1',
                 'schemaPath': '#/properties/test/properties/field1/type',
                 'params': { 'type': 'string' },
-                'message': 'should be string'
+                'message': 'must be string'
             }, {
                 'keyword': 'enum',
                 'dataPath': '.test.field1',
                 'schemaPath': '#/properties/test/properties/field1/enum',
                 'params': { 'allowedValues': ['enum1', 'enum2'] },
-                'message': 'should be equal to one of the allowed values'
+                'message': 'must be equal to one of the allowed values'
             }]);
         });
         it('bad body - wrong enum value', function () {
@@ -1309,7 +1309,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.test.field1',
                 'schemaPath': '#/properties/test/properties/field1/enum',
                 'params': { 'allowedValues': ['enum1', 'enum2'] },
-                'message': 'should be equal to one of the allowed values'
+                'message': 'must be equal to one of the allowed values'
             }]);
         });
         it('bad query param - missing required params', function () {
@@ -1363,7 +1363,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.path.petId',
                 'schemaPath': '#/properties/path/properties/petId/minLength',
                 'params': { 'limit': 3 },
-                'message': 'should NOT be shorter than 3 characters'
+                'message': 'must NOT have fewer than 3 characters'
             }]);
         });
         it('bad body - wrong format nested attribute (not parameters)', function () {
@@ -1378,13 +1378,13 @@ describe('oai2 - request tests', () => {
                 'dataPath': '[0].test.field1',
                 'schemaPath': '#/items/properties/test/properties/field1/type',
                 'params': { 'type': 'string' },
-                'message': 'should be string'
+                'message': 'must be string'
             }, {
                 'keyword': 'enum',
                 'dataPath': '[0].test.field1',
                 'schemaPath': '#/items/properties/test/properties/field1/enum',
                 'params': { 'allowedValues': ['enum1', 'enum2'] },
-                'message': 'should be equal to one of the allowed values'
+                'message': 'must be equal to one of the allowed values'
             }]);
         });
         it('bad body - wrong format in array item body (second item)', function () {
@@ -1403,13 +1403,13 @@ describe('oai2 - request tests', () => {
                 'dataPath': '[1].test.field1',
                 'schemaPath': '#/items/properties/test/properties/field1/type',
                 'params': { 'type': 'string' },
-                'message': 'should be string'
+                'message': 'must be string'
             }, {
                 'keyword': 'enum',
                 'dataPath': '[1].test.field1',
                 'schemaPath': '#/items/properties/test/properties/field1/enum',
                 'params': { 'allowedValues': ['enum1', 'enum2'] },
-                'message': 'should be equal to one of the allowed values'
+                'message': 'must be equal to one of the allowed values'
             }]);
         });
         it('bad body - wrong format body (should be an array)', function () {
@@ -1424,7 +1424,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '',
                 'schemaPath': '#/type',
                 'params': { 'type': 'array' },
-                'message': 'should be array'
+                'message': 'must be array'
             }]);
         });
         it('bad request - wrong content-type (should be application/json)', function () {
@@ -1447,7 +1447,7 @@ describe('oai2 - request tests', () => {
                 'form-data'
             ]);
         });
-        it('valid content-type when multiple content-types defined - should pass validation', function () {
+        it('valid content-type when multiple content-types defined - must pass validation', function () {
             let paramsValidationErrors = validateParams({
                 schemas: schemas,
                 headers: { 'content-type': 'text/plain', 'content-length': '1' },
@@ -1459,7 +1459,7 @@ describe('oai2 - request tests', () => {
             });
             expect(paramsValidationErrors).to.eql(undefined);
         });
-        it('more detailed content-type - should pass validation', function () {
+        it('more detailed content-type - must pass validation', function () {
             let paramsValidationErrors = validateParams({
                 schemas: schemas,
                 headers: { 'content-type': 'application/json; charset=utf-8', 'content-length': '1' },
@@ -1471,7 +1471,7 @@ describe('oai2 - request tests', () => {
             });
             expect(paramsValidationErrors).to.eql(undefined);
         });
-        it('valid empty request - should pass validation', function () {
+        it('valid empty request - must pass validation', function () {
             let paramsValidationErrors = validateParams({
                 schemas: schemas,
                 headers: { 'request-id': '1234', 'api-version': '1.0' },
@@ -1508,7 +1508,7 @@ describe('oai2 - request tests', () => {
                 dataPath: '.id',
                 schemaPath: '#/properties/id/format',
                 params: { format: 'abcName' },
-                message: 'should match format "abcName"' } ]);
+                message: 'must match format "abcName"' } ]);
         });
 
         it('valid body - good format', function () {
@@ -1535,7 +1535,7 @@ describe('oai2 - request tests', () => {
             const swaggerPath = path.join(__dirname, './yaml/pet-store-swagger-inheritance.yaml');
             schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
         });
-        it('should pass', function () {
+        it('must pass', function () {
             let bodyValidationErrors = validateBody({
                 schemas: schemas,
                 body: {
@@ -1563,7 +1563,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.headers[\'api-version\']',
                 'schemaPath': '#/properties/headers/properties/api-version/enum',
                 'params': { 'allowedValues': ['1.0', '1.1'] },
-                'message': 'should be equal to one of the allowed values'
+                'message': 'must be equal to one of the allowed values'
             }]);
         });
         it('wrong value for query with enum definition', function () {
@@ -1596,7 +1596,7 @@ describe('oai2 - request tests', () => {
                     'params': {
                         'missingProperty': 'api-version'
                     },
-                    'message': 'should have required property \'api-version\''
+                    'message': 'must have required property \'api-version\''
                 }
             ]);
         });
@@ -1615,7 +1615,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '.path.version',
                 'schemaPath': '#/properties/path/properties/version/enum',
                 'params': { 'allowedValues': ['v1'] },
-                'message': 'should be equal to one of the allowed values'
+                'message': 'must be equal to one of the allowed values'
             }]);
         });
         it('should fail for wrong value in discriminator', function () {
@@ -1641,7 +1641,7 @@ describe('oai2 - request tests', () => {
             });
 
             expect(bodyValidationErrors[0].dataPath).to.equal('.petType');
-            expect(bodyValidationErrors[0].message).to.equal('should be equal to one of the allowed values');
+            expect(bodyValidationErrors[0].message).to.equal('must be equal to one of the allowed values');
             expect(bodyValidationErrors[0].params.allowedValues).to.eql([
                 'Cat',
                 'Dog'
@@ -1659,7 +1659,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '',
                 'schemaPath': '#/allOf/1/required',
                 'params': { 'missingProperty': 'packSize' },
-                'message': 'should have required property \'packSize\''
+                'message': 'must have required property \'packSize\''
             }]);
         });
         it('should fail for missing attribute in inherited object (cat)', function () {
@@ -1674,7 +1674,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '',
                 'schemaPath': '#/allOf/1/required',
                 'params': { 'missingProperty': 'huntingSkill' },
-                'message': 'should have required property \'huntingSkill\''
+                'message': 'must have required property \'huntingSkill\''
             }]);
         });
         it('should fail for missing attribute in inherited object (parent)', function () {
@@ -1689,13 +1689,13 @@ describe('oai2 - request tests', () => {
                 'dataPath': '',
                 'schemaPath': '#/allOf/0/required',
                 'params': { 'missingProperty': 'name' },
-                'message': 'should have required property \'name\''
+                'message': 'must have required property \'name\''
             }, {
                 'keyword': 'required',
                 'dataPath': '',
                 'schemaPath': '#/allOf/1/required',
                 'params': { 'missingProperty': 'packSize' },
-                'message': 'should have required property \'packSize\''
+                'message': 'must have required property \'packSize\''
             }]);
         });
     });
@@ -1714,7 +1714,7 @@ describe('oai2 - request tests', () => {
             const swaggerPath = path.join(__dirname, './yaml/form-data-swagger.yaml');
             schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
         });
-        it('only required files exists should pass', function () {
+        it('only required files exists must pass', function () {
             let paramsValidationErrors = validateParams({
                 schemas: schemas,
                 headers: { 'api-version': '1.0' },
@@ -1726,7 +1726,7 @@ describe('oai2 - request tests', () => {
             });
             expect(paramsValidationErrors).to.eql(undefined);
         });
-        it('required and optional files exists should pass', function () {
+        it('required and optional files exists must pass', function () {
             let paramsValidationErrors = validateParams({
                 schemas: schemas,
                 headers: { 'api-version': '1.0' },
@@ -1791,7 +1791,7 @@ describe('oai2 - request tests', () => {
                 'dataPath': '',
                 'schemaPath': '#/required',
                 'params': { 'missingProperty': 'password' },
-                'message': 'should have required property \'password\''
+                'message': 'must have required property \'password\''
             }]);
         });
     });
@@ -1814,7 +1814,7 @@ describe('oai2 - request tests', () => {
             }
         };
 
-        var range = require('ajv-keywords/keywords/range');
+        var range = require('ajv-keywords/dist/keywords/range');
         let schemas, options = {
             keywords: [range, { name: 'prohibited', definition }],
             expectFormFieldsInBody: true
@@ -1823,7 +1823,7 @@ describe('oai2 - request tests', () => {
             const swaggerPath = path.join(__dirname, './yaml/custom-keywords-swagger.yaml');
             schemas = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
         });
-        it('should pass the validation by the range keyword', function () {
+        it('must pass the validation by the range keyword', function () {
             let bodyValidationErrors = validateBody({
                 schemas: schemas,
                 body: { 'age': 20 },
@@ -1842,15 +1842,15 @@ describe('oai2 - request tests', () => {
             expect(bodyValidationErrors).to.eql([{
                 'keyword': 'maximum',
                 'dataPath': '.age',
-                'schemaPath': '#/properties/age/maximum',
-                'params': { 'comparison': '<=', 'limit': 30, 'exclusive': false },
-                'message': 'should be <= 30'
+                'schemaPath': '#/properties/age/range/maximum',
+                'params': { 'comparison': '<=', 'limit': 30 },
+                'message': 'must be <= 30'
             }, {
                 'keyword': 'range',
                 'dataPath': '.age',
                 'schemaPath': '#/properties/age/range',
-                'params': { 'keyword': 'range' },
-                'message': 'should pass "range" keyword validation'
+                'params': {},
+                'message': 'must pass "range" keyword validation'
             }]);
         });
         it('should be failed by the prohibited keyword', function () {
@@ -1863,15 +1863,15 @@ describe('oai2 - request tests', () => {
             expect(bodyValidationErrors).to.eql([{
                 'keyword': 'not',
                 'dataPath': '',
-                'schemaPath': '#/not',
+                'schemaPath': '#/prohibited/not',
                 'params': {},
-                'message': 'should NOT be valid'
+                'message': 'must NOT be valid'
             }, {
                 'keyword': 'prohibited',
                 'dataPath': '',
                 'schemaPath': '#/prohibited',
-                'params': { 'keyword': 'prohibited' },
-                'message': 'should pass "prohibited" keyword validation'
+                'params': {},
+                'message': 'must pass "prohibited" keyword validation'
             }]);
         });
     });

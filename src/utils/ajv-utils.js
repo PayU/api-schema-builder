@@ -17,14 +17,14 @@ function addCustomKeyword(ajv, formats, keywords) {
                 const name = keyword.name;
                 const definition = keyword.definition;
                 if (name && definition) {
-                    return ajv.addKeyword(name, definition);
+                    return ajv.addKeyword({ keyword: name, ...definition });
                 }
             }
         });
     }
 
-    ajv.addKeyword('files', filesKeyword);
-    ajv.addKeyword('content', contentKeyword);
+    ajv.addKeyword({ keyword: 'files', ...filesKeyword });
+    ajv.addKeyword({ keyword: 'content', ...contentKeyword });
 }
 
 module.exports = {

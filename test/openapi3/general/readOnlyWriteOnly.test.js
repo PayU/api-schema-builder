@@ -42,7 +42,7 @@ describe('oai3 - readOnly/writeOnly', function () {
                         dataPath: '',
                         schemaPath: '#/additionalProperties',
                         params: { additionalProperty: 'id' },
-                        message: 'should NOT have additional properties'
+                        message: 'must NOT have additional properties'
                     }
                 ]);
                 expect(isBodysMatch).to.be.false;
@@ -67,7 +67,7 @@ describe('oai3 - readOnly/writeOnly', function () {
                         dataPath: '.body',
                         schemaPath: '#/body/required',
                         params: { missingProperty: 'id' },
-                        message: 'should have required property \'id\''
+                        message: 'must have required property \'id\''
                     }
                 ]);
                 expect(isBodysMatch).to.be.false;
@@ -104,7 +104,7 @@ describe('oai3 - readOnly/writeOnly', function () {
                         dataPath: '',
                         schemaPath: '#/required',
                         params: { missingProperty: 'password' },
-                        message: 'should have required property \'password\''
+                        message: 'must have required property \'password\''
                     }
                 ]);
                 expect(isBodysMatch).to.be.false;
@@ -157,7 +157,7 @@ describe('oai3 - readOnly/writeOnly', function () {
                         dataPath: '.body',
                         schemaPath: '#/body/additionalProperties',
                         params: { additionalProperty: 'password' },
-                        message: 'should NOT have additional properties'
+                        message: 'must NOT have additional properties'
                     }
                 ]);
                 expect(isBodysMatch).to.be.false;
@@ -181,7 +181,7 @@ describe('oai3 - readOnly/writeOnly', function () {
                     dataPath: '',
                     schemaPath: '#/additionalProperties',
                     params: { additionalProperty: 'id' },
-                    message: 'should NOT have additional properties'
+                    message: 'must NOT have additional properties'
                 }
             ]);
             expect(isBodysMatch).to.be.false;
@@ -206,7 +206,7 @@ describe('oai3 - readOnly/writeOnly', function () {
                     dataPath: '.body',
                     schemaPath: '#/body/additionalProperties',
                     params: { additionalProperty: 'password' },
-                    message: 'should NOT have additional properties'
+                    message: 'must NOT have additional properties'
                 }
             ]);
             expect(isBodysMatch).to.be.false;
@@ -230,7 +230,7 @@ describe('oai3 - readOnly/writeOnly', function () {
                     dataPath: '.user',
                     schemaPath: '#/properties/user/additionalProperties',
                     params: { additionalProperty: 'id' },
-                    message: 'should NOT have additional properties'
+                    message: 'must NOT have additional properties'
                 }
             ]);
             expect(isBodysMatch).to.be.false;
@@ -258,7 +258,7 @@ describe('oai3 - readOnly/writeOnly', function () {
                     dataPath: '.body.user',
                     schemaPath: '#/body/properties/user/additionalProperties',
                     params: { additionalProperty: 'password' },
-                    message: 'should NOT have additional properties'
+                    message: 'must NOT have additional properties'
                 }
             ]);
             expect(isBodysMatch).to.be.false;
@@ -282,7 +282,7 @@ describe('oai3 - readOnly/writeOnly', function () {
                     dataPath: '[0]',
                     schemaPath: '#/items/additionalProperties',
                     params: { additionalProperty: 'id' },
-                    message: 'should NOT have additional properties'
+                    message: 'must NOT have additional properties'
                 }
             ]);
             expect(isBodysMatch).to.be.false;
@@ -309,7 +309,7 @@ describe('oai3 - readOnly/writeOnly', function () {
                     dataPath: '.body[0]',
                     schemaPath: '#/body/items/additionalProperties',
                     params: { additionalProperty: 'password' },
-                    message: 'should NOT have additional properties'
+                    message: 'must NOT have additional properties'
                 }
             ]);
             expect(isBodysMatch).to.be.false;
@@ -331,21 +331,21 @@ describe('oai3 - readOnly/writeOnly', function () {
                     dataPath: '',
                     schemaPath: '#/oneOf/0/additionalProperties',
                     params: { additionalProperty: 'id' },
-                    message: 'should NOT have additional properties'
+                    message: 'must NOT have additional properties'
                 },
                 {
                     keyword: 'required',
                     dataPath: '',
                     schemaPath: '#/oneOf/1/required',
                     params: { missingProperty: 'additionalOneOfField' },
-                    message: 'should have required property \'additionalOneOfField\''
+                    message: 'must have required property \'additionalOneOfField\''
                 },
                 {
                     keyword: 'oneOf',
                     dataPath: '',
                     schemaPath: '#/oneOf',
                     params: { passingSchemas: null },
-                    message: 'should match exactly one schema in oneOf'
+                    message: 'must match exactly one schema in oneOf'
                 }
             ]);
             expect(isBodysMatch).to.be.false;
@@ -364,39 +364,39 @@ describe('oai3 - readOnly/writeOnly', function () {
 
             expect(validator.errors).to.be.eql([
                 {
-                    keyword: 'additionalProperties',
-                    dataPath: '.body',
-                    schemaPath: '#/body/oneOf/0/additionalProperties',
-                    params: { additionalProperty: 'password' },
-                    message: 'should NOT have additional properties'
-                },
-                {
                     keyword: 'required',
                     dataPath: '.body',
                     schemaPath: '#/body/oneOf/0/required',
                     params: { missingProperty: 'id' },
-                    message: 'should have required property \'id\''
+                    message: 'must have required property \'id\''
                 },
                 {
                     keyword: 'required',
                     dataPath: '.body',
                     schemaPath: '#/body/oneOf/0/required',
                     params: { missingProperty: 'email' },
-                    message: 'should have required property \'email\''
+                    message: 'must have required property \'email\''
+                },
+                {
+                    keyword: 'additionalProperties',
+                    dataPath: '.body',
+                    schemaPath: '#/body/oneOf/0/additionalProperties',
+                    params: { additionalProperty: 'password' },
+                    message: 'must NOT have additional properties'
                 },
                 {
                     keyword: 'required',
                     dataPath: '.body',
                     schemaPath: '#/body/oneOf/1/required',
                     params: { missingProperty: 'additionalOneOfField' },
-                    message: 'should have required property \'additionalOneOfField\''
+                    message: 'must have required property \'additionalOneOfField\''
                 },
                 {
                     keyword: 'oneOf',
                     dataPath: '.body',
                     schemaPath: '#/body/oneOf',
                     params: { passingSchemas: null },
-                    message: 'should match exactly one schema in oneOf'
+                    message: 'must match exactly one schema in oneOf'
                 }
             ]);
             expect(isBodysMatch).to.be.false;
@@ -418,21 +418,21 @@ describe('oai3 - readOnly/writeOnly', function () {
                     dataPath: '',
                     schemaPath: '#/anyOf/0/additionalProperties',
                     params: { additionalProperty: 'id' },
-                    message: 'should NOT have additional properties'
+                    message: 'must NOT have additional properties'
                 },
                 {
                     keyword: 'required',
                     dataPath: '',
                     schemaPath: '#/anyOf/1/required',
                     params: { missingProperty: 'additionalOneOfField' },
-                    message: 'should have required property \'additionalOneOfField\''
+                    message: 'must have required property \'additionalOneOfField\''
                 },
                 {
                     keyword: 'anyOf',
                     dataPath: '',
                     schemaPath: '#/anyOf',
                     params: {},
-                    message: 'should match some schema in anyOf'
+                    message: 'must match a schema in anyOf'
                 }
             ]);
             expect(isBodysMatch).to.be.false;
@@ -457,21 +457,21 @@ describe('oai3 - readOnly/writeOnly', function () {
                     dataPath: '.body',
                     schemaPath: '#/body/anyOf/0/additionalProperties',
                     params: { additionalProperty: 'password' },
-                    message: 'should NOT have additional properties'
+                    message: 'must NOT have additional properties'
                 },
                 {
                     keyword: 'required',
                     dataPath: '.body',
                     schemaPath: '#/body/anyOf/1/required',
                     params: { missingProperty: 'additionalOneOfField' },
-                    message: 'should have required property \'additionalOneOfField\''
+                    message: 'must have required property \'additionalOneOfField\''
                 },
                 {
                     keyword: 'anyOf',
                     dataPath: '.body',
                     schemaPath: '#/body/anyOf',
                     params: {},
-                    message: 'should match some schema in anyOf'
+                    message: 'must match a schema in anyOf'
                 }
             ]);
             expect(isBodysMatch).to.be.false;
@@ -493,14 +493,14 @@ describe('oai3 - readOnly/writeOnly', function () {
                     dataPath: '',
                     schemaPath: '#/allOf/0/additionalProperties',
                     params: { additionalProperty: 'id' },
-                    message: 'should NOT have additional properties'
+                    message: 'must NOT have additional properties'
                 },
                 {
                     keyword: 'required',
                     dataPath: '',
                     schemaPath: '#/allOf/1/required',
                     params: { missingProperty: 'additionalOneOfField' },
-                    message: 'should have required property \'additionalOneOfField\''
+                    message: 'must have required property \'additionalOneOfField\''
                 }
             ]);
             expect(isBodysMatch).to.be.false;
@@ -525,14 +525,14 @@ describe('oai3 - readOnly/writeOnly', function () {
                     dataPath: '.body',
                     schemaPath: '#/body/allOf/0/additionalProperties',
                     params: { additionalProperty: 'password' },
-                    message: 'should NOT have additional properties'
+                    message: 'must NOT have additional properties'
                 },
                 {
                     keyword: 'required',
                     dataPath: '.body',
                     schemaPath: '#/body/allOf/1/required',
                     params: { missingProperty: 'additionalOneOfField' },
-                    message: 'should have required property \'additionalOneOfField\''
+                    message: 'must have required property \'additionalOneOfField\''
                 }
             ]);
             expect(isBodysMatch).to.be.false;
