@@ -34,7 +34,7 @@ This package is used to build schema for input validation base on openapi doc [S
 ## Install
 
 ### Requirements
-- Node.js >= 18
+- Node.js >= 24
 
 ```bash
 npm install --save api-schema-builder

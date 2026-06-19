@@ -6,10 +6,10 @@
 - **Validation error ordering** may differ from v2 (e.g., `required` errors may appear before `additionalProperties`)
 - **Custom keywords** (`ajv-keywords` v5): `schemaPath` and `params` format changed for sub-keyword errors
 - Upgraded eslint from v8 to v10 requiring new flat config format
-- Dropped Node.js support below version 18
+- Dropped Node.js support below version 24
 - Removed eslint-config-standard (incompatible with eslint v10)
 - Removed eslint-plugin-node, eslint-plugin-standard, and eslint-plugin-import
-- Updated minimum Node.js version from ">=8" to ">=18"
+- Updated minimum Node.js version from ">=8" to ">=24"
 
 ### New features
 - **OpenAPI 3.0 `nullable` support for Ajv v8** — `nullable: true` is automatically converted to `type: [T, "null"]`
@@ -51,12 +51,12 @@ See [MIGRATION.md](./MIGRATION.md) for a detailed migration guide including a fu
 
 ### CI/CD
 - Updated GitHub Actions to use latest action versions
-- Updated Node.js test matrix to [18, 20, 22, 24]
+- Updated Node.js test matrix to [24]
 - Updated default Node.js version to 24
-- Updated actions/checkout@v2 → @v4
-- Updated actions/setup-node@v2 → @v4
-- Updated actions/upload-artifact@v2 → @v4
-- Updated actions/download-artifact@v2 → @v4
+- Updated actions/checkout@v4 → @v5
+- Updated actions/setup-node@v4
+- Updated actions/upload-artifact@v4 → @v6
+- Updated actions/download-artifact@v4 → @v6
 - Updated github/codeql-action/*@v1 → @v3
 - Updated coverallsapp/github-action@master → @v2
 

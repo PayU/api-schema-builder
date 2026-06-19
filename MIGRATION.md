@@ -15,7 +15,7 @@ Additionally, all other dependencies have been bumped to their latest versions:
 - `mocha`: `^8.4.0` → `^11.7.6`
 - And others (see `package.json` for full list)
 
-**Minimum Node.js version**: `>=18` (was `>=10`)
+**Minimum Node.js version**: `>=24` (was `>=10`)
 
 ---
 
@@ -161,7 +161,7 @@ Ajv v8 is more strict by default. The library sets `strict: false` to maintain c
 3. **Update error message assertions** in your tests from "should" to "must"
 4. **Check error ordering** — if you compare full error arrays with deep equality, the order may have changed
 5. **Update `ajv-keywords` imports** if you use them directly: `keywords/` → `dist/keywords/`
-6. **Ensure Node.js >= 18**
+6. **Ensure Node.js >= 24**
 
 ---
 

@@ -10,7 +10,7 @@ jobs:
     name: Lockfile lint
     runs-on: 'ubuntu-latest'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.DEFAULT_NODE }}
@@ -26,7 +26,7 @@ jobs:
     needs: lockfile-lint
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
@@ -36,7 +36,7 @@ jobs:
         run: npm run test:coverage
       - name: upload code coverage artifacts
         if: ${{ matrix.node == env.DEFAULT_NODE }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: coverage
           path: coverage
@@ -45,14 +45,14 @@ jobs:
     needs: [test, lockfile-lint]
     runs-on: 'ubuntu-latest'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.DEFAULT_NODE }}
       - name: install dependencies
         run: npm ci --ignore-scripts
       - name: download code coverage artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: coverage
           path: coverage
@@ -65,7 +65,7 @@ jobs:
     needs: lockfile-lint
     runs-on: 'ubuntu-latest'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.DEFAULT_NODE }}
