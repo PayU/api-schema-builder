@@ -131,7 +131,7 @@ Arguments, options and response are the same as for the `buildSchemaSync` method
   expect(schemaEndpoint.body.errors).to.be.eql([{
       'dataPath': '.bark',
       'keyword': 'type',
-      'message': 'should be string',
+      'message': 'must be string',
       'params': {
          'type': 'string'
        },
@@ -152,7 +152,7 @@ Arguments, options and response are the same as for the `buildSchemaSync` method
     {
       'dataPath': '.body.name',
       'keyword': 'type',
-      'message': 'should be string',
+      'message': 'must be string',
       'params': {
           'type': 'string'
       },
