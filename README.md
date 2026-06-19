@@ -1,7 +1,7 @@
 
 # api-schema-builder
 [![NPM Version](https://img.shields.io/npm/v/api-schema-builder.svg?style=flat)](https://npmjs.org/package/api-schema-builder)
-[![Build Status](https://travis-ci.org/payu/api-schema-builder.svg?branch=master)](https://travis-ci.org/payu/api-schema-builder)
+[![CI Status](https://github.com/PayU/api-schema-builder/workflows/CI/badge.svg)](https://github.com/PayU/api-schema-builder/actions)
 [![Coverage Status](https://coveralls.io/repos/github/PayU/api-schema-builder/badge.svg?branch=master)](https://coveralls.io/github/PayU/api-schema-builder?branch=master)
 [![Known Vulnerabilities](https://snyk.io/test/npm/api-schema-builder/badge.svg)](https://snyk.io/test/npm/api-schema-builder)
 [![Apache 2.0 License](https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat)](LICENSE)
@@ -25,12 +25,17 @@ This package is used to build schema for input validation base on openapi doc [S
   - [api-schema-builder.buildSchema(PathToSwaggerFile, options)](#api-schema-buildergetSchemaAsyncpathtoswaggerfile-options)
 - [Usage Example](#usage-example)
 - [Important Notes](#important-notes)
+- [Migrating from v2 to v3](#migrating-from-v2-to-v3)
 - [Open api 3 - known issues](#open-api-3---known-issues)
 - [Running Tests](#running-tests)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Install
+
+### Requirements
+- Node.js >= 24
+
 ```bash
 npm install --save api-schema-builder
 ```
@@ -126,7 +131,7 @@ Arguments, options and response are the same as for the `buildSchemaSync` method
   expect(schemaEndpoint.body.errors).to.be.eql([{
       'dataPath': '.bark',
       'keyword': 'type',
-      'message': 'should be string',
+      'message': 'must be string',
       'params': {
          'type': 'string'
        },
@@ -147,7 +152,7 @@ Arguments, options and response are the same as for the `buildSchemaSync` method
     {
       'dataPath': '.body.name',
       'keyword': 'type',
-      'message': 'should be string',
+      'message': 'must be string',
       'params': {
           'type': 'string'
       },
@@ -160,6 +165,10 @@ Arguments, options and response are the same as for the `buildSchemaSync` method
 
 - Objects - it is important to set any objects with the property `type: object` inside your swagger file, although it isn't a must in the Swagger (OpenAPI) spec in order to validate it accurately with [ajv](https://www.npmjs.com/package/ajv) it must be marked as `object`
 - Response validator does not support readOnly attribute
+
+## Migrating from v2 to v3
+
+Version 3.0 upgrades the underlying validation engine from Ajv v6 to Ajv v8, which introduces breaking changes in error message format and other areas. See [MIGRATION.md](./MIGRATION.md) for a detailed migration guide.
 
 ## Open api 3 - known issues
 - supporting inheritance with discriminator , only if the ancestor object is the discriminator.

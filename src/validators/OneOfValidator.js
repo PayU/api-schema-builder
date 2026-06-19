@@ -12,7 +12,7 @@ function oneOf(schemas, data) {
     let result = false;
     if (schema) {
         result = schema(data);
-        this.errors = schema.errors;
+        this.errors = validatorUtils.normalizeAjvErrors(schema.errors);
     } else {
         validatorUtils.allowedValuesError.call(this, schemas.discriminator, schemas.inheritance);
     }

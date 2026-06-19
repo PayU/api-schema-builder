@@ -36,7 +36,7 @@ describe('oai3 - response tests', function () {
                 'params': {
                     'format': 'uuid'
                 },
-                'message': 'should match format "uuid"'
+                'message': 'must match format "uuid"'
             }]);
             expect(isMatch).to.be.false;
         });
@@ -106,7 +106,7 @@ describe('oai3 - response tests', function () {
                     {
                         'dataPath': '.body',
                         'keyword': 'required',
-                        'message': "should have required property 'bark'",
+                        'message': "must have required property 'bark'",
                         'params': {
                             'missingProperty': 'bark'
                         },
@@ -126,7 +126,7 @@ describe('oai3 - response tests', function () {
                     {
                         'dataPath': '.body.bark',
                         'keyword': 'type',
-                        'message': 'should be string',
+                        'message': 'must be string',
                         'params': {
                             'type': 'string'
                         },
@@ -161,7 +161,7 @@ describe('oai3 - response tests', function () {
                         'params': {
                             'type': 'number'
                         },
-                        'message': 'should be number'
+                        'message': 'must be number'
                     },
                     {
                         'keyword': 'type',
@@ -170,7 +170,7 @@ describe('oai3 - response tests', function () {
                         'params': {
                             'type': 'number'
                         },
-                        'message': 'should be number'
+                        'message': 'must be number'
                     },
                     {
                         'keyword': 'type',
@@ -179,7 +179,7 @@ describe('oai3 - response tests', function () {
                         'params': {
                             'type': 'number'
                         },
-                        'message': 'should be number'
+                        'message': 'must be number'
                     },
                     {
                         'keyword': 'type',
@@ -188,7 +188,7 @@ describe('oai3 - response tests', function () {
                         'params': {
                             'type': 'string'
                         },
-                        'message': 'should be string'
+                        'message': 'must be string'
                     },
                     {
                         'keyword': 'type',
@@ -197,7 +197,7 @@ describe('oai3 - response tests', function () {
                         'params': {
                             'type': 'string'
                         },
-                        'message': 'should be string'
+                        'message': 'must be string'
                     },
                     {
                         'keyword': 'type',
@@ -206,7 +206,7 @@ describe('oai3 - response tests', function () {
                         'params': {
                             'type': 'string'
                         },
-                        'message': 'should be string'
+                        'message': 'must be string'
                     }
                 ]);
                 expect(isMatch).to.be.false;
@@ -233,7 +233,7 @@ describe('oai3 - response tests', function () {
                     {
                         'dataPath': '.body',
                         'keyword': 'required',
-                        'message': "should have required property 'description'",
+                        'message': "must have required property 'description'",
                         'params': {
                             'missingProperty': 'description'
                         },
@@ -254,7 +254,7 @@ describe('oai3 - response tests', function () {
                     {
                         'dataPath': '.body.description',
                         'keyword': 'type',
-                        'message': 'should be string',
+                        'message': 'must be string',
                         'params': {
                             'type': 'string'
                         },
@@ -288,7 +288,7 @@ describe('oai3 - response tests', function () {
                     {
                         'dataPath': '.body',
                         'keyword': 'required',
-                        'message': "should have required property 'bark'",
+                        'message': "must have required property 'bark'",
                         'params': {
                             'missingProperty': 'bark'
                         },
@@ -297,7 +297,7 @@ describe('oai3 - response tests', function () {
                     {
                         'dataPath': '.body',
                         'keyword': 'required',
-                        'message': "should have required property 'fur'",
+                        'message': "must have required property 'fur'",
                         'params': {
                             'missingProperty': 'fur'
                         },
@@ -306,7 +306,7 @@ describe('oai3 - response tests', function () {
                     {
                         'dataPath': '.body',
                         'keyword': 'anyOf',
-                        'message': 'should match some schema in anyOf',
+                        'message': 'must match a schema in anyOf',
                         'params': {},
                         'schemaPath': '#/body/anyOf'
                     }
@@ -324,7 +324,7 @@ describe('oai3 - response tests', function () {
                     {
                         'dataPath': '.body.bark',
                         'keyword': 'type',
-                        'message': 'should be string',
+                        'message': 'must be string',
                         'params': {
                             'type': 'string'
                         },
@@ -333,7 +333,7 @@ describe('oai3 - response tests', function () {
                     {
                         'dataPath': '.body.fur',
                         'keyword': 'pattern',
-                        'message': 'should match pattern "^\\d+$"',
+                        'message': 'must match pattern "^\\d+$"',
                         'params': {
                             'pattern': '^\\d+$'
                         },
@@ -342,7 +342,7 @@ describe('oai3 - response tests', function () {
                     {
                         'dataPath': '.body',
                         'keyword': 'anyOf',
-                        'message': 'should match some schema in anyOf',
+                        'message': 'must match a schema in anyOf',
                         'params': {},
                         'schemaPath': '#/body/anyOf'
                     }
@@ -376,7 +376,7 @@ describe('oai3 - response tests', function () {
                     {
                         'dataPath': '.body',
                         'keyword': 'required',
-                        'message': "should have required property 'fur'",
+                        'message': "must have required property 'fur'",
                         'params': {
                             'missingProperty': 'fur'
                         },
@@ -396,7 +396,7 @@ describe('oai3 - response tests', function () {
                     {
                         'dataPath': '.body.bark',
                         'keyword': 'type',
-                        'message': 'should be string',
+                        'message': 'must be string',
                         'params': {
                             'type': 'string'
                         },
@@ -405,7 +405,7 @@ describe('oai3 - response tests', function () {
                     {
                         'dataPath': '.body.fur',
                         'keyword': 'pattern',
-                        'message': 'should match pattern "^\\d+$"',
+                        'message': 'must match pattern "^\\d+$"',
                         'params': {
                             'pattern': '^\\d+$'
                         },
@@ -440,7 +440,7 @@ describe('oai3 - response tests', function () {
                     {
                         'dataPath': '.body',
                         'keyword': 'required',
-                        'message': "should have required property 'bark'",
+                        'message': "must have required property 'bark'",
                         'params': {
                             'missingProperty': 'bark'
                         },
@@ -459,7 +459,7 @@ describe('oai3 - response tests', function () {
                     {
                         'dataPath': '.body.bark',
                         'keyword': 'type',
-                        'message': 'should be string',
+                        'message': 'must be string',
                         'params': {
                             'type': 'string'
                         },
@@ -492,9 +492,9 @@ describe('oai3 - response tests', function () {
                         },
                 headers: DEFAULT_HEADERS });
 
-                expect(schemaEndpoint.errors[0].message).to.be.equal("should have required property 'bark'");
-                expect(schemaEndpoint.errors[1].message).to.be.equal('should match pattern "^\\d+$"');
-                expect(schemaEndpoint.errors[2].message).to.be.equal('should match exactly one schema in oneOf');
+                expect(schemaEndpoint.errors[0].message).to.be.equal("must have required property 'bark'");
+                expect(schemaEndpoint.errors[1].message).to.be.equal('must match pattern "^\\d+$"');
+                expect(schemaEndpoint.errors[2].message).to.be.equal('must match exactly one schema in oneOf');
                 expect(isMatch).to.be.false;
             });
         });
@@ -516,7 +516,7 @@ describe('oai3 - response tests', function () {
                     headers: DEFAULT_HEADERS });
 
                     expect(schemaEndpoint.errors.length).to.be.equal(1);
-                    expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
+                    expect(schemaEndpoint.errors[0].message).to.equal('must be equal to one of the allowed values');
                     expect(schemaEndpoint.errors[0].dataPath).to.equal('.body.type');
                     expect(schemaEndpoint.errors[0].keyword).to.equal('enum');
                     expect(schemaEndpoint.errors[0].params.allowedValues).to.eql([
@@ -536,7 +536,7 @@ describe('oai3 - response tests', function () {
                         {
                             'dataPath': '.body',
                             'keyword': 'required',
-                            'message': "should have required property 'bark'",
+                            'message': "must have required property 'bark'",
                             'params': {
                                 'missingProperty': 'bark'
                             },
@@ -567,7 +567,7 @@ describe('oai3 - response tests', function () {
                         headers: DEFAULT_HEADERS });
 
                     expect(schemaEndpoint.errors.length).to.be.equal(1);
-                    expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
+                    expect(schemaEndpoint.errors[0].message).to.equal('must be equal to one of the allowed values');
                     expect(schemaEndpoint.errors[0].dataPath).to.equal('.body.type');
                     expect(schemaEndpoint.errors[0].keyword).to.equal('enum');
                     expect(schemaEndpoint.errors[0].params.allowedValues).to.eql([
@@ -586,7 +586,7 @@ describe('oai3 - response tests', function () {
                         headers: DEFAULT_HEADERS });
 
                     expect(schemaEndpoint.errors.length).to.be.equal(1);
-                    expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
+                    expect(schemaEndpoint.errors[0].message).to.equal('must be equal to one of the allowed values');
                     expect(schemaEndpoint.errors[0].dataPath).to.equal('.body.model');
                     expect(schemaEndpoint.errors[0].keyword).to.equal('enum');
                     expect(schemaEndpoint.errors[0].params.allowedValues).to.eql([
@@ -605,9 +605,9 @@ describe('oai3 - response tests', function () {
                     });
 
                     expect(schemaEndpoint.errors.length).to.be.equal(3);
-                    expect(schemaEndpoint.errors[0].message).to.equal('should have required property \'max_length\'');
-                    expect(schemaEndpoint.errors[1].message).to.equal('should have required property \'name\'');
-                    expect(schemaEndpoint.errors[2].message).to.equal('should have required property \'dog_age\'');
+                    expect(schemaEndpoint.errors[0].message).to.equal('must have required property \'max_length\'');
+                    expect(schemaEndpoint.errors[1].message).to.equal('must have required property \'name\'');
+                    expect(schemaEndpoint.errors[2].message).to.equal('must have required property \'dog_age\'');
                     expect(isMatch).to.be.false;
                 });
                 it('when valid discriminator type is dog_multiple and model small_dog', function () {
@@ -638,7 +638,7 @@ describe('oai3 - response tests', function () {
                     });
 
                     expect(schemaEndpoint.errors.length).to.be.equal(1);
-                    expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
+                    expect(schemaEndpoint.errors[0].message).to.equal('must be equal to one of the allowed values');
                     expect(schemaEndpoint.errors[0].dataPath).to.equal('.body.type');
                     expect(schemaEndpoint.errors[0].keyword).to.equal('enum');
                     expect(schemaEndpoint.errors[0].params.allowedValues).to.eql([
@@ -657,15 +657,15 @@ describe('oai3 - response tests', function () {
                     });
 
                     expect(schemaEndpoint.errors.length).to.be.equal(3);
-                    expect(schemaEndpoint.errors[0].message).to.equal('should have required property \'max_length\'');
+                    expect(schemaEndpoint.errors[0].message).to.equal('must have required property \'max_length\'');
                     expect(schemaEndpoint.errors[0].dataPath).to.equal('.body');
                     expect(schemaEndpoint.errors[0].keyword).to.equal('required');
 
-                    expect(schemaEndpoint.errors[1].message).to.equal('should have required property \'name\'');
+                    expect(schemaEndpoint.errors[1].message).to.equal('must have required property \'name\'');
                     expect(schemaEndpoint.errors[1].dataPath).to.equal('.body');
                     expect(schemaEndpoint.errors[1].keyword).to.equal('required');
 
-                    expect(schemaEndpoint.errors[2].message).to.equal('should have required property \'dog_age\'');
+                    expect(schemaEndpoint.errors[2].message).to.equal('must have required property \'dog_age\'');
                     expect(schemaEndpoint.errors[2].dataPath).to.equal('.body');
                     expect(schemaEndpoint.errors[2].keyword).to.equal('required');
                     expect(isMatch).to.be.false;
@@ -706,7 +706,7 @@ describe('oai3 - response tests', function () {
                 {
                     'dataPath': ".headers['x-zooz-request-id']",
                     'keyword': 'format',
-                    'message': 'should match format "uuid"',
+                    'message': 'must match format "uuid"',
                     'params': {
                         'format': 'uuid'
                     },
@@ -724,11 +724,11 @@ describe('oai3 - response tests', function () {
                 'x-zooz-request-id': uuid()
             } });
             expect(schemaEndpoint.errors[0].dataPath).to.be.equal('.body');
-            expect(schemaEndpoint.errors[0].message).to.be.equal('should have required property \'bark\'');
+            expect(schemaEndpoint.errors[0].message).to.be.equal('must have required property \'bark\'');
             expect(schemaEndpoint.errors[1].dataPath).to.be.equal('.body.fur');
-            expect(schemaEndpoint.errors[1].message).to.be.equal('should be string');
+            expect(schemaEndpoint.errors[1].message).to.be.equal('must be string');
             expect(schemaEndpoint.errors[2].dataPath).to.be.equal('.body');
-            expect(schemaEndpoint.errors[2].message).to.be.equal('should match exactly one schema in oneOf');
+            expect(schemaEndpoint.errors[2].message).to.be.equal('must match exactly one schema in oneOf');
 
             expect(validatorMatch).to.be.false;
         });
@@ -742,13 +742,13 @@ describe('oai3 - response tests', function () {
             } });
 
             expect(schemaEndpoint.errors[0].dataPath).to.be.equal('.body');
-            expect(schemaEndpoint.errors[0].message).to.be.equal('should have required property \'bark\'');
+            expect(schemaEndpoint.errors[0].message).to.be.equal('must have required property \'bark\'');
             expect(schemaEndpoint.errors[1].dataPath).to.be.equal('.body.fur');
-            expect(schemaEndpoint.errors[1].message).to.be.equal('should be string');
+            expect(schemaEndpoint.errors[1].message).to.be.equal('must be string');
             expect(schemaEndpoint.errors[2].dataPath).to.be.equal('.body');
-            expect(schemaEndpoint.errors[2].message).to.be.equal('should match exactly one schema in oneOf');
+            expect(schemaEndpoint.errors[2].message).to.be.equal('must match exactly one schema in oneOf');
             expect(schemaEndpoint.errors[3].dataPath).to.be.equal('.headers[\'x-zooz-request-id\']');
-            expect(schemaEndpoint.errors[3].message).to.be.equal('should match format "uuid"');
+            expect(schemaEndpoint.errors[3].message).to.be.equal('must match format "uuid"');
 
             expect(validatorMatch).to.be.false;
         });
@@ -792,7 +792,7 @@ describe('oai3 - response tests', function () {
                 {
                     'dataPath': ".headers['x-zooz-request-id']",
                     'keyword': 'type',
-                    'message': 'should be string',
+                    'message': 'must be string',
                     'params': {
                         'type': 'string'
                     },

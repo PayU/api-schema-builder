@@ -1,6 +1,7 @@
 const cloneDeep = require('clone-deep');
 const get = require('lodash.get');
 const Ajv = require('ajv');
+const addFormats = require('ajv-formats');
 
 const Validators = require('../validators/index');
 const ajvUtils = require('../utils/ajv-utils');
@@ -96,11 +97,12 @@ function handleBodyValidation(
 
     const defaultAjvOptions = {
         allErrors: true,
-        nullable: true
+        strict: false
     };
 
     const ajvOptions = Object.assign({}, defaultAjvOptions, ajvConfigBody);
     const ajv = new Ajv(ajvOptions);
+    addFormats(ajv);
 
     ajvUtils.addCustomKeyword(ajv, formats, keywords);
 
@@ -140,10 +142,12 @@ function buildHeadersValidation(responses, statusCode, { ajvConfigParams, format
 
     const defaultAjvOptions = {
         allErrors: true,
-        coerceTypes: 'array'
+        coerceTypes: 'array',
+        strict: false
     };
     const ajvOptions = Object.assign({}, defaultAjvOptions, ajvConfigParams);
     const ajv = new Ajv(ajvOptions);
+    addFormats(ajv);
 
     ajvUtils.addCustomKeyword(ajv, formats, keywords);
 

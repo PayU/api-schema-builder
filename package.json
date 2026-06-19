@@ -1,6 +1,6 @@
 {
   "name": "api-schema-builder",
-  "version": "2.0.5",
+  "version": "3.0.0-rc.1",
   "description": "build schema with validators for each endpoint",
   "main": "src/index.js",
   "files": [
@@ -17,7 +17,10 @@
       "text"
     ],
     "cache": true,
-    "all": true
+    "all": true,
+    "exclude": [
+      "eslint.config.js"
+    ]
   },
   "license": "Apache-2.0",
   "scripts": {
@@ -49,35 +52,33 @@
     "Gal Cohen"
   ],
   "dependencies": {
-    "ajv": "^6.12.6",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "clone-deep": "^4.0.1",
-    "decimal.js": "^10.3.1",
-    "js-yaml": "^3.14.1",
+    "decimal.js": "^10.6.0",
+    "js-yaml": "^4.2.0",
     "json-schema-deref-sync": "^0.14.0",
     "lodash.get": "^4.4.2",
-    "openapi-schema-validator": "^3.0.3",
+    "openapi-schema-validator": "^12.1.3",
     "swagger-parser": "^10.0.3"
   },
   "devDependencies": {
-    "ajv-keywords": "^3.5.2",
-    "chai": "^4.3.4",
-    "chai-as-promised": "^7.1.1",
-    "eslint": "^8.5.0",
-    "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-chai-friendly": "^0.6.0",
-    "eslint-plugin-import": "^2.25.3",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.3.1",
-    "eslint-plugin-standard": "^4.1.0",
-    "mocha": "^8.4.0",
-    "nyc": "^15.1.0",
-    "snyk": "^1.812.0",
-    "uuid": "^8.3.2"
+    "ajv-keywords": "^5.1.0",
+    "chai": "^4.5.0",
+    "chai-as-promised": "^7.1.2",
+    "eslint": "^10.5.0",
+    "eslint-plugin-chai-friendly": "^1.2.1",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-promise": "^7.3.0",
+    "mocha": "^11.7.6",
+    "nyc": "^18.0.0",
+    "snyk": "^1.1305.1",
+    "uuid": "^14.0.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=24"
   }
 }

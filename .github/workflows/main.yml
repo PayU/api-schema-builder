@@ -3,15 +3,15 @@ name: CI
 on: [ push, pull_request ]
 
 env:
-  DEFAULT_NODE: '16'
+  DEFAULT_NODE: '24'
 
 jobs:
   lockfile-lint:
     name: Lockfile lint
     runs-on: 'ubuntu-latest'
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.DEFAULT_NODE }}
       - name: lint lock file
@@ -21,22 +21,22 @@ jobs:
     strategy:
       matrix:
         platform: [ ubuntu-latest ]
-        node: [ '10', '12', '14', '16' ]
+        node: [ '24' ]
     name: Unit Tests Node ${{ matrix.node }} (${{ matrix.platform }})
     needs: lockfile-lint
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
       - name: install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
       - name: unit tests
         run: npm run test:coverage
       - name: upload code coverage artifacts
         if: ${{ matrix.node == env.DEFAULT_NODE }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v6
         with:
           name: coverage
           path: coverage
@@ -45,19 +45,19 @@ jobs:
     needs: [test, lockfile-lint]
     runs-on: 'ubuntu-latest'
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.DEFAULT_NODE }}
       - name: install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
       - name: download code coverage artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v7
         with:
           name: coverage
           path: coverage
       - name: publish coverage to coveralls
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -65,11 +65,11 @@ jobs:
     needs: lockfile-lint
     runs-on: 'ubuntu-latest'
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.DEFAULT_NODE }}
       - name: install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
       - name: lint
         run: npm run lint

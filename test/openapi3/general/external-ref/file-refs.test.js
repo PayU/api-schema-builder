@@ -25,26 +25,26 @@ describe('Loading definitions file with file refs', () => {
                     dataPath: '',
                     schemaPath: '#/allOf/0/required',
                     params: { missingProperty: 'email' },
-                    message: 'should have required property \'email\''
+                    message: 'must have required property \'email\''
                 },
                 {
                     keyword: 'required',
                     dataPath: '',
                     schemaPath: '#/allOf/0/required',
                     params: { missingProperty: 'password' },
-                    message: 'should have required property \'password\''
+                    message: 'must have required property \'password\''
                 },
                 {
                     keyword: 'required',
                     dataPath: '',
                     schemaPath: '#/allOf/0/required',
                     params: { missingProperty: 'name' },
-                    message: 'should have required property \'name\''
+                    message: 'must have required property \'name\''
                 },
                 {
                     dataPath: '',
                     keyword: 'type',
-                    message: 'should be array',
+                    message: 'must be array',
                     params: {
                         type: 'array'
                     },
@@ -63,7 +63,7 @@ describe('Loading definitions file with file refs', () => {
                 {
                     dataPath: '',
                     keyword: 'type',
-                    message: 'should be array',
+                    message: 'must be array',
                     params: {
                         type: 'array'
                     },
@@ -92,7 +92,7 @@ describe('Loading definitions file with file refs', () => {
                 {
                     dataPath: '',
                     keyword: 'type',
-                    message: 'should be array',
+                    message: 'must be array',
                     params: {
                         type: 'array'
                     },

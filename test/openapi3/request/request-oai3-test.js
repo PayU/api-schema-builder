@@ -43,7 +43,7 @@ describe('oai3 - request tests', function () {
             expect(schemaEndpoint.parameters.errors).to.be.eql([{
                 dataPath: '.headers',
                 keyword: 'required',
-                message: "should have required property 'public-key'",
+                message: "must have required property 'public-key'",
                 params: {
                     missingProperty: 'public-key'
                 },
@@ -63,7 +63,7 @@ describe('oai3 - request tests', function () {
             expect(schemaEndpoint.parameters.errors).to.be.eql([{
                 dataPath: '.headers',
                 keyword: 'type',
-                message: 'should be object',
+                message: 'must be object',
                 params: {
                     type: 'object'
                 },
@@ -87,7 +87,7 @@ describe('oai3 - request tests', function () {
                 {
                     dataPath: '.headers.header_uuid',
                     keyword: 'format',
-                    message: 'should match format "uuid"',
+                    message: 'must match format "uuid"',
                     params: {
                         format: 'uuid'
                     },
@@ -138,21 +138,21 @@ describe('oai3 - request tests', function () {
             expect(schemaEndpoint.parameters.errors).to.be.eql([
                 {
                     dataPath: '.query',
-                    keyword: 'additionalProperties',
-                    message: 'should NOT have additional properties',
-                    params: {
-                        additionalProperty: 'wrong_query'
-                    },
-                    schemaPath: '#/properties/query/additionalProperties'
-                },
-                {
-                    dataPath: '.query',
                     keyword: 'required',
-                    message: "should have required property 'page'",
+                    message: "must have required property 'page'",
                     params: {
                         missingProperty: 'page'
                     },
                     schemaPath: '#/properties/query/required'
+                },
+                {
+                    dataPath: '.query',
+                    keyword: 'additionalProperties',
+                    message: 'must NOT have additional properties',
+                    params: {
+                        additionalProperty: 'wrong_query'
+                    },
+                    schemaPath: '#/properties/query/additionalProperties'
                 }
             ]);
             expect(isParametersMatch).to.be.false;
@@ -180,7 +180,7 @@ describe('oai3 - request tests', function () {
                 {
                     dataPath: '.query.query_uuid',
                     keyword: 'format',
-                    message: 'should match format "uuid"',
+                    message: 'must match format "uuid"',
                     params: {
                         format: 'uuid'
                     },
@@ -209,7 +209,7 @@ describe('oai3 - request tests', function () {
                 {
                     dataPath: '.query',
                     keyword: 'additionalProperties',
-                    message: 'should NOT have additional properties',
+                    message: 'must NOT have additional properties',
                     params: {
                         additionalProperty: 'page'
                     },
@@ -246,21 +246,21 @@ describe('oai3 - request tests', function () {
             expect(schemaEndpoint.parameters.errors).to.be.eql([
                 {
                     dataPath: '.path',
-                    keyword: 'additionalProperties',
-                    message: 'should NOT have additional properties',
-                    params: {
-                        additionalProperty: 'namee'
-                    },
-                    schemaPath: '#/properties/path/additionalProperties'
-                },
-                {
-                    dataPath: '.path',
                     keyword: 'required',
-                    message: "should have required property 'name'",
+                    message: "must have required property 'name'",
                     params: {
                         missingProperty: 'name'
                     },
                     schemaPath: '#/properties/path/required'
+                },
+                {
+                    dataPath: '.path',
+                    keyword: 'additionalProperties',
+                    message: 'must NOT have additional properties',
+                    params: {
+                        additionalProperty: 'namee'
+                    },
+                    schemaPath: '#/properties/path/additionalProperties'
                 }
             ]);
             expect(isParametersMatch).to.be.false;
@@ -292,7 +292,7 @@ describe('oai3 - request tests', function () {
                 {
                     dataPath: '.path.pet_id',
                     keyword: 'format',
-                    message: 'should match format "uuid"',
+                    message: 'must match format "uuid"',
                     params: {
                         format: 'uuid'
                     },
@@ -327,7 +327,7 @@ describe('oai3 - request tests', function () {
                     {
                         dataPath: '',
                         keyword: 'required',
-                        message: "should have required property 'bark'",
+                        message: "must have required property 'bark'",
                         params: {
                             missingProperty: 'bark'
                         },
@@ -347,7 +347,7 @@ describe('oai3 - request tests', function () {
                     {
                         dataPath: '.bark',
                         keyword: 'type',
-                        message: 'should be string',
+                        message: 'must be string',
                         params: {
                             type: 'string'
                         },
@@ -384,7 +384,7 @@ describe('oai3 - request tests', function () {
                         params: {
                             type: 'number'
                         },
-                        message: 'should be number'
+                        message: 'must be number'
                     },
                     {
                         keyword: 'type',
@@ -393,7 +393,7 @@ describe('oai3 - request tests', function () {
                         params: {
                             type: 'number'
                         },
-                        message: 'should be number'
+                        message: 'must be number'
                     },
                     {
                         keyword: 'type',
@@ -402,7 +402,7 @@ describe('oai3 - request tests', function () {
                         params: {
                             type: 'number'
                         },
-                        message: 'should be number'
+                        message: 'must be number'
                     },
                     {
                         keyword: 'type',
@@ -411,7 +411,7 @@ describe('oai3 - request tests', function () {
                         params: {
                             type: 'string'
                         },
-                        message: 'should be string'
+                        message: 'must be string'
                     },
                     {
                         keyword: 'type',
@@ -420,7 +420,7 @@ describe('oai3 - request tests', function () {
                         params: {
                             type: 'string'
                         },
-                        message: 'should be string'
+                        message: 'must be string'
                     },
                     {
                         keyword: 'type',
@@ -429,7 +429,7 @@ describe('oai3 - request tests', function () {
                         params: {
                             type: 'string'
                         },
-                        message: 'should be string'
+                        message: 'must be string'
                     }
                 ]);
                 expect(isBodysMatch).to.be.false;
@@ -456,7 +456,7 @@ describe('oai3 - request tests', function () {
                     {
                         dataPath: '',
                         keyword: 'required',
-                        message: "should have required property 'bark'",
+                        message: "must have required property 'bark'",
                         params: {
                             missingProperty: 'bark'
                         },
@@ -465,7 +465,7 @@ describe('oai3 - request tests', function () {
                     {
                         dataPath: '',
                         keyword: 'required',
-                        message: "should have required property 'fur'",
+                        message: "must have required property 'fur'",
                         params: {
                             missingProperty: 'fur'
                         },
@@ -474,7 +474,7 @@ describe('oai3 - request tests', function () {
                     {
                         dataPath: '',
                         keyword: 'anyOf',
-                        message: 'should match some schema in anyOf',
+                        message: 'must match a schema in anyOf',
                         params: {},
                         schemaPath: '#/anyOf'
                     }
@@ -490,7 +490,7 @@ describe('oai3 - request tests', function () {
                     {
                         dataPath: '.bark',
                         keyword: 'type',
-                        message: 'should be string',
+                        message: 'must be string',
                         params: {
                             type: 'string'
                         },
@@ -499,7 +499,7 @@ describe('oai3 - request tests', function () {
                     {
                         dataPath: '.fur',
                         keyword: 'pattern',
-                        message: 'should match pattern "^\\d+$"',
+                        message: 'must match pattern "^\\d+$"',
                         params: {
                             pattern: '^\\d+$'
                         },
@@ -508,7 +508,7 @@ describe('oai3 - request tests', function () {
                     {
                         dataPath: '',
                         keyword: 'anyOf',
-                        message: 'should match some schema in anyOf',
+                        message: 'must match a schema in anyOf',
                         params: {},
                         schemaPath: '#/anyOf'
                     }
@@ -538,7 +538,7 @@ describe('oai3 - request tests', function () {
                     {
                         dataPath: '',
                         keyword: 'required',
-                        message: "should have required property 'fur'",
+                        message: "must have required property 'fur'",
                         params: {
                             missingProperty: 'fur'
                         },
@@ -556,7 +556,7 @@ describe('oai3 - request tests', function () {
                     {
                         dataPath: '.bark',
                         keyword: 'type',
-                        message: 'should be string',
+                        message: 'must be string',
                         params: {
                             type: 'string'
                         },
@@ -565,7 +565,7 @@ describe('oai3 - request tests', function () {
                     {
                         dataPath: '.fur',
                         keyword: 'pattern',
-                        message: 'should match pattern "^\\d+$"',
+                        message: 'must match pattern "^\\d+$"',
                         params: {
                             pattern: '^\\d+$'
                         },
@@ -587,7 +587,7 @@ describe('oai3 - request tests', function () {
                         bark: 'hav hav'
                     });
 
-                    expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
+                    expect(schemaEndpoint.errors[0].message).to.equal('must be equal to one of the allowed values');
                     expect(schemaEndpoint.errors[0].dataPath).to.equal('.type');
                     expect(schemaEndpoint.errors[0].keyword).to.equal('enum');
                     expect(schemaEndpoint.errors[0].params.allowedValues).to.eql([
@@ -605,7 +605,7 @@ describe('oai3 - request tests', function () {
                         {
                             dataPath: '',
                             keyword: 'required',
-                            message: "should have required property 'bark'",
+                            message: "must have required property 'bark'",
                             params: {
                                 missingProperty: 'bark'
                             },
@@ -635,7 +635,7 @@ describe('oai3 - request tests', function () {
                         fur: 'hav hav'
                     });
 
-                    expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
+                    expect(schemaEndpoint.errors[0].message).to.equal('must be equal to one of the allowed values');
                     expect(schemaEndpoint.errors[0].dataPath).to.equal('.type');
                     expect(schemaEndpoint.errors[0].keyword).to.equal('enum');
                     expect(schemaEndpoint.errors[0].params.allowedValues).to.eql([
@@ -652,7 +652,7 @@ describe('oai3 - request tests', function () {
                         type: 'dog_multiple'
                     });
 
-                    expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
+                    expect(schemaEndpoint.errors[0].message).to.equal('must be equal to one of the allowed values');
                     expect(schemaEndpoint.errors[0].dataPath).to.equal('.model');
                     expect(schemaEndpoint.errors[0].keyword).to.equal('enum');
                     expect(schemaEndpoint.errors[0].params.allowedValues).to.eql([
@@ -668,9 +668,9 @@ describe('oai3 - request tests', function () {
                         model: 'small_dog'
                     });
 
-                    expect(schemaEndpoint.errors[0].message).to.equal('should have required property \'max_length\'');
-                    expect(schemaEndpoint.errors[1].message).to.equal('should have required property \'name\'');
-                    expect(schemaEndpoint.errors[2].message).to.equal('should have required property \'dog_age\'');
+                    expect(schemaEndpoint.errors[0].message).to.equal('must have required property \'max_length\'');
+                    expect(schemaEndpoint.errors[1].message).to.equal('must have required property \'name\'');
+                    expect(schemaEndpoint.errors[2].message).to.equal('must have required property \'dog_age\'');
                     expect(isBodysMatch).to.be.false;
                 });
                 it('when valid discriminator type is dog_multiple and model small_dog', function () {
@@ -697,7 +697,7 @@ describe('oai3 - request tests', function () {
                         fur: '6'
                     });
 
-                    expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
+                    expect(schemaEndpoint.errors[0].message).to.equal('must be equal to one of the allowed values');
                     expect(schemaEndpoint.errors[0].dataPath).to.equal('.type');
                     expect(schemaEndpoint.errors[0].keyword).to.equal('enum');
                     expect(schemaEndpoint.errors[0].params.allowedValues).to.eql([
@@ -713,7 +713,7 @@ describe('oai3 - request tests', function () {
                         model: 'small_dog'
                     });
 
-                    expect(schemaEndpoint.errors[0].message).to.equal('should have required property \'max_length\'');
+                    expect(schemaEndpoint.errors[0].message).to.equal('must have required property \'max_length\'');
                     expect(schemaEndpoint.errors[0].dataPath).to.equal('');
                     expect(schemaEndpoint.errors[0].keyword).to.equal('required');
                     expect(isBodysMatch).to.be.false;

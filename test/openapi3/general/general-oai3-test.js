@@ -21,12 +21,12 @@ describe('oai3 - general tests', () => {
                     expect(err.errors).to.deep.equal([
                         {
                             keyword: 'required',
-                            dataPath: '',
+                            instancePath: '',
                             schemaPath: '#/required',
                             params: {
                                 missingProperty: 'info'
                             },
-                            message: "should have required property 'info'"
+                            message: "must have required property 'info'"
                         }
                     ]);
                     done();

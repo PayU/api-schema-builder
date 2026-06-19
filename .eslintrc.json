@@ -1,7 +1,7 @@
 {
-    "extends": "standard",
     "plugins": [
-        "standard",
+        "import",
+        "n",
         "promise",
         "chai-friendly"
     ],

@@ -29,7 +29,7 @@ describe('oai2 - response tests', function () {
                 {
                     'dataPath': ".headers['x-next']",
                     'keyword': 'type',
-                    'message': 'should be string',
+                    'message': 'must be string',
                     'params': {
                         'type': 'string'
                     },
@@ -51,7 +51,7 @@ describe('oai2 - response tests', function () {
                 {
                     'dataPath': '.body.name',
                     'keyword': 'type',
-                    'message': 'should be string',
+                    'message': 'must be string',
                     'params': {
                         'type': 'string'
                     },
@@ -73,7 +73,7 @@ describe('oai2 - response tests', function () {
                 {
                     'dataPath': '.body.name',
                     'keyword': 'type',
-                    'message': 'should be string',
+                    'message': 'must be string',
                     'params': {
                         'type': 'string'
                     },
@@ -82,7 +82,7 @@ describe('oai2 - response tests', function () {
                 {
                     'dataPath': ".headers['x-next']",
                     'keyword': 'type',
-                    'message': 'should be string',
+                    'message': 'must be string',
                     'params': {
                         'type': 'string'
                     },
@@ -113,7 +113,7 @@ describe('oai2 - response tests', function () {
                 schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath);
             });
 
-            it('valid response - should pass validation', function () {
+            it('valid response - must pass validation', function () {
                 let schemaEndpoint = schema['/pets/:petId']['get'].responses['200'];
                 let validatorMatch = schemaEndpoint.validate({ body: {
                     id: 1,
@@ -132,7 +132,7 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': '.body.id',
                         'keyword': 'type',
-                        'message': 'should be integer',
+                        'message': 'must be integer',
                         'params': {
                             'type': 'integer'
                         },
@@ -151,7 +151,7 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': '.body.field2',
                         'keyword': 'type',
-                        'message': 'should be object',
+                        'message': 'must be object',
                         'params': {
                             'type': 'object'
                         },
@@ -170,7 +170,7 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': '.body',
                         'keyword': 'required',
-                        'message': "should have required property 'id'",
+                        'message': "must have required property 'id'",
                         'params': {
                             'missingProperty': 'id'
                         },
@@ -187,7 +187,7 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': '.body',
                         'keyword': 'required',
-                        'message': "should have required property 'field2'",
+                        'message': "must have required property 'field2'",
                         'params': {
                             'missingProperty': 'field2'
                         },
@@ -206,7 +206,7 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': '.body.field1',
                         'keyword': 'enum',
-                        'message': 'should be equal to one of the allowed values',
+                        'message': 'must be equal to one of the allowed values',
                         'params': {
                             'allowedValues': [
                                 'enum1',
@@ -231,7 +231,7 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': '.body[1].field1',
                         'keyword': 'type',
-                        'message': 'should be string',
+                        'message': 'must be string',
                         'params': {
                             'type': 'string'
                         },
@@ -250,7 +250,7 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': '.body',
                         'keyword': 'type',
-                        'message': 'should be array',
+                        'message': 'must be array',
                         'params': {
                             'type': 'array'
                         },
@@ -259,7 +259,7 @@ describe('oai2 - response tests', function () {
                 ]);
                 expect(validatorMatch).to.be.false;
             });
-            it('valid nested response - should pass validation', function () {
+            it('valid nested response - must pass validation', function () {
                 let schemaEndpoint = schema['/pet-with-object']['get'].responses['200'];
                 let validatorMatch = schemaEndpoint.validate({ body: {
                     field2: {
@@ -280,7 +280,7 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': '.body.field2',
                         'keyword': 'required',
-                        'message': "should have required property 'field3'",
+                        'message': "must have required property 'field3'",
                         'params': {
                             'missingProperty': 'field3'
                         },
@@ -301,7 +301,7 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': '.body.field2.field3',
                         'keyword': 'type',
-                        'message': 'should be integer',
+                        'message': 'must be integer',
                         'params': {
                             'type': 'integer'
                         },
@@ -332,7 +332,7 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': '.body',
                         'keyword': 'required',
-                        'message': "should have required property 'message'",
+                        'message': "must have required property 'message'",
                         'params': {
                             'missingProperty': 'message'
                         },
@@ -353,7 +353,7 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': '.body.message',
                         'keyword': 'type',
-                        'message': 'should be string',
+                        'message': 'must be string',
                         'params': {
                             'type': 'string'
                         },
@@ -380,7 +380,7 @@ describe('oai2 - response tests', function () {
                         'params': {
                             'type': 'integer'
                         },
-                        'message': 'should be integer'
+                        'message': 'must be integer'
                     },
                     {
                         'keyword': 'type',
@@ -389,7 +389,7 @@ describe('oai2 - response tests', function () {
                         'params': {
                             'type': 'integer'
                         },
-                        'message': 'should be integer'
+                        'message': 'must be integer'
                     },
                     {
                         'keyword': 'type',
@@ -398,7 +398,7 @@ describe('oai2 - response tests', function () {
                         'params': {
                             'type': 'integer'
                         },
-                        'message': 'should be integer'
+                        'message': 'must be integer'
                     },
                     {
                         'keyword': 'type',
@@ -407,7 +407,7 @@ describe('oai2 - response tests', function () {
                         'params': {
                             'type': 'string'
                         },
-                        'message': 'should be string'
+                        'message': 'must be string'
                     },
                     {
                         'keyword': 'type',
@@ -416,7 +416,7 @@ describe('oai2 - response tests', function () {
                         'params': {
                             'type': 'string'
                         },
-                        'message': 'should be string'
+                        'message': 'must be string'
                     },
                     {
                         'keyword': 'type',
@@ -425,7 +425,7 @@ describe('oai2 - response tests', function () {
                         'params': {
                             'type': 'string'
                         },
-                        'message': 'should be string'
+                        'message': 'must be string'
                     }
                 ]);
                 expect(validatorMatch).to.be.false;
@@ -472,7 +472,7 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': '.body[0].name',
                         'keyword': 'type',
-                        'message': 'should be string',
+                        'message': 'must be string',
                         'params': {
                             'type': 'string'
                         },
@@ -489,7 +489,7 @@ describe('oai2 - response tests', function () {
                 schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath);
             });
 
-            it('should pass', function () {
+            it('must pass', function () {
                 let schemaEndpoint = schema['/pets']['post'].responses['201'];
                 let validatorMatch = schemaEndpoint.validate({
                     headers: {},
@@ -515,7 +515,7 @@ describe('oai2 - response tests', function () {
                 headers: {} });
 
                 expect(schemaEndpoint.errors.length).to.equal(1);
-                expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
+                expect(schemaEndpoint.errors[0].message).to.equal('must be equal to one of the allowed values');
                 expect(schemaEndpoint.errors[0].dataPath).to.equal('.body.petType');
                 expect(schemaEndpoint.errors[0].keyword).to.equal('enum');
                 expect(schemaEndpoint.errors[0].params.allowedValues).to.eql([
@@ -537,7 +537,7 @@ describe('oai2 - response tests', function () {
                 } });
 
                 expect(schemaEndpoint.errors.length).to.equal(1);
-                expect(schemaEndpoint.errors[0].message).to.equal('should be equal to one of the allowed values');
+                expect(schemaEndpoint.errors[0].message).to.equal('must be equal to one of the allowed values');
                 expect(schemaEndpoint.errors[0].dataPath).to.equal('.body.petType');
                 expect(schemaEndpoint.errors[0].keyword).to.equal('enum');
                 expect(schemaEndpoint.errors[0].params.allowedValues).to.eql([
@@ -558,7 +558,7 @@ describe('oai2 - response tests', function () {
                 headers: {} });
 
                 expect(schemaEndpoint.errors.length).to.equal(1);
-                expect(schemaEndpoint.errors[0].message).to.equal('should have required property \'packSize\'');
+                expect(schemaEndpoint.errors[0].message).to.equal('must have required property \'packSize\'');
                 expect(schemaEndpoint.errors[0].dataPath).to.equal('.body');
                 expect(schemaEndpoint.errors[0].keyword).to.equal('required');
                 expect(schemaEndpoint.errors[0].params.missingProperty).to.eql('packSize');
@@ -577,7 +577,7 @@ describe('oai2 - response tests', function () {
                 headers: {} });
 
                 expect(schemaEndpoint.errors.length).to.equal(1);
-                expect(schemaEndpoint.errors[0].message).to.be.eql('should have required property \'huntingSkill\'');
+                expect(schemaEndpoint.errors[0].message).to.be.eql('must have required property \'huntingSkill\'');
                 expect(schemaEndpoint.errors[0].params.missingProperty).to.eql('huntingSkill');
                 expect(validatorMatch).to.be.false;
             });
@@ -592,7 +592,7 @@ describe('oai2 - response tests', function () {
                 headers: {} });
 
                 expect(schemaEndpoint.errors.length).to.equal(1);
-                expect(schemaEndpoint.errors[0].message).to.be.equal('should have required property \'name\'');
+                expect(schemaEndpoint.errors[0].message).to.be.equal('must have required property \'name\'');
                 expect(schemaEndpoint.errors[0].params.missingProperty).to.eql('name');
                 expect(validatorMatch).to.be.false;
             });
@@ -622,7 +622,7 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': ".headers['x-next']",
                         'keyword': 'type',
-                        'message': 'should be string',
+                        'message': 'must be string',
                         'params': {
                             'type': 'string'
                         },
@@ -643,7 +643,7 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': ".headers['pattern-header']",
                         'keyword': 'pattern',
-                        'message': 'should match pattern "^\\d{1,3}\\.\\d{1,3}$"',
+                        'message': 'must match pattern "^\\d{1,3}\\.\\d{1,3}$"',
                         'params': {
                             'pattern': '^\\d{1,3}\\.\\d{1,3}$'
                         },
@@ -664,7 +664,7 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': ".headers['minlength-header']",
                         'keyword': 'minLength',
-                        'message': 'should NOT be shorter than 1 characters',
+                        'message': 'must NOT have fewer than 1 characters',
                         'params': {
                             'limit': 1
                         },
@@ -712,7 +712,7 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': ".headers['x-next']",
                         'keyword': 'type',
-                        'message': 'should be string',
+                        'message': 'must be string',
                         'params': {
                             'type': 'string'
                         },
@@ -754,7 +754,7 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': ".headers['x-next']",
                         'keyword': 'type',
-                        'message': 'should be string',
+                        'message': 'must be string',
                         'params': {
                             'type': 'string'
                         },
@@ -775,7 +775,7 @@ describe('oai2 - response tests', function () {
                         contentTypeValidation: true
                     });
                 });
-                it('more detailed content-type - should pass validation', function () {
+                it('more detailed content-type - must pass validation', function () {
                     schemaEndpoint = schema['/pet-with-header']['get'].responses['200'];
                     let isValid = schemaEndpoint.validate({
                         headers: {
@@ -787,7 +787,7 @@ describe('oai2 - response tests', function () {
                     expect(schemaEndpoint.errors).to.be.equal(null);
                     expect(isValid).to.be.true;
                 });
-                it('valid content-type when multiple content-types defined - should pass validation', function () {
+                it('valid content-type when multiple content-types defined - must pass validation', function () {
                     schemaEndpoint = schema['/text']['put'].responses['200'];
 
                     let isValid = schemaEndpoint.validate({
@@ -851,7 +851,7 @@ describe('oai2 - response tests', function () {
                     const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
                     schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
                 });
-                it('request with wrong parameter type - should pass validation due to coercion', function () {
+                it('request with wrong parameter type - must pass validation due to coercion', function () {
                     let schemaEndpoint = schema['/pets']['put'].responses['200'];
 
                     let isValid = schemaEndpoint.validate({
@@ -880,7 +880,7 @@ describe('oai2 - response tests', function () {
                     const swaggerPath = path.join(__dirname, './yaml/pets-response.yaml');
                     schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
                 });
-                it('request with wrong parameter type - should pass validation due to coercion', function () {
+                it('request with wrong parameter type - must pass validation due to coercion', function () {
                     let schemaEndpoint = schema['/pets']['put'].responses['200'];
 
                     let isValid = schemaEndpoint.validate({
@@ -898,7 +898,7 @@ describe('oai2 - response tests', function () {
                         {
                             'dataPath': '.body[0].name',
                             'keyword': 'type',
-                            'message': 'should be string',
+                            'message': 'must be string',
                             'params': {
                                 'type': 'string'
                             },
@@ -928,7 +928,7 @@ describe('oai2 - response tests', function () {
                 }
             };
 
-            var range = require('ajv-keywords/keywords/range');
+            var range = require('ajv-keywords/dist/keywords/range');
             let schema, options = {
                 keywords: [range, { name: 'prohibited', definition }],
                 expectFormFieldsInBody: true
@@ -939,7 +939,7 @@ describe('oai2 - response tests', function () {
                 schema = schemaValidatorGenerator.buildSchemaSync(swaggerPath, options);
             });
 
-            it('should pass the validation by the range keyword', function () {
+            it('must pass the validation by the range keyword', function () {
                 let schemaEndpoint = schema['/keywords']['post'].responses['200'];
 
                 let isValid = schemaEndpoint.validate({
@@ -967,21 +967,18 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': '.body.age',
                         'keyword': 'maximum',
-                        'message': 'should be <= 30',
+                        'message': 'must be <= 30',
                         'params': {
                             'comparison': '<=',
-                            'exclusive': false,
                             'limit': 30
                         },
-                        'schemaPath': '#/body/properties/age/maximum'
+                        'schemaPath': '#/body/properties/age/range/maximum'
                     },
                     {
                         'dataPath': '.body.age',
                         'keyword': 'range',
-                        'message': 'should pass "range" keyword validation',
-                        'params': {
-                            'keyword': 'range'
-                        },
+                        'message': 'must pass "range" keyword validation',
+                        'params': {},
                         'schemaPath': '#/body/properties/age/range'
                     }
                 ]);
@@ -999,17 +996,15 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': '.body',
                         'keyword': 'not',
-                        'message': 'should NOT be valid',
+                        'message': 'must NOT be valid',
                         'params': {},
-                        'schemaPath': '#/body/not'
+                        'schemaPath': '#/body/prohibited/not'
                     },
                     {
                         'dataPath': '.body',
                         'keyword': 'prohibited',
-                        'message': 'should pass "prohibited" keyword validation',
-                        'params': {
-                            'keyword': 'prohibited'
-                        },
+                        'message': 'must pass "prohibited" keyword validation',
+                        'params': {},
                         'schemaPath': '#/body/prohibited'
                     }
                 ]);
@@ -1041,7 +1036,7 @@ describe('oai2 - response tests', function () {
                     {
                         'dataPath': '.body.id',
                         'keyword': 'format',
-                        'message': 'should match format "abcName"',
+                        'message': 'must match format "abcName"',
                         'params': {
                             'format': 'abcName'
                         },

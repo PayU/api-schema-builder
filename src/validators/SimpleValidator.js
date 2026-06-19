@@ -1,5 +1,6 @@
 
 const Validator = require('./Validator');
+const { normalizeAjvErrors } = require('./validator-utils');
 
 class SimpleValidator extends Validator {
     constructor(schema) {
@@ -9,7 +10,7 @@ class SimpleValidator extends Validator {
 
 function simple(ajvValidate, data) {
     const result = ajvValidate(data);
-    this.errors = ajvValidate.errors;
+    this.errors = normalizeAjvErrors(ajvValidate.errors);
 
     return result;
 }
